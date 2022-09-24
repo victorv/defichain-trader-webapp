@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+
+	<script>
+		window.commitHash = '$COMMIT_HASH'
+		// outdated syntax to support older browsers
+		var errors = ''
+
+		window.addEventListener('error',  function(e) {
+			console.log(e)
+			errors += 'message: ' + e.message + '\n'
+			errors += 'filename: ' + e.filename + '\n'
+			errors += 'lineno: ' + e.lineno + '\n'
+			errors += 'colno: ' + e.colno + '\n'
+			errors += 'type: ' + e.type + '\n'
+			errors += 'timestamp: ' + e.timeStamp + '\n'
+			if (e.error) {
+				errors += 'stack: ' + e.error.stack + '\n'
+			}
+			errors += 'commit hash: ' + window.commitHash + '\n'
+			errors += '\n\n'
+		})
+
+		document.addEventListener("DOMContentLoaded", function () {
+			if(errors) {
+				document.body.innerHTML = '<h1>An error occurred!</h1><h2>Give this information to the maintainer</h2><pre>' + errors + '</pre>'
+			}
+		})
+	</script>
+
+	<title>defichain-trader.com</title>
+
+	<link rel='icon' type='image/png' href='/favicon.png'>
+	<link rel='stylesheet' href='/global.css'>
+	<link rel='stylesheet' href='/build/bundle.css'>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@2.1.0/build/pure-min.css" integrity="sha384-yHIFVG6ClnONEA5yB5DJXfW2/KC173DIQrYoZMEtBvGzmf0PKiGyNEqe9N6BNDBH" crossorigin="anonymous">
+
+	<script defer src='/build/bundle.js'></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" onload="fireChartJSLoad(Chart)"></script>
+	<script defer src="lib/chartjs-plugin-annotation.min.js"></script>
+</head>
+
+<body>
+</body>
+</html>
