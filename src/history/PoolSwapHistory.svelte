@@ -1,6 +1,7 @@
 <script>
     import {onMount} from "svelte";
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
+    import PoolSwapDetails from "./PoolSwapDetails.svelte";
 
     export let allTokens
 
@@ -77,7 +78,6 @@
         <tr>
             <th>Transaction ID</th>
             <th>Block</th>
-            <th>Ordinal</th>
             <th>Fee</th>
             <th>Input Amount</th>
             <th>Output Amount</th>
@@ -99,9 +99,6 @@
                     </a>
                 </td>
                 <td>
-                    {tx.ordinal}
-                </td>
-                <td>
                     {tx.fee}
                 </td>
                 <td>
@@ -116,41 +113,20 @@
                     </a>
                 </td>
                 <td>
-                    <a href="https://defiscan.live/address/{tx.to}" target="_blank">
-                        {limitLength(tx.to)}
-                    </a>
+                    {#if tx.from != tx.to}
+                        <a href="https://defiscan.live/address/{tx.to}" target="_blank">
+                            {limitLength(tx.to)}
+                        </a>
+                    {:else}
+                        &lt;from address&gt;
+                    {/if}
                 </td>
             </tr>
             {#if tx === selectedTX}
                 <tr>
                     <td colspan="3">
                         {#if selectedTX}
-                            <table>
-                                <tr>
-                                    <td>
-                                        <strong>Block Height Received</strong>
-                                        <br/>
-                                        {selectedTX.blockHeightReceived}
-                                    </td>
-                                    <td>
-                                        <strong>Block Height Confirmed</strong>
-                                        <br/>
-                                        {selectedTX.blockHeight}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <strong>Fee Received</strong>
-                                        <br/>
-                                        {selectedTX.feeReceived}
-                                    </td>
-                                    <td>
-                                        <strong>Confirmed Fee</strong>
-                                        <br/>
-                                        {selectedTX.fee}
-                                    </td>
-                                </tr>
-                            </table>
+                           <PoolSwapDetails tx={selectedTX}/>
                         {/if}
                     </td>
                 </tr>

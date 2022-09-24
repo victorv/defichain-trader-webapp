@@ -30,7 +30,7 @@
     <table class="pure-table pure-table-striped">
         <tbody>
         <tr>
-            <th role="rowheader" class="swap">Summary</th>
+            <th role="rowheader" class="banner">Summary</th>
             <td>
                 {breakdown.path}
             </td>
@@ -103,7 +103,7 @@
         </tr>
         {#each breakdown.swaps as swap, index}
             <tr>
-                <th role="rowheader" class="swap">
+                <th role="rowheader" class="banner">
                     Swap {index + 1}
                     <Help whiteText={true}
                           help="Some swaps consist of multiple swaps. This is called a composite swap and will go through multiple pools. You pay fees and commissions each time for every pool you swap through. The height of those fees can be different for each pool and they can add up quickly."/>
@@ -173,11 +173,6 @@
 {/if}
 
 <style>
-    th.swap {
-        background: #333;
-        color: white;
-    }
-
     label {
         display: block;
     }

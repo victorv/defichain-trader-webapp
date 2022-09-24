@@ -1,7 +1,7 @@
 <svelte:options immutable/>
 <script>
     import DEX from "../dex/DEX.svelte";
-    import PoolSwapHistory from "../mempool/PoolSwapHistory.svelte";
+    import PoolSwapHistory from "../history/PoolSwapHistory.svelte";
     import Settings from "../settings/Settings.svelte";
     import {logout, store, updateStore} from "../store";
     import Icon from "../common/Icon.svelte";
