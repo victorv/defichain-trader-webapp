@@ -76,7 +76,6 @@
         <thead>
         <tr>
             <th>Transaction ID</th>
-            <!--            <th>Age</th>-->
             <th>Block</th>
             <th>Ordinal</th>
             <th>Fee</th>
@@ -94,9 +93,6 @@
                         {limitLength(tx.txID)}
                     </a>
                 </td>
-                <!--                <td>-->
-                <!--                    {toTime(tx.blockTime)}-->
-                <!--                </td>-->
                 <td>
                     <a href="https://defiscan.live/blocks/{tx.blockHeight}" target="_blank">
                         {tx.blockHeight}
@@ -130,18 +126,6 @@
                     <td colspan="3">
                         {#if selectedTX}
                             <table>
-                                <!--                                <tr>-->
-                                <!--                                    <td>-->
-                                <!--                                        <strong>Time Received</strong>-->
-                                <!--                                        <br/>-->
-                                <!--                                        {toTime(selectedTX.timeReceived)}-->
-                                <!--                                    </td>-->
-                                <!--                                    <td>-->
-                                <!--                                        <strong>Time Confirmed</strong>-->
-                                <!--                                        <br/>-->
-                                <!--                                        {toTime(selectedTX.blockTime)}-->
-                                <!--                                    </td>-->
-                                <!--                                </tr>-->
                                 <tr>
                                     <td>
                                         <strong>Block Height Received</strong>
