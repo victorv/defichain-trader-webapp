@@ -74,19 +74,26 @@
     <tr>
         <th role="rowheader" class="banner">First seen</th>
         <td>
+            {#if tx.mempool}
+                {new Date(tx.mempool.time).toString()}
+            {:else}
+                Never
+            {/if}
         </td>
     </tr>
-    <tr>
-        <th role="rowheader">Block Height</th>
-        <td>
-            {tx.blockHeightReceived}
-        </td>
-    </tr>
-    <tr>
-        <th role="rowheader">Position</th>
-        <td>
-            {tx.txnReceived}
-        </td>
-    </tr>
+    {#if tx.mempool}
+        <tr>
+            <th role="rowheader">Block Height</th>
+            <td>
+                {tx.mempool.blockHeight}
+            </td>
+        </tr>
+        <tr>
+            <th role="rowheader">Position</th>
+            <td>
+                {tx.mempool.txn}
+            </td>
+        </tr>
+    {/if}
     </tbody>
 </table>
