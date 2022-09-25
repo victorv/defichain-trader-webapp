@@ -103,11 +103,7 @@
                     {/if}
                 </td>
                 <td>
-                    {#if tx.block}
-                        {tx.block.fee}
-                    {:else}
-                        Not stored yet
-                    {/if}
+                    {tx.fee}
                 </td>
                 <td>
                     {tx.amountFrom} {tx.tokenFrom}

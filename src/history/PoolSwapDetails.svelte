@@ -73,7 +73,7 @@
         <tr>
             <th role="rowheader">Fee</th>
             <td>
-                {tx.block.fee}
+                {tx.fee}
             </td>
         </tr>
     {/if}
@@ -93,6 +93,12 @@
                 <th role="rowheader">Confirmed</th>
                 <td>
                     No
+                </td>
+            </tr>
+            <tr>
+                <th role="rowheader">Fee</th>
+                <td>
+                    {tx.fee}
                 </td>
             </tr>
         {/if}
