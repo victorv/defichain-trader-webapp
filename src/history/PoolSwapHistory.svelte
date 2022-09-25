@@ -138,7 +138,7 @@
             </tr>
             {#if tx === selectedTX}
                 <tr>
-                    <td colspan="3">
+                    <td colspan="7">
                         {#if selectedTX}
                             <PoolSwapDetails tx={selectedTX}/>
                         {/if}
@@ -171,8 +171,8 @@
         color: white;
     }
 
-    td[colspan="3"] {
-        padding: 1rem;
+    td[colspan="7"] {
+        padding: 0.5rem;
     }
 
     .message {
