@@ -167,6 +167,10 @@
         color: white;
     }
 
+    tr.selected-row a {
+        color: white;
+    }
+
     td[colspan="3"] {
         padding: 1rem;
     }
