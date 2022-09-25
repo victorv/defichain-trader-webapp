@@ -94,18 +94,30 @@
                     </a>
                 </td>
                 <td>
-                    <a href="https://defiscan.live/blocks/{tx.blockHeight}" target="_blank">
-                        {tx.blockHeight}
-                    </a>
+                    {#if tx.block}
+                        <a href="https://defiscan.live/blocks/{tx.blockHeight}" target="_blank">
+                            {tx.block.blockHeight}
+                        </a>
+                    {:else}
+                        First seen: {tx.mempool.blockHeight}
+                    {/if}
                 </td>
                 <td>
-                    {tx.fee}
+                    {#if tx.block}
+                        {tx.block.fee}
+                    {:else}
+                        Not stored yet
+                    {/if}
                 </td>
                 <td>
                     {tx.amountFrom} {tx.tokenFrom}
                 </td>
                 <td>
-                    {tx.amountTo} {tx.tokenTo}
+                    {#if tx.amountTo}
+                        {tx.amountTo} {tx.tokenTo}
+                    {:else}
+                        NA {tx.tokenTo}
+                    {/if}
                 </td>
                 <td>
                     <a href="https://defiscan.live/address/{tx.from}" target="_blank">
@@ -126,7 +138,7 @@
                 <tr>
                     <td colspan="3">
                         {#if selectedTX}
-                           <PoolSwapDetails tx={selectedTX}/>
+                            <PoolSwapDetails tx={selectedTX}/>
                         {/if}
                     </td>
                 </tr>

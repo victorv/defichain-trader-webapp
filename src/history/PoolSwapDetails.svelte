@@ -17,7 +17,11 @@
     <tr>
         <th role="rowheader">Output amount</th>
         <td>
-            {tx.amountTo} {tx.tokenTo}
+            {#if tx.amountTo}
+                {tx.amountTo} {tx.tokenTo}
+            {:else}
+                NA {tx.tokenTo}
+            {/if}
         </td>
     </tr>
     <tr>
@@ -47,30 +51,32 @@
         </td>
     </tr>
 
-    <tr>
-        <th role="rowheader" class="banner">Confirmed</th>
-        <td>
-            Yes
-        </td>
-    </tr>
-    <tr>
-        <th role="rowheader">Block Height</th>
-        <td>
-            {tx.blockHeight}
-        </td>
-    </tr>
-    <tr>
-        <th role="rowheader">Position in block</th>
-        <td>
-            {tx.txn}
-        </td>
-    </tr>
-    <tr>
-        <th role="rowheader">Fee</th>
-        <td>
-            {tx.fee}
-        </td>
-    </tr>
+    {#if tx.block}
+        <tr>
+            <th role="rowheader" class="banner">Confirmed</th>
+            <td>
+                Yes
+            </td>
+        </tr>
+        <tr>
+            <th role="rowheader">Block Height</th>
+            <td>
+                {tx.block.blockHeight}
+            </td>
+        </tr>
+        <tr>
+            <th role="rowheader">Position in block</th>
+            <td>
+                {tx.block.txn}
+            </td>
+        </tr>
+        <tr>
+            <th role="rowheader">Fee</th>
+            <td>
+                {tx.block.fee}
+            </td>
+        </tr>
+    {/if}
     <tr>
         <th role="rowheader" class="banner">First seen</th>
         <td>
@@ -82,6 +88,14 @@
         </td>
     </tr>
     {#if tx.mempool}
+        {#if !tx.block}
+            <tr>
+                <th role="rowheader">Confirmed</th>
+                <td>
+                    No
+                </td>
+            </tr>
+        {/if}
         <tr>
             <th role="rowheader">Block Height</th>
             <td>
