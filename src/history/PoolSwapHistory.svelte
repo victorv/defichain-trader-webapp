@@ -101,7 +101,7 @@
                 </td>
                 <td>
                     {#if tx.block}
-                        <a href="https://defiscan.live/blocks/{tx.blockHeight}" target="_blank">
+                        <a href="https://defiscan.live/blocks/{tx.block.blockHeight}" target="_blank">
                             {tx.block.blockHeight}
                         </a>
                     {:else}
