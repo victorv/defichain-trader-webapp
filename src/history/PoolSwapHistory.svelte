@@ -118,7 +118,7 @@
                     {#if tx.amountTo}
                         {tx.amountTo} {tx.tokenTo}
                     {:else}
-                        NA {tx.tokenTo}
+                        N/A {tx.tokenTo}
                     {/if}
                 </td>
                 <td>
