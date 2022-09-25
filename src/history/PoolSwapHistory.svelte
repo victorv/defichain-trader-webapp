@@ -9,8 +9,7 @@
     let toTokenSymbol
     let filterString = ''
     let error
-
-    const utcOffset = new Date().getTimezoneOffset()
+    
     let poolSwaps
     let selectedTX
 
@@ -68,13 +67,6 @@
 
     const limitLength = s => {
         return `${s.substring(0, 9)}...`
-    }
-
-    const toTime = utcMilliseconds => {
-        console.log(utcOffset)
-        const date = new Date(utcMilliseconds)
-        date.setMinutes(date.getMinutes() + utcOffset);
-        return date.toLocaleTimeString()
     }
 </script>
 
