@@ -7,6 +7,7 @@
 
     let fromTokenSymbol
     let toTokenSymbol
+    let filterString = ''
     let error
 
     const utcOffset = new Date().getTimezoneOffset()
@@ -24,6 +25,11 @@
         if (toTokenSymbol && toTokenSymbol != 'Any') {
             requestBody.toTokenSymbol = toTokenSymbol
         }
+        if (filterString) {
+            requestBody.filterString = filterString
+        } else if (filterString === 'NA') {
+            requestBody.filterString = ''
+        }
 
         const response = await fetch(`/poolswaps`, {
             method: 'POST',
@@ -35,6 +41,13 @@
         })
 
         poolSwaps = await response.json()
+    }
+
+    const submitFilter = async() => {
+        await fetchPoolSwaps().catch(e => {
+            error = `Unable to fetch results: ${e.message}`
+            throw e
+        })
     }
 
     const onTokenSelectionChanged = async selection => {
@@ -65,10 +78,11 @@
     }
 </script>
 
-<form class="pure-form pure-form-stacked" on:submit|preventDefault>
+<form class="pure-form" on:submit|preventDefault={submitFilter}>
     <fieldset>
         <FromToTokenFilter supportAnyToken={true}
                            {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+        <input bind:value={filterString} type="text" placeholder="TX ID/Address/Block Hash"/>
     </fieldset>
 </form>
 {#if poolSwaps && poolSwaps.length}
