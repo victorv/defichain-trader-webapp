@@ -6,7 +6,7 @@
     <tbody>
     <tr>
         <th role="rowheader" class="banner">Swap</th>
-        <td></td>
+        <td>{tx.txID}</td>
     </tr>
     <tr>
         <th role="rowheader">Input amount</th>
