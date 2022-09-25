@@ -33,18 +33,14 @@
     <tr>
         <th role="rowheader">From</th>
         <td>
-            <a href="https://defiscan.live/address/{tx.from}" target="_blank">
-                {tx.from}
-            </a>
+            {tx.from}
         </td>
     </tr>
     <tr>
         <th role="rowheader">To</th>
         <td>
             {#if tx.from !== tx.to}
-                <a href="https://defiscan.live/address/{tx.to}" target="_blank">
-                    {tx.to}
-                </a>
+                {tx.to}
             {:else}
                 &lt;from address&gt;
             {/if}
