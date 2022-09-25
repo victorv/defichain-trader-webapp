@@ -62,7 +62,7 @@
     <tr>
         <th role="rowheader">Position in block</th>
         <td>
-            {tx.ordinal}
+            {tx.txn}
         </td>
     </tr>
     <tr>
