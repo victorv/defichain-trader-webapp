@@ -15,6 +15,7 @@
     let swapToFrom
     let fromTokenSymbol
     let toTokenSymbol
+    let sortOrder
 
     let selectedTX
 
@@ -25,6 +26,9 @@
         }
         if (toTokenSymbol && toTokenSymbol != 'Any') {
             filter.toTokenSymbol = toTokenSymbol
+        }
+        if (sortOrder) {
+            filter.sort = sortOrder
         }
         await refresh(filter)
     }
@@ -75,6 +79,11 @@
         swapToFrom = await response.json()
         swapToFrom.tx = swap
     }
+
+    const changeSortOrder = async e => {
+        sortOrder = e.target.value
+        await update()
+    }
 </script>
 
 <form class="pure-form" on:submit|preventDefault>
@@ -83,8 +92,14 @@
                            {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
         <label>
             Sort
-            <select>
-                <option>Block, txn DESC</option>
+            <select on:change={changeSortOrder}>
+                <option value="">Most Recent - Old</option>
+                <option value="fee_asc">Fee - ascending</option>
+                <option value="fee_desc">Fee - descending</option>
+                <option value="input_amount_asc">Input Amount - ascending</option>
+                <option value="input_amount_desc">Input Amount - descending</option>
+                <option value="output_amount_asc">Output Amount - ascending</option>
+                <option value="output_amount_desc">Output Amount - descending</option>
             </select>
         </label>
     </fieldset>
