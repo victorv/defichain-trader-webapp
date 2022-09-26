@@ -32,21 +32,24 @@
             <li class="pure-menu-item logo">
                 <img src="logo.png" width="140" height="38"/>
             </li>
+
+            <li class:pure-menu-selected={componentType === PoolSwapHistory}
+                on:click={() => onChange(PoolSwapHistory)}
+                class="pure-menu-item">
+                <a href="#poolswaphistory" class="pure-menu-link">Pool Swaps</a>
+            </li>
+
+
             <li class:pure-menu-selected={componentType === DEX}
                 on:click={() => onChange(DEX)}
                 class="pure-menu-item">
-                <a href="#dex" class="pure-menu-link">DEX</a>
+                <a href="#dex" class="pure-menu-link">Track Pool Swaps</a>
             </li>
 
             <li class:pure-menu-selected={componentType === TokenStats}
                 on:click={() => onChange(TokenStats)}
                 class="pure-menu-item">
                 <a href="#tokenstatistics" class="pure-menu-link">Token Statistics</a>
-            </li>
-            <li class:pure-menu-selected={componentType === PoolSwapHistory}
-                on:click={() => onChange(PoolSwapHistory)}
-                class="pure-menu-item">
-                <a href="#poolswaphistory" class="pure-menu-link">Swap History</a>
             </li>
 
             <li class:pure-menu-selected={componentType === Settings}
