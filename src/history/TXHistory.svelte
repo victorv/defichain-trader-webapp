@@ -10,9 +10,31 @@
     let filterString = ''
     let currentFilter
 
-    async function fetchItems(filter) {
+    let hasMore
+    let pager = {offset: 0}
+
+    const createPager = items => {
+        if (items && items.length) {
+            const maxBlockHeight = Math.min(
+                ...items.map(item => (item.block || item.mempool).blockHeight)
+            )
+            const offset = items
+                .filter(item => (item.block || item.mempool).blockHeight === maxBlockHeight)
+                .length
+            console.log(maxBlockHeight, offset)
+
+            return {
+                maxBlockHeight,
+                offset,
+            }
+        }
+        return {offset: 0}
+    }
+
+    async function fetchItems(filter, getMore) {
+        hasMore = false
         error = null
-        items = null
+        items = getMore ? items : null
 
         const requestBody = {...filter, ...(currentFilter || {})}
 
@@ -20,6 +42,9 @@
             requestBody.filterString = filterString
         } else if (filterString === 'NA') {
             requestBody.filterString = ''
+        }
+        if (getMore) {
+            requestBody.pager = pager
         }
 
         try {
@@ -32,15 +57,27 @@
                     'Accept': 'application/json'
                 }
             })
-            items = await response.json()
+
+            let newItems = await response.json()
+            hasMore = newItems.length > 25
+            newItems = newItems.slice(0, 25)
+
+            pager = createPager(newItems)
+            items = getMore
+                ? items = items.concat(...newItems)
+                : newItems
         } finally {
             loading = false
         }
     }
 
-    const refresh = async filter => {
+    const showMore = async() => {
+        await refresh(currentFilter || {}, true)
+    }
+
+    const refresh = async (filter, getMore) => {
         currentFilter = filter
-        await fetchItems(filter).catch(e => {
+        await fetchItems(filter, getMore).catch(e => {
             error = `Unable to fetch results: ${e.message}`
             throw e
         })
@@ -64,6 +101,12 @@
 
 <PoolSwapHistory {allTokens} {items} {refresh}/>
 
+{#if hasMore && (!currentFilter || !currentFilter.sort)}
+    <section class="pager">
+        <button on:click={showMore} class="pure-button" type="button">Show more</button>
+    </section>
+{/if}
+
 {#if items && !items.length}
     <div class="message">
         <p class="info">0 results found</p>
@@ -79,6 +122,12 @@
 {/if}
 
 <style>
+    .pager {
+        display: flex;
+        padding: 0.3rem;
+        justify-content: center;
+    }
+
     form {
         padding-left: 0.2rem;
     }
