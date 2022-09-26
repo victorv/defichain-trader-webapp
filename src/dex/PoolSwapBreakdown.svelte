@@ -5,6 +5,7 @@
     import {hasItems} from "../common/common";
     import Percentage from "./Percentage.svelte";
     import Help from "../common/Help.svelte";
+    import ProfitLoss from "./ProfitLoss.svelte";
 
     export let poolSwap
 
@@ -33,6 +34,14 @@
             <th role="rowheader" class="banner">Summary</th>
             <td>
                 {breakdown.path}
+            </td>
+        </tr>
+        <tr>
+            <th role="rowheader">
+                Profit/loss
+            </th>
+            <td>
+                <ProfitLoss {poolSwap}/>
             </td>
         </tr>
         <tr>
