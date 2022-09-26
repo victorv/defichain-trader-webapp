@@ -79,6 +79,10 @@
 {/if}
 
 <style>
+    form {
+        padding-left: 0.2rem;
+    }
+
     .message {
         display: flex;
         justify-content: center;
