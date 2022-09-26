@@ -2,14 +2,18 @@
     import {onMount} from "svelte";
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
+    import Icon from "../common/Icon.svelte";
+    import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
+    import {hasItems} from "../common/common";
 
     export let allTokens
 
+    let swapFrom
     let fromTokenSymbol
     let toTokenSymbol
     let filterString = ''
     let error
-    
+
     let poolSwaps
     let selectedTX
 
@@ -42,7 +46,7 @@
         poolSwaps = await response.json()
     }
 
-    const submitFilter = async() => {
+    const submitFilter = async () => {
         await fetchPoolSwaps().catch(e => {
             error = `Unable to fetch results: ${e.message}`
             throw e
@@ -68,6 +72,26 @@
     const limitLength = s => {
         return `${s.substring(0, 9)}...`
     }
+
+    const toggleTXDetails = async tx => {
+        swapFrom = null
+
+        selectedTX === tx ? selectedTX = null : selectedTX = tx
+    }
+
+    const toggleEstimateFrom = async (swap) => {
+        selectedTX = null
+
+        if (swapFrom && swapFrom.tx === swap) {
+            swapFrom = null
+            return
+        }
+
+        const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo}`
+        const response = await fetch(`/estimate?poolswap=${request}`)
+        swapFrom = await response.json()
+        swapFrom.tx = swap
+    }
 </script>
 
 <form class="pure-form" on:submit|preventDefault={submitFilter}>
@@ -92,9 +116,14 @@
         </tr>
         </thead>
         {#each poolSwaps as tx}
-            <tr class:selected-row={tx === selectedTX}
-                on:click={() => selectedTX === tx ? selectedTX = null : selectedTX = tx}>
+            <tr class:selected-row={tx === selectedTX}>
                 <td>
+                    <button on:click={() => toggleTXDetails(tx)}
+                            class:info={tx === selectedTX}
+                            type="button"
+                            class="pure-button info-button">
+                        <Icon icon="info"/>
+                    </button>
                     <a href="https://defiscan.live/transactions/{tx.txID}" target="_blank">
                         {limitLength(tx.txID)}
                     </a>
@@ -112,6 +141,12 @@
                     {tx.fee}
                 </td>
                 <td>
+                    <button on:click={() => toggleEstimateFrom(tx)}
+                            class:info={swapFrom && swapFrom.tx === tx}
+                            type="button"
+                            class="pure-button info-button">
+                        <Icon icon="info"/>
+                    </button>
                     {tx.amountFrom} {tx.tokenFrom}
                 </td>
                 <td>
@@ -141,6 +176,18 @@
                     <td colspan="7">
                         {#if selectedTX}
                             <PoolSwapDetails tx={selectedTX}/>
+                        {/if}
+                    </td>
+                </tr>
+            {:else if swapFrom && swapFrom.tx === tx}
+                <tr>
+                    <td colspan="7">
+                        {#if hasItems(swapFrom.breakdown)}
+                            <PoolSwapBreakdown poolSwap={swapFrom}/>
+                        {:else}
+                            <div class="warning">
+                                Something went wrong
+                            </div>
                         {/if}
                     </td>
                 </tr>
