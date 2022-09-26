@@ -36,7 +36,7 @@
             <li class:pure-menu-selected={componentType === PoolSwapHistory}
                 on:click={() => onChange(PoolSwapHistory)}
                 class="pure-menu-item">
-                <a href="#poolswaphistory" class="pure-menu-link">Pool Swaps</a>
+                <a href="#poolswaphistory" class="pure-menu-link">Explore</a>
             </li>
 
 

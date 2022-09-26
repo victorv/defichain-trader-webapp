@@ -114,9 +114,27 @@
 
 <form class="pure-form" on:submit|preventDefault={submitFilter}>
     <fieldset>
+        <select>
+            <option>Pool Swaps</option>
+        </select>
+        <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
+        <label>
+            Mempool
+            <input type="checkbox"/>
+        </label>
+    </fieldset>
+</form>
+
+<form class="pure-form" on:submit|preventDefault={submitFilter}>
+    <fieldset>
         <FromToTokenFilter supportAnyToken={true}
                            {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-        <input bind:value={filterString} type="text" placeholder="TX ID/Address/Block Hash"/>
+        <label>
+            Sort
+            <select>
+                <option>Block, txn DESC</option>
+            </select>
+        </label>
     </fieldset>
 </form>
 {#if poolSwaps && poolSwaps.length}
@@ -246,6 +264,10 @@
 {/if}
 
 <style>
+    form {
+        padding: 0.2rem 0 0 0.2rem;
+    }
+
     tr.selected-row td {
         background: #333;
         color: white;
