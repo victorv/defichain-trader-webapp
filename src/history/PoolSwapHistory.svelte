@@ -1,5 +1,4 @@
 <script>
-    import {onMount} from "svelte";
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
@@ -7,68 +6,34 @@
     import {hasItems} from "../common/common";
 
     export let allTokens
+    export let refresh
+    export let items
+
+    $: poolSwaps = items
 
     let swapFromTo
     let swapToFrom
     let fromTokenSymbol
     let toTokenSymbol
-    let filterString = ''
-    let error
 
-    let poolSwaps
     let selectedTX
 
-    async function fetchPoolSwaps() {
-        error = null
-        poolSwaps = null
-
-        const requestBody = {}
+    async function update() {
+        const filter = {}
         if (fromTokenSymbol && fromTokenSymbol != 'Any') {
-            requestBody.fromTokenSymbol = fromTokenSymbol
+            filter.fromTokenSymbol = fromTokenSymbol
         }
         if (toTokenSymbol && toTokenSymbol != 'Any') {
-            requestBody.toTokenSymbol = toTokenSymbol
+            filter.toTokenSymbol = toTokenSymbol
         }
-        if (filterString) {
-            requestBody.filterString = filterString
-        } else if (filterString === 'NA') {
-            requestBody.filterString = ''
-        }
-
-        const response = await fetch(`/poolswaps`, {
-            method: 'POST',
-            body: JSON.stringify(requestBody),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-
-        poolSwaps = await response.json()
-    }
-
-    const submitFilter = async () => {
-        await fetchPoolSwaps().catch(e => {
-            error = `Unable to fetch results: ${e.message}`
-            throw e
-        })
+        await refresh(filter)
     }
 
     const onTokenSelectionChanged = async selection => {
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
-        await fetchPoolSwaps().catch(e => {
-            error = `Unable to fetch results: ${e.message}`
-            throw e
-        })
+        await update()
     }
-
-    onMount(async () => {
-        await fetchPoolSwaps().catch(e => {
-            error = `Unable to fetch results: ${e.message}`
-            throw e
-        })
-    })
 
     const limitLength = s => {
         return `${s.substring(0, 9)}...`
@@ -112,20 +77,7 @@
     }
 </script>
 
-<form class="pure-form" on:submit|preventDefault={submitFilter}>
-    <fieldset>
-        <select>
-            <option>Pool Swaps</option>
-        </select>
-        <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
-        <label>
-            Mempool
-            <input type="checkbox"/>
-        </label>
-    </fieldset>
-</form>
-
-<form class="pure-form" on:submit|preventDefault={submitFilter}>
+<form class="pure-form" on:submit|preventDefault>
     <fieldset>
         <FromToTokenFilter supportAnyToken={true}
                            {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
@@ -137,8 +89,8 @@
         </label>
     </fieldset>
 </form>
-{#if poolSwaps && poolSwaps.length}
 
+{#if items && items.length}
     <table class="pure-table pure-table-striped">
         <thead>
         <tr>
@@ -249,18 +201,6 @@
             {/if}
         {/each}
     </table>
-{:else if poolSwaps}
-    <div class="message">
-        <p class="info">0 results found</p>
-    </div>
-{:else if error}
-    <div class="message">
-        <p class="error">{error}</p>
-    </div>
-{:else}
-    <div class="message">
-        <p class="info">Loading results...</p>
-    </div>
 {/if}
 
 <style>
@@ -279,10 +219,5 @@
 
     td[colspan="7"] {
         padding: 0.5rem;
-    }
-
-    .message {
-        display: flex;
-        justify-content: center;
     }
 </style>

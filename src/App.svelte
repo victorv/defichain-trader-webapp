@@ -4,13 +4,13 @@
     import {store, updateStore} from "./store";
     import Menu from "./menu/Menu.svelte";
     import DEX from "./dex/DEX.svelte";
-    import PoolSwapHistory from "./history/PoolSwapHistory.svelte";
+    import TXHistory from "./history/TXHistory.svelte";
 
     let allTokens
     let error
     let Chart
     let mainElement
-    let componentType = PoolSwapHistory
+    let componentType = TXHistory
     let isMenuActive = false
 
     window.fireChartJSLoad = chartConstructor => {
