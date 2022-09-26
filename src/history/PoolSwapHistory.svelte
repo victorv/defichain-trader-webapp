@@ -90,7 +90,7 @@
             return
         }
 
-        const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo}`
+        const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo || 1.0}`
         const response = await fetch(`/estimate?poolswap=${request}`)
         swapFromTo = await response.json()
         swapFromTo.tx = swap
