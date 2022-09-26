@@ -8,7 +8,8 @@
 
     export let allTokens
 
-    let swapFrom
+    let swapFromTo
+    let swapToFrom
     let fromTokenSymbol
     let toTokenSymbol
     let filterString = ''
@@ -74,23 +75,40 @@
     }
 
     const toggleTXDetails = async tx => {
-        swapFrom = null
+        swapFromTo = null
+        swapToFrom = null
 
         selectedTX === tx ? selectedTX = null : selectedTX = tx
     }
 
-    const toggleEstimateFrom = async (swap) => {
+    const toggleEstimateFromTo = async (swap) => {
         selectedTX = null
+        swapToFrom = null
 
-        if (swapFrom && swapFrom.tx === swap) {
-            swapFrom = null
+        if (swapFromTo && swapFromTo.tx === swap) {
+            swapFromTo = null
             return
         }
 
         const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo}`
         const response = await fetch(`/estimate?poolswap=${request}`)
-        swapFrom = await response.json()
-        swapFrom.tx = swap
+        swapFromTo = await response.json()
+        swapFromTo.tx = swap
+    }
+
+    const toggleEstimateToFrom = async (swap) => {
+        selectedTX = null
+        swapFromTo = null
+
+        if (swapToFrom && swapToFrom.tx === swap) {
+            swapToFrom = null
+            return
+        }
+
+        const request = `${swap.amountTo}+${swap.tokenTo}+to+${swap.tokenFrom}+desiredResult+${swap.amountFrom}`
+        const response = await fetch(`/estimate?poolswap=${request}`)
+        swapToFrom = await response.json()
+        swapToFrom.tx = swap
     }
 </script>
 
@@ -116,7 +134,7 @@
         </tr>
         </thead>
         {#each poolSwaps as tx}
-            <tr class:selected-row={tx === selectedTX || (swapFrom && swapFrom.tx === tx)}>
+            <tr class:selected-row={tx === selectedTX || (swapFromTo && swapFromTo.tx === tx) || (swapToFrom && swapToFrom.tx === tx)}>
                 <td>
                     <button on:click={() => toggleTXDetails(tx)}
                             class:info={tx === selectedTX}
@@ -141,8 +159,8 @@
                     {tx.fee}
                 </td>
                 <td>
-                    <button on:click={() => toggleEstimateFrom(tx)}
-                            class:info={swapFrom && swapFrom.tx === tx}
+                    <button on:click={() => toggleEstimateFromTo(tx)}
+                            class:info={swapFromTo && swapFromTo.tx === tx}
                             type="button"
                             class="pure-button info-button">
                         <Icon icon="info"/>
@@ -150,6 +168,13 @@
                     {tx.amountFrom} {tx.tokenFrom}
                 </td>
                 <td>
+                    <button on:click={() => toggleEstimateToFrom(tx)}
+                            disabled={!tx.amountTo}
+                            class:info={swapToFrom && swapToFrom.tx === tx}
+                            type="button"
+                            class="pure-button info-button">
+                        <Icon icon="info"/>
+                    </button>
                     {#if tx.amountTo}
                         {tx.amountTo} {tx.tokenTo}
                     {:else}
@@ -179,11 +204,23 @@
                         {/if}
                     </td>
                 </tr>
-            {:else if swapFrom && swapFrom.tx === tx}
+            {:else if swapFromTo && swapFromTo.tx === tx}
                 <tr>
                     <td colspan="7">
-                        {#if hasItems(swapFrom.breakdown)}
-                            <PoolSwapBreakdown poolSwap={swapFrom}/>
+                        {#if hasItems(swapFromTo.breakdown)}
+                            <PoolSwapBreakdown poolSwap={swapFromTo}/>
+                        {:else}
+                            <div class="warning">
+                                Something went wrong
+                            </div>
+                        {/if}
+                    </td>
+                </tr>
+            {:else if swapToFrom && swapToFrom.tx === tx}
+                <tr>
+                    <td colspan="7">
+                        {#if hasItems(swapToFrom.breakdown)}
+                            <PoolSwapBreakdown poolSwap={swapToFrom}/>
                         {:else}
                             <div class="warning">
                                 Something went wrong
