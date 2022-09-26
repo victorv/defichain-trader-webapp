@@ -1,12 +1,12 @@
 <svelte:options immutable/>
 <script>
     import DEX from "../dex/DEX.svelte";
-    import PoolSwapHistory from "../mempool/PoolSwapHistory.svelte";
     import Settings from "../settings/Settings.svelte";
     import {logout, store, updateStore} from "../store";
     import Icon from "../common/Icon.svelte";
     import LogIn from "../account/LogIn.svelte";
     import TokenStats from "../dex/TokenStats.svelte";
+    import TXHistory from "../history/TXHistory.svelte";
 
     export let componentType
     export let onChange
@@ -32,21 +32,23 @@
             <li class="pure-menu-item logo">
                 <img src="logo.png" width="140" height="38"/>
             </li>
+
+            <li class:pure-menu-selected={componentType === TXHistory}
+                on:click={() => onChange(TXHistory)}
+                class="pure-menu-item">
+                <a href="#poolswaphistory" class="pure-menu-link">Explore</a>
+            </li>
+
             <li class:pure-menu-selected={componentType === DEX}
                 on:click={() => onChange(DEX)}
                 class="pure-menu-item">
-                <a href="#dex" class="pure-menu-link">DEX</a>
+                <a href="#dex" class="pure-menu-link">Track Pool Swaps</a>
             </li>
 
             <li class:pure-menu-selected={componentType === TokenStats}
                 on:click={() => onChange(TokenStats)}
                 class="pure-menu-item">
                 <a href="#tokenstatistics" class="pure-menu-link">Token Statistics</a>
-            </li>
-            <li class:pure-menu-selected={componentType === PoolSwapHistory}
-                on:click={() => onChange(PoolSwapHistory)}
-                class="pure-menu-item">
-                <a href="#poolswaphistory" class="pure-menu-link">Swap History</a>
             </li>
 
             <li class:pure-menu-selected={componentType === Settings}

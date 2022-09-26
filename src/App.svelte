@@ -4,13 +4,13 @@
     import {store, updateStore} from "./store";
     import Menu from "./menu/Menu.svelte";
     import DEX from "./dex/DEX.svelte";
-    import TokenStats from "./dex/TokenStats.svelte";
+    import TXHistory from "./history/TXHistory.svelte";
 
     let allTokens
     let error
     let Chart
     let mainElement
-    let componentType = TokenStats
+    let componentType = TXHistory
     let isMenuActive = false
 
     window.fireChartJSLoad = chartConstructor => {

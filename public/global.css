@@ -38,6 +38,11 @@ table {
 	/* this is a light blue */
 }
 
+th.banner {
+	background: #333;
+	color: white;
+}
+
 /*
 Add transition to containers so they can push in and out.
 */
