@@ -116,7 +116,7 @@
         </tr>
         </thead>
         {#each poolSwaps as tx}
-            <tr class:selected-row={tx === selectedTX}>
+            <tr class:selected-row={tx === selectedTX || (swapFrom && swapFrom.tx === tx)}>
                 <td>
                     <button on:click={() => toggleTXDetails(tx)}
                             class:info={tx === selectedTX}
