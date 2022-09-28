@@ -47,7 +47,7 @@
         <tr>
             <th role="rowheader">
                 Estimate
-                <Help help="The estimated result. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
+                <Help warning={true} help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimated result. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
             </th>
             <td>
                 {breakdown.estimate} {poolSwap.tokenTo}
