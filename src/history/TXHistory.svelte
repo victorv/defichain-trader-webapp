@@ -5,25 +5,55 @@
 
     export let allTokens
 
-    let socket = new WebSocket(`ws://${window.location.host}/stream`)
     let mempool
+    let items
+    let error
+    let connected
 
-    socket.onmessage = function (event) {
-        if(!mempool) {
-            return
+    let socket
+
+    const newSocket = () => {
+        if (socket) {
+            socket.onclose = function () {
+            }
+            socket.close()
         }
 
-        const data = JSON.parse(event.data)
-        if (data.height) {
+        socket = new WebSocket(`${window.location.host.indexOf('localhost') >= 0 ? 'ws' : 'wss'}://${window.location.host}/stream`)
+
+        window.onbeforeunload = function () {
+            socket.onclose = function () {
+            }
+            socket.close()
+        }
+
+        socket.onopen = () => {
+            connected = true
             items = []
-        } else {
-            items = items.concat(data)
+            error = null
+        }
+
+        socket.onclose = function () {
+            error = 'You are not connected to the server'
+            items = null
+            connected = false
+        }
+
+        socket.onmessage = function (event) {
+            if (!mempool) {
+                return
+            }
+
+            const data = JSON.parse(event.data)
+            if (data.height) {
+                items = []
+            } else {
+                items = items.concat(data)
+            }
         }
     }
 
-    let error
     let loading
-    let items
     let filterString = ''
     let currentFilter
 
@@ -109,28 +139,41 @@
         }
     }
 
-    onMount(async () => await refresh({}))
+    onMount(async () => {
+        newSocket()
+        await refresh({})
+    })
 
-    onDestroy(() => socket.close())
+    onDestroy(() => {
+        socket.onclose = function () {
+        }
+        socket.close()
+    })
 </script>
 
-<form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
-    <fieldset>
-        <select>
-            <option>Pool Swaps</option>
-        </select>
-        <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
-        <label>
-            Mempool
-            <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
-        </label>
-        <button class="pure-button" on:click={() => refresh(currentFilter || {})}>Refresh</button>
-    </fieldset>
-</form>
+{#if connected}
+    <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
+        <fieldset>
+            <select>
+                <option>Pool Swaps</option>
+            </select>
+            <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
+            <label>
+                Mempool
+                <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
+            </label>
+            <button class="pure-button" on:click={() => refresh(currentFilter || {})}>Refresh</button>
+        </fieldset>
+    </form>
 
-<PoolSwapHistory {allTokens} {items} {refresh}/>
+    <PoolSwapHistory {allTokens} {items} {refresh}/>
+{:else}
+    <div class="message">
+        <button class="pure-button" on:click={newSocket}>Reconnect</button>
+    </div>
+{/if}
 
-{#if hasMore && !mempool}
+{#if hasMore && !mempool && !error && connected}
     <section class="pager">
         <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button" type="button">
             Show more
