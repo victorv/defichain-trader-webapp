@@ -2,11 +2,12 @@
 <script>
     export let whiteText
     export let help
+    export let warning
 
     let active = false
 </script>
 
-<div class:white={whiteText} class:blue={!whiteText} class="tooltip" tabindex="0">[?]
+<div class:white={whiteText} class:blue={!whiteText} class:warn={warning} class="tooltip" tabindex="0">{#if warning}[!]{:else}[?]{/if}
     <span class="tooltip-text">{help}</span>
 </div>
 
@@ -20,6 +21,10 @@
     .blue {
         border-bottom: 1px solid blue;
         color: blue;
+    }
+
+    .warn {
+        color: red;
     }
 
     .white {
