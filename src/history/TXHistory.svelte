@@ -29,7 +29,7 @@
 
         socket.onopen = () => {
             connected = true
-            items = []
+            items = mempool ? null : items
             error = null
         }
 
