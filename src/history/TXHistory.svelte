@@ -38,7 +38,6 @@
             const offset = items
                 .filter(item => (item.block || item.mempool).blockHeight === maxBlockHeight)
                 .length
-            console.log(maxBlockHeight, offset)
 
             return {
                 maxBlockHeight,
@@ -125,6 +124,7 @@
             Mempool
             <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
         </label>
+        <button class="pure-button" on:click={() => refresh(currentFilter || {})}>Refresh</button>
     </fieldset>
 </form>
 
