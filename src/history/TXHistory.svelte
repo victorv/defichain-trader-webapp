@@ -1,8 +1,25 @@
 <script>
     import PoolSwapHistory from "./PoolSwapHistory.svelte";
-    import {onMount} from "svelte";
+    import {onDestroy, onMount} from "svelte";
+    import Help from "../common/Help.svelte";
 
     export let allTokens
+
+    let socket = new WebSocket(`ws://${window.location.host}/stream`)
+    let mempool
+
+    socket.onmessage = function (event) {
+        if(!mempool) {
+            return
+        }
+
+        const data = JSON.parse(event.data)
+        if (data.height) {
+            items = []
+        } else {
+            items = items.concat(data)
+        }
+    }
 
     let error
     let loading
@@ -32,6 +49,7 @@
     }
 
     async function fetchItems(filter, getMore) {
+        mempool = false
         hasMore = false
         error = null
         items = getMore ? items : null
@@ -71,7 +89,7 @@
         }
     }
 
-    const showMore = async() => {
+    const showMore = async () => {
         await refresh(currentFilter || {}, true)
     }
 
@@ -83,7 +101,18 @@
         })
     }
 
+    const toggleMempool = async event => {
+        mempool = event.target.checked
+        if (mempool) {
+            items = []
+        } else {
+            await refresh(currentFilter || {})
+        }
+    }
+
     onMount(async () => await refresh({}))
+
+    onDestroy(() => socket.close())
 </script>
 
 <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
@@ -94,22 +123,33 @@
         <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
         <label>
             Mempool
-            <input type="checkbox"/>
+            <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
         </label>
     </fieldset>
 </form>
 
 <PoolSwapHistory {allTokens} {items} {refresh}/>
 
-{#if hasMore && (!currentFilter || !currentFilter.sort)}
+{#if hasMore && !mempool}
     <section class="pager">
-        <button on:click={showMore} class="pure-button" type="button">Show more</button>
+        <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button" type="button">
+            Show more
+        </button>
+        {#if currentFilter && currentFilter.sort}
+            <Help help="Paging currently only works for Most Recent - Old"/>
+        {/if}
     </section>
 {/if}
 
 {#if items && !items.length}
     <div class="message">
-        <p class="info">0 results found</p>
+        <p class="info">
+            {#if mempool}
+                Keep open to receive transactions...
+            {:else}
+                0 results found
+            {/if}
+        </p>
     </div>
 {:else if error}
     <div class="message">
