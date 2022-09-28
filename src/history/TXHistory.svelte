@@ -5,7 +5,7 @@
 
     export let allTokens
 
-    let socket = new WebSocket(`ws://${window.location.host}/stream`)
+    let socket = new WebSocket(`${window.location.host.indexOf('localhost') >= 0 ? 'ws' : 'wss'}://${window.location.host}/stream`)
     let mempool
 
     socket.onmessage = function (event) {
