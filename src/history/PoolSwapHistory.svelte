@@ -4,6 +4,7 @@
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {hasItems} from "../common/common";
+    import Help from "../common/Help.svelte";
 
     export let allTokens
     export let refresh
@@ -162,6 +163,9 @@
                     </button>
                     {#if tx.amountTo}
                         {tx.amountTo} {tx.tokenTo}
+                        {#if tx.tokenTo !== tx.tokenToAlt}
+                            or {tx.tokenToAlt} <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
+                        {/if}
                     {:else}
                         N/A {tx.tokenTo}
                     {/if}
