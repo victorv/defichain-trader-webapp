@@ -169,7 +169,7 @@
                 Mempool
                 <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
             </label>
-            <button class="pure-button" on:click={() => refresh(currentFilter || {})}>Refresh</button>
+            <button class="pure-button" type="submit">Refresh</button>
         </fieldset>
     </form>
 
