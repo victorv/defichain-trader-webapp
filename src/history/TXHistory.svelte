@@ -65,13 +65,13 @@
             const maxBlockHeight = Math.min(
                 ...items.map(item => (item.block || item.mempool).blockHeight)
             )
-            const offset = items
+            const blacklist = items
                 .filter(item => (item.block || item.mempool).blockHeight === maxBlockHeight)
-                .length
+                .map(item => item.id)
 
             return {
                 maxBlockHeight,
-                offset,
+                blacklist,
             }
         }
         return {offset: 0}
