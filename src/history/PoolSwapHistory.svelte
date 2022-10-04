@@ -95,12 +95,12 @@
             Sort
             <select on:change={changeSortOrder}>
                 <option value="">Most Recent - Old</option>
-                <option value="fee_asc">Fee - ascending</option>
-                <option value="fee_desc">Fee - descending</option>
-                <option value="input_amount_asc">Input Amount - ascending</option>
-                <option value="input_amount_desc">Input Amount - descending</option>
-                <option value="output_amount_asc">Output Amount - ascending</option>
-                <option value="output_amount_desc">Output Amount - descending</option>
+                <option disabled value="fee_asc">Fee - ascending</option>
+                <option disabled value="fee_desc">Fee - descending</option>
+                <option disabled value="input_amount_asc">Input Amount - ascending</option>
+                <option disabled value="input_amount_desc">Input Amount - descending</option>
+                <option disabled value="output_amount_asc">Output Amount - ascending</option>
+                <option disabled value="output_amount_desc">Output Amount - descending</option>
             </select>
         </label>
     </fieldset>
