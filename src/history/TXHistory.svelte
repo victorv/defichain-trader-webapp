@@ -5,6 +5,7 @@
 
     export let allTokens
 
+    let abortController = new AbortController()
     let mempool
     let items
     let error
@@ -94,28 +95,31 @@
             requestBody.pager = pager
         }
 
-        try {
-            loading = true
-            const response = await fetch(`/poolswaps`, {
-                method: 'POST',
-                body: JSON.stringify(requestBody),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
+        abortController.abort()
+        abortController = new AbortController()
 
-            let newItems = await response.json()
-            hasMore = newItems.length > 25
-            newItems = newItems.slice(0, 25)
+        loading = true
 
-            pager = createPager(newItems)
-            items = getMore
-                ? items = items.concat(...newItems)
-                : newItems
-        } finally {
-            loading = false
-        }
+        const response = await fetch(`/poolswaps`, {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            signal: abortController.signal,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+
+        let newItems = await response.json()
+        loading = false
+        hasMore = newItems.length > 25
+        newItems = newItems.slice(0, 25)
+
+        pager = createPager(newItems)
+        items = getMore
+            ? items = items.concat(...newItems)
+            : newItems
+
     }
 
     const showMore = async () => {
@@ -125,8 +129,11 @@
     const refresh = async (filter, getMore) => {
         currentFilter = filter
         await fetchItems(filter, getMore).catch(e => {
-            error = `Unable to fetch results: ${e.message}`
-            throw e
+            if (e.name !== 'AbortError') {
+                loading = false
+                error = `Unable to fetch results: ${e.message}`
+                throw e
+            }
         })
     }
 
@@ -162,7 +169,7 @@
                 Mempool
                 <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
             </label>
-            <button class="pure-button" on:click={() => refresh(currentFilter || {})}>Refresh</button>
+            <button class="pure-button" type="submit">Refresh</button>
         </fieldset>
     </form>
 
