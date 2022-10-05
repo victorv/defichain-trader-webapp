@@ -1,13 +1,13 @@
 <script>
     import {onDestroy} from "svelte";
     import PoolSwapHistory from "../history/PoolSwapHistory.svelte";
-    import {messages} from "../store";
+    import {incomingMessages} from "../store";
 
     export let allTokens
 
     let items = []
 
-    const unsubscribe = messages.subscribe(message => {
+    const unsubscribe = incomingMessages.subscribe(message => {
         if (!message.connected || !message.data || message.error) {
             items = []
             return

@@ -1,9 +1,24 @@
 <script>
-    import {messages} from "./store";
+    import {incomingMessages} from "./store";
 
     let socket
     let connected
     let error
+    let uuid
+
+    const getUUID = () => {
+        if (localStorage) {
+            let uuid = localStorage.getItem("uuid")
+            if (!uuid) {
+                uuid = crypto.randomUUID()
+            }
+            localStorage.setItem("uuid", uuid)
+            return uuid
+        }
+        return crypto.randomUUID()
+    }
+
+    uuid = getUUID()
 
     const newSocket = () => {
         if (socket) {
@@ -23,6 +38,7 @@
         socket.onopen = () => {
             connected = true
             error = null
+            socket.send(uuid)
         }
 
         socket.onclose = function () {
@@ -32,7 +48,7 @@
 
         socket.onmessage = function (event) {
             const data = JSON.parse(event.data)
-            messages.set({
+            incomingMessages.set({
                 connected,
                 error,
                 data,

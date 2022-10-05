@@ -1,7 +1,6 @@
 <svelte:options immutable/>
 <script>
     import {onMount} from "svelte";
-    import {store, updateStore} from "./store";
     import Menu from "./menu/Menu.svelte";
     import DEX from "./dex/DEX.svelte";
     import TXHistory from "./history/TXHistory.svelte";
@@ -37,7 +36,6 @@
             poolPairTokens.add(tokenSymbolsById[poolPair.idTokenB])
         }
 
-        updateStore({tokenSymbolsById})
         allTokens = Array.from(poolPairTokens).sort()
     }
 
