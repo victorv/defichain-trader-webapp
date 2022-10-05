@@ -5,6 +5,7 @@
     import Menu from "./menu/Menu.svelte";
     import DEX from "./dex/DEX.svelte";
     import TXHistory from "./history/TXHistory.svelte";
+    import WebSocket from "./WebSocket.svelte";
 
     let allTokens
     let error
@@ -59,6 +60,10 @@
         }
     }
 </script>
+
+<header>
+    <WebSocket/>
+</header>
 
 <div class:active={isMenuActive} id="layout">
     <Menu {isMenuActive} onChange={updateComponentType} {componentType}/>

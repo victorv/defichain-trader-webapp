@@ -1,58 +1,13 @@
 <script>
     import PoolSwapHistory from "./PoolSwapHistory.svelte";
-    import {onDestroy, onMount} from "svelte";
+    import {onMount} from "svelte";
     import Help from "../common/Help.svelte";
 
     export let allTokens
 
     let abortController = new AbortController()
-    let mempool
     let items
     let error
-    let connected
-
-    let socket
-
-    const newSocket = () => {
-        if (socket) {
-            socket.onclose = function () {
-            }
-            socket.close()
-        }
-
-        socket = new WebSocket(`${window.location.host.indexOf('localhost') >= 0 ? 'ws' : 'wss'}://${window.location.host}/stream`)
-
-        window.onbeforeunload = function () {
-            socket.onclose = function () {
-            }
-            socket.close()
-        }
-
-        socket.onopen = () => {
-            connected = true
-            items = mempool ? null : items
-            error = null
-        }
-
-        socket.onclose = function () {
-            error = 'You are not connected to the server'
-            items = null
-            connected = false
-        }
-
-        socket.onmessage = function (event) {
-            if (!mempool) {
-                return
-            }
-
-            const data = JSON.parse(event.data)
-            if (data.height) {
-                items = []
-            } else {
-                items = items.concat(data)
-            }
-        }
-    }
 
     let loading
     let filterString = ''
@@ -79,7 +34,6 @@
     }
 
     async function fetchItems(filter, getMore) {
-        mempool = false
         hasMore = false
         error = null
         items = getMore ? items : null
@@ -137,50 +91,24 @@
         })
     }
 
-    const toggleMempool = async event => {
-        mempool = event.target.checked
-        if (mempool) {
-            items = []
-        } else {
-            await refresh(currentFilter || {})
-        }
-    }
-
     onMount(async () => {
-        newSocket()
         await refresh({})
-    })
-
-    onDestroy(() => {
-        socket.onclose = function () {
-        }
-        socket.close()
     })
 </script>
 
-{#if connected}
-    <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
-        <fieldset>
-            <select>
-                <option>Pool Swaps</option>
-            </select>
-            <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
-            <label>
-                Mempool
-                <input type="checkbox" checked={mempool} on:change={toggleMempool}/>
-            </label>
-            <button class="pure-button" type="submit">Refresh</button>
-        </fieldset>
-    </form>
+<form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
+    <fieldset>
+        <select>
+            <option>Pool Swaps</option>
+        </select>
+        <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
+        <button class="pure-button" type="submit">Refresh</button>
+    </fieldset>
+</form>
 
-    <PoolSwapHistory {allTokens} {items} {refresh}/>
-{:else}
-    <div class="message">
-        <button class="pure-button" on:click={newSocket}>Reconnect</button>
-    </div>
-{/if}
+<PoolSwapHistory {allTokens} {items} {refresh}/>
 
-{#if hasMore && !mempool && !error && connected}
+{#if hasMore && !error}
     <section class="pager">
         <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button" type="button">
             Show more
@@ -194,11 +122,7 @@
 {#if items && !items.length}
     <div class="message">
         <p class="info">
-            {#if mempool}
-                Keep open to receive transactions...
-            {:else}
-                0 results found
-            {/if}
+            0 results found
         </p>
     </div>
 {:else if error}

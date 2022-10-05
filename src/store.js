@@ -34,6 +34,8 @@ const getDesktopNotifications = () => {
     return JSON.parse(item)
 }
 
+export const messages = writable({connected: false})
+
 export const store = writable({
     isMenuActive: false,
     poolSwaps: getPoolSwapsFromLocalStorage(),

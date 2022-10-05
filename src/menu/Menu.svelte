@@ -7,6 +7,7 @@
     import LogIn from "../account/LogIn.svelte";
     import TokenStats from "../dex/TokenStats.svelte";
     import TXHistory from "../history/TXHistory.svelte";
+    import Mempool from "../mempool/Mempool.svelte";
 
     export let componentType
     export let onChange
@@ -43,6 +44,12 @@
                 on:click={() => onChange(DEX)}
                 class="pure-menu-item">
                 <a href="#dex" class="pure-menu-link">Track Pool Swaps</a>
+            </li>
+
+            <li class:pure-menu-selected={componentType === Mempool}
+                on:click={() => onChange(Mempool)}
+                class="pure-menu-item">
+                <a href="#mempool" class="pure-menu-link">Mempool</a>
             </li>
 
             <li class:pure-menu-selected={componentType === TokenStats}
