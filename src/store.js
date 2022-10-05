@@ -19,26 +19,10 @@ const getPoolSwapsFromLocalStorage = () => {
     return []
 }
 
-const getDesktopNotifications = () => {
-    if (!('Notification' in window) || Notification.permission !== 'granted') {
-        return false
-    }
-
-    if (!localStorage) {
-        return false
-    }
-    const item = localStorage.getItem("desktopNotifications")
-    if (item !== 'false' && item !== 'true') {
-        return false
-    }
-    return JSON.parse(item)
-}
-
 export const messages = writable({connected: false})
 
 export const store = writable({
     poolSwaps: getPoolSwapsFromLocalStorage(),
-    desktopNotifications: getDesktopNotifications(),
     tokenSymbolsById: {},
 })
 
@@ -63,13 +47,6 @@ export function setAccount(account) {
 
 export function logout() {
     window.location.reload()
-}
-
-export function setDesktopNotifications(desktopNotifications) {
-    store.update(state => ({
-        ...state,
-        desktopNotifications
-    }))
 }
 
 async function updateAccount(poolSwaps) {
@@ -133,7 +110,6 @@ store.subscribe(state => {
     if (!localStorage) {
         return
     }
-    localStorage.setItem("desktopNotifications", JSON.stringify(state.desktopNotifications))
     if (!activeAccount) {
         localStorage.setItem("poolSwaps", JSON.stringify(state.poolSwaps || []))
     }

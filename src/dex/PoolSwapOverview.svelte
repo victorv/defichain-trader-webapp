@@ -1,29 +1,7 @@
 <svelte:options immutable/>
 <script context="module">
-    import {calcProfitLoss, describePoolSwap} from "../common/common";
-
     const maxDataPoints = Math.round(window.innerWidth / 8)
     console.log(`max data points: ${maxDataPoints}`)
-
-    function notifyUser(oldPoolSwaps, poolSwaps) {
-        for (let i = 0; i < poolSwaps.length; i++) {
-            const oldPoolSwap = oldPoolSwaps[i]
-            const poolSwap = poolSwaps[i]
-            if (oldPoolSwap.estimate < oldPoolSwap.desiredResult && poolSwap.estimate >= poolSwap.desiredResult) {
-
-                const title = describePoolSwap(poolSwap)
-
-                const desiredResult = `desired result: ${poolSwap.desiredResult}`
-                const estimate = `estimate: ${poolSwap.estimate}`
-                const profit = `profit: +${calcProfitLoss(poolSwap)}%`
-                const body = `${desiredResult}\n${estimate}\n${profit}`
-
-                new Notification(title, {
-                    body,
-                })
-            }
-        }
-    }
 </script>
 <script>
     import {removePoolSwap, store, updateStore} from "../store";
@@ -39,14 +17,12 @@
 
     let poolSwaps = []
     let evtSource
-    let desktopNotifications
     let connected
     let request
 
     const poolSwapHandler = e => {
         const updates = JSON.parse(e.data)
         console.log(updates)
-        const oldPoolSwaps = poolSwaps
         const timestamp = new Date().toLocaleString()
 
         const newPoolSwaps = poolSwaps.map((poolSwap, index) => {
@@ -83,9 +59,6 @@
         })
         updateStore({poolSwaps: newPoolSwaps})
 
-        if (desktopNotifications) {
-            notifyUser(oldPoolSwaps, newPoolSwaps)
-        }
         onUpdate(timestamp)
 
         console.log(newPoolSwaps)
@@ -110,8 +83,6 @@
     }
 
     store.subscribe(state => {
-        desktopNotifications = state.desktopNotifications
-
         poolSwaps = state.poolSwaps.map(poolSwap => ({
             timestamp: poolSwap.timestamp || 'Never',
             ...poolSwap
