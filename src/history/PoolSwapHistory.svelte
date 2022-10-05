@@ -9,6 +9,7 @@
     export let allTokens
     export let refresh
     export let items
+    export let filter
 
     $: poolSwaps = items
 
@@ -87,24 +88,26 @@
     }
 </script>
 
-<form class="pure-form" on:submit|preventDefault>
-    <fieldset>
-        <FromToTokenFilter supportAnyToken={true}
-                           {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-        <label>
-            Sort
-            <select on:change={changeSortOrder}>
-                <option value="">Most Recent - Old</option>
-                <option disabled value="fee_asc">Fee - ascending</option>
-                <option disabled value="fee_desc">Fee - descending</option>
-                <option disabled value="input_amount_asc">Input Amount - ascending</option>
-                <option disabled value="input_amount_desc">Input Amount - descending</option>
-                <option disabled value="output_amount_asc">Output Amount - ascending</option>
-                <option disabled value="output_amount_desc">Output Amount - descending</option>
-            </select>
-        </label>
-    </fieldset>
-</form>
+{#if filter !== false}
+    <form class="pure-form" on:submit|preventDefault>
+        <fieldset>
+            <FromToTokenFilter supportAnyToken={true}
+                               {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+            <label>
+                Sort
+                <select on:change={changeSortOrder}>
+                    <option value="">Most Recent - Old</option>
+                    <option disabled value="fee_asc">Fee - ascending</option>
+                    <option disabled value="fee_desc">Fee - descending</option>
+                    <option disabled value="input_amount_asc">Input Amount - ascending</option>
+                    <option disabled value="input_amount_desc">Input Amount - descending</option>
+                    <option disabled value="output_amount_asc">Output Amount - ascending</option>
+                    <option disabled value="output_amount_desc">Output Amount - descending</option>
+                </select>
+            </label>
+        </fieldset>
+    </form>
+{/if}
 
 {#if items && items.length}
     <table class="pure-table pure-table-striped">
@@ -164,7 +167,8 @@
                     {#if tx.amountTo}
                         {tx.amountTo} {tx.tokenTo}
                         {#if tx.tokenTo !== tx.tokenToAlt}
-                            or {tx.tokenToAlt} <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
+                            or {tx.tokenToAlt}
+                            <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                         {/if}
                     {:else}
                         N/A {tx.tokenTo}
