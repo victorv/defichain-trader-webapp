@@ -12,13 +12,10 @@
     let Chart
     let mainElement
     let componentType = TXHistory
-    let isMenuActive = false
 
     window.fireChartJSLoad = chartConstructor => {
         Chart = chartConstructor
     }
-
-    store.subscribe(state => isMenuActive = state.isMenuActive)
 
     const onLogin = () => {
         componentType = DEX
@@ -65,23 +62,21 @@
     <WebSocket/>
 </header>
 
-<div class:active={isMenuActive} id="layout">
-    <Menu {isMenuActive} onChange={updateComponentType} {componentType}/>
+<Menu onChange={updateComponentType} {componentType}/>
 
-    <main bind:this={mainElement} tabindex="1">
-        {#if allTokens}
-            <svelte:component this={componentType} {allTokens} {Chart} {onLogin}/>
-        {:else if error}
-            <div class="message">
-                <p class="error">{error}</p>
-            </div>
-        {:else}
-            <div class="message">
-                <p class="info">Loading application data...</p>
-            </div>
-        {/if}
-    </main>
-</div>
+<main bind:this={mainElement} tabindex="1">
+    {#if allTokens}
+        <svelte:component this={componentType} {allTokens} {Chart} {onLogin}/>
+    {:else if error}
+        <div class="message">
+            <p class="error">{error}</p>
+        </div>
+    {:else}
+        <div class="message">
+            <p class="info">Loading application data...</p>
+        </div>
+    {/if}
+</main>
 
 <style>
     .message {

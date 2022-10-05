@@ -11,21 +11,11 @@
 
     export let componentType
     export let onChange
-    export let isMenuActive
 
     let account
 
     store.subscribe(state => account = state.account)
-
-    const toggleMenu = () => updateStore({isMenuActive: !isMenuActive})
 </script>
-
-
-<!-- Menu toggle -->
-<a on:click={toggleMenu} href="#menu" id="menuLink" class="menu-link">
-    <!-- Hamburger icon -->
-    <span></span>
-</a>
 
 <div id="menu">
     <div class="pure-menu pure-menu-horizontal">
@@ -60,27 +50,27 @@
 
             <li class:pure-menu-selected={componentType === Settings}
                 on:click={() => onChange(Settings)}
-                class="pure-menu-item menu-item-divided">
+                class="pure-menu-item">
                 <a href="#settings" class="pure-menu-link">Settings</a>
             </li>
             {#if !account}
                 <li class:pure-menu-selected={componentType === LogIn}
                     on:click={() => onChange(LogIn)}
-                    class="pure-menu-item menu-item-divided">
+                    class="pure-menu-item">
                     <a href="#login" class="pure-menu-link">
                         Log In
                     </a>
                 </li>
             {:else}
                 <li on:click={() => logout()}
-                    class="pure-menu-item menu-item-divided">
+                    class="pure-menu-item">
                     <a href="#logout" class="pure-menu-link">
                         Log Out
                     </a>
                 </li>
             {/if}
             <li on:click={() => onChange(LogIn)}
-                class="pure-menu-item menu-item-divided">
+                class="pure-menu-item">
                 <a href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank" class="pure-menu-link">
                     Discuss <Icon icon="telegram"/>
                 </a>
@@ -89,7 +79,3 @@
         </ul>
     </div>
 </div>
-
-<style>
-
-</style>
