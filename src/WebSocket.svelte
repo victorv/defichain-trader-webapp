@@ -44,18 +44,14 @@
 </script>
 
 <div>
-    {#if connected}
-        Connected
-    {:else}
-        <div class="message">
+    <label>
+        Status
+        {#if connected}
+            Connected
+        {:else}
             <button class="pure-button" on:click={newSocket}>Reconnect</button>
-        </div>
-    {/if}
+        {/if}
+    </label>
 </div>
 
-<style>
-    div {
-        float: right;
-    }
-</style>
 

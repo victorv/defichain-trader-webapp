@@ -58,11 +58,10 @@
     }
 </script>
 
+<Menu onChange={updateComponentType} {componentType}/>
 <header>
     <WebSocket/>
 </header>
-
-<Menu onChange={updateComponentType} {componentType}/>
 
 <main bind:this={mainElement} tabindex="1">
     {#if allTokens}
