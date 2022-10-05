@@ -46,22 +46,22 @@
                 class="pure-menu-item">
                 <a href="#bought_sold" class="pure-menu-link">Bought/Sold</a>
             </li>
-            {#if !account}
-                <li class:pure-menu-selected={componentType === LogIn}
-                    on:click={() => onChange(LogIn)}
-                    class="pure-menu-item">
-                    <a href="#login" class="pure-menu-link">
-                        Log In
-                    </a>
-                </li>
-            {:else}
-                <li on:click={() => logout()}
-                    class="pure-menu-item">
-                    <a href="#logout" class="pure-menu-link">
-                        Log Out
-                    </a>
-                </li>
-            {/if}
+            <!--{#if !account}-->
+            <!--    <li class:pure-menu-selected={componentType === LogIn}-->
+            <!--        on:click={() => onChange(LogIn)}-->
+            <!--        class="pure-menu-item">-->
+            <!--        <a href="#login" class="pure-menu-link">-->
+            <!--            Log In-->
+            <!--        </a>-->
+            <!--    </li>-->
+            <!--{:else}-->
+            <!--    <li on:click={() => logout()}-->
+            <!--        class="pure-menu-item">-->
+            <!--        <a href="#logout" class="pure-menu-link">-->
+            <!--            Log Out-->
+            <!--        </a>-->
+            <!--    </li>-->
+            <!--{/if}-->
             <li on:click={() => onChange(LogIn)}
                 class="pure-menu-item">
                 <a href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank" class="pure-menu-link">
