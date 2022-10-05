@@ -1,8 +1,7 @@
 <svelte:options immutable/>
 <script>
     import DEX from "../dex/DEX.svelte";
-    import Settings from "../settings/Settings.svelte";
-    import {logout, store, updateStore} from "../store";
+    import {logout, store} from "../store";
     import Icon from "../common/Icon.svelte";
     import LogIn from "../account/LogIn.svelte";
     import TokenStats from "../dex/TokenStats.svelte";
@@ -46,12 +45,6 @@
                 on:click={() => onChange(TokenStats)}
                 class="pure-menu-item">
                 <a href="#bought_sold" class="pure-menu-link">Bought/Sold</a>
-            </li>
-
-            <li class:pure-menu-selected={componentType === Settings}
-                on:click={() => onChange(Settings)}
-                class="pure-menu-item">
-                <a href="#settings" class="pure-menu-link">Settings</a>
             </li>
             {#if !account}
                 <li class:pure-menu-selected={componentType === LogIn}
