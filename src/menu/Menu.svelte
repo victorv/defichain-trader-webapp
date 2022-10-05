@@ -21,7 +21,7 @@
     <div class="pure-menu pure-menu-horizontal">
         <ul class="pure-menu-list">
             <li class="pure-menu-item logo">
-                <img src="logo.png" width="140" height="38"/>
+                <img src="logo.png" width="70" height="19"/>
             </li>
 
             <li class:pure-menu-selected={componentType === TXHistory}
