@@ -33,7 +33,7 @@
             <li class:pure-menu-selected={componentType === DEX}
                 on:click={() => onChange(DEX)}
                 class="pure-menu-item">
-                <a href="#dex" class="pure-menu-link">Track Pool Swaps</a>
+                <a href="#dex" class="pure-menu-link">Track Poolswaps</a>
             </li>
 
             <li class:pure-menu-selected={componentType === Mempool}
@@ -45,7 +45,7 @@
             <li class:pure-menu-selected={componentType === TokenStats}
                 on:click={() => onChange(TokenStats)}
                 class="pure-menu-item">
-                <a href="#tokenstatistics" class="pure-menu-link">Token Statistics</a>
+                <a href="#bought_sold" class="pure-menu-link">Bought/Sold</a>
             </li>
 
             <li class:pure-menu-selected={componentType === Settings}
