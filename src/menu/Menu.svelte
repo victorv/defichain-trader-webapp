@@ -65,7 +65,7 @@
             <li on:click={() => onChange(LogIn)}
                 class="pure-menu-item">
                 <a href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank" class="pure-menu-link">
-                    Discuss <Icon icon="telegram"/>
+                    Telegram
                 </a>
             </li>
 
