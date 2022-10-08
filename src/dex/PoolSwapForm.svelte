@@ -2,7 +2,7 @@
     import Help from "../common/Help.svelte";
     import {round} from "../common/common";
     import FromToTokenFilter from "./FromToTokenFilter.svelte";
-    import {addPoolswap} from "../store";
+    import {addPoolswap, outgoingMessages} from "../store";
 
     export let allTokens
 

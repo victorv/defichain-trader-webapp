@@ -4,7 +4,7 @@
     console.log(`max data points: ${maxDataPoints}`)
 </script>
 <script>
-    import {removePoolswap} from "../store";
+    import {removePoolswap, swaps} from "../store";
     import PoolSwapGraph from "./PoolSwapGraph.svelte";
     import ProfitLoss from "./ProfitLoss.svelte";
     import Icon from "../common/Icon.svelte";
@@ -15,6 +15,8 @@
     export let onUpdate
 
     let poolSwaps = []
+
+    swaps.subscribe(swaps => poolSwaps = swaps)
 
     const toggleGraph = forIndex => {
         poolSwaps = poolSwaps.map((poolSwap, index) => ({
@@ -45,7 +47,7 @@
         {#each poolSwaps as poolSwap, index}
             <tr>
                 <td>
-                    <button on:click={async() => await removePoolswap(index)}
+                    <button on:click={async() => await removePoolswap(poolSwap)}
                             class="pure-button">
                         <Icon icon="remove"/>
                     </button>

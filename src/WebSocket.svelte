@@ -1,5 +1,5 @@
 <script>
-    import {incomingMessages} from "./store";
+    import {incomingMessages, outgoingMessages} from "./store";
 
     let socket
     let connected
@@ -20,6 +20,12 @@
 
     uuid = getUUID()
 
+    outgoingMessages.subscribe(message => {
+        if (message != null) {
+            socket.send(JSON.stringify(message))
+        }
+    })
+
     const newSocket = () => {
         if (socket) {
             socket.onclose = function () {
@@ -38,7 +44,10 @@
         socket.onopen = () => {
             connected = true
             error = null
-            socket.send(uuid)
+            socket.send(JSON.stringify({
+                id: 'uuid',
+                data: uuid,
+            }))
         }
 
         socket.onclose = function () {
@@ -47,12 +56,8 @@
         }
 
         socket.onmessage = function (event) {
-            const data = JSON.parse(event.data)
-            incomingMessages.set({
-                connected,
-                error,
-                data,
-            })
+            const message = JSON.parse(event.data)
+            incomingMessages.set(message)
         }
     }
 
