@@ -9,6 +9,19 @@ const getSwapID = swap => {
     return `${swap.tokenFrom}+${swap.tokenTo}+${swap.amountFrom}+${swap.desiredResult}`
 }
 
+const storePoolSwaps = swaps => {
+    if (localStorage) {
+        localStorage.setItem("poolSwaps", JSON.stringify(swaps.map(
+            swap => ({
+                amountFrom: swap.amountFrom,
+                tokenFrom: swap.tokenFrom,
+                tokenTo: swap.tokenTo,
+                desiredResult: swap.desiredResult,
+            })
+        )))
+    }
+}
+
 incomingMessages.subscribe(message => {
     if (message.id === 'mempool-swap') {
         mempool.update(state => state.concat(message.data))
@@ -19,19 +32,27 @@ incomingMessages.subscribe(message => {
 
         swaps.update(swaps => {
             if (!swaps.find(swap => getSwapID(swap) === swapID)) {
-                return swaps.concat(message.data)
+                const updated = swaps.concat(message.data)
+                storePoolSwaps(updated)
+                return updated
             }
 
-            return swaps.map(swap =>
+            const updated = swaps.map(swap =>
                 ({
                     ...swap,
                     ...(getSwapID(swap) === swapID ? message.data : {}),
                 })
             )
+            storePoolSwaps(updated)
+            return updated
         })
     } else if (message.id === 'swaps-removed') {
         const removedSwaps = new Set(message.data.map(removedSwap => getSwapID(removedSwap)))
-        swaps.update(swaps => swaps.filter(swap => !removedSwaps.has(getSwapID(swap))))
+        swaps.update(swaps => {
+            const updated = swaps.filter(swap => !removedSwaps.has(getSwapID(swap)))
+            storePoolSwaps(updated)
+            return updated
+        })
     }
 })
 
@@ -39,7 +60,7 @@ export const store = writable({
     account: {},
 })
 
-export const removePoolswap = async swap => {
+export const removePoolswap = swap => {
     outgoingMessages.set({
         id: 'remove-swap',
         data: {
@@ -51,7 +72,7 @@ export const removePoolswap = async swap => {
     })
 }
 
-export const addPoolswap = async swap => {
+export const addPoolswap = swap => {
     outgoingMessages.set({
         id: 'add-swap',
         data: swap,

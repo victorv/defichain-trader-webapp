@@ -26,22 +26,28 @@
         const swap = poolSwaps[forIndex]
         const estimates = swap.graph ? null : await fetchEstimates(swap)
 
-        console.log(estimates)
-
-        poolSwaps = poolSwaps.map((poolSwap, index) => ({
-            ...poolSwap,
-            showBreakdown: false,
-            graph: index === forIndex ? !poolSwap.graph : false,
-            estimates,
-        }))
+        swaps.update(poolSwaps =>
+            poolSwaps.map((poolSwap, index) =>
+                ({
+                    ...poolSwap,
+                    showBreakdown: false,
+                    graph: index === forIndex ? !poolSwap.graph : false,
+                    estimates,
+                })
+            )
+        )
     }
 
     const toggleBreakdown = forIndex => {
-        poolSwaps = poolSwaps.map((poolSwap, index) => ({
-            ...poolSwap,
-            showBreakdown: index === forIndex ? !poolSwap.showBreakdown : false,
-            graph: false
-        }))
+        swaps.update(poolSwaps =>
+            poolSwaps.map((poolSwap, index) =>
+                ({
+                    ...poolSwap,
+                    showBreakdown: index === forIndex ? !poolSwap.showBreakdown : false,
+                    graph: false
+                })
+            )
+        )
     }
 </script>
 
@@ -57,7 +63,7 @@
         {#each poolSwaps as poolSwap, index}
             <tr>
                 <td>
-                    <button on:click={async() => await removePoolswap(poolSwap)}
+                    <button on:click={() => removePoolswap(poolSwap)}
                             class="pure-button">
                         <Icon icon="remove"/>
                     </button>

@@ -1,5 +1,5 @@
 <script>
-    import {incomingMessages, outgoingMessages} from "./store";
+    import {addPoolswap, incomingMessages, outgoingMessages} from "./store";
 
     let socket
     let connected
@@ -48,6 +48,12 @@
                 id: 'uuid',
                 data: uuid,
             }))
+
+            const swaps = localStorage
+                ? JSON.parse(localStorage.getItem('poolSwaps') || '[]')
+                : []
+
+            swaps.forEach(swap => addPoolswap(swap))
         }
 
         socket.onclose = function () {

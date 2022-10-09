@@ -2,7 +2,7 @@
     import Help from "../common/Help.svelte";
     import {round} from "../common/common";
     import FromToTokenFilter from "./FromToTokenFilter.svelte";
-    import {addPoolswap, outgoingMessages} from "../store";
+    import {addPoolswap} from "../store";
 
     export let allTokens
 
@@ -54,7 +54,7 @@
             return
         }
 
-        await addPoolswap({
+        addPoolswap({
             tokenFrom: fromTokenSymbol,
             tokenTo: toTokenSymbol,
             amountFrom: +amountFromElement.value,
