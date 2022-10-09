@@ -17,11 +17,22 @@
 
     swaps.subscribe(swaps => poolSwaps = swaps)
 
-    const toggleGraph = forIndex => {
+    const fetchEstimates = async swap => {
+        const response = await fetch(`/graph?poolswap=${swap.amountFrom} ${swap.tokenFrom} to ${swap.tokenTo}`)
+        return await response.json()
+    }
+
+    const toggleGraph = async forIndex => {
+        const swap = poolSwaps[forIndex]
+        const estimates = swap.graph ? null : await fetchEstimates(swap)
+
+        console.log(estimates)
+
         poolSwaps = poolSwaps.map((poolSwap, index) => ({
             ...poolSwap,
             showBreakdown: false,
-            graph: index === forIndex ? !poolSwap.graph : false
+            graph: index === forIndex ? !poolSwap.graph : false,
+            estimates,
         }))
     }
 
@@ -71,7 +82,7 @@
                 </td>
                 <td>
                     <button on:click={() => toggleGraph(index)}
-                            disabled={!Chart || !hasItems(poolSwap.estimates)}
+                            disabled={!Chart}
                             class:info={poolSwap.graph}
                             type="button"
                             class="pure-button">
@@ -80,7 +91,7 @@
                     <ProfitLoss {poolSwap}/>
                 </td>
             </tr>
-            {#if poolSwap.graph}
+            {#if poolSwap.graph && hasItems(poolSwap.estimates)}
                 <tr>
                     <td colspan="2">
                         <PoolSwapGraph {Chart} estimates={poolSwap.estimates} {poolSwap}/>
