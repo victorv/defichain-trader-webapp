@@ -12,7 +12,6 @@
     import {hasItems} from "../common/common";
 
     export let Chart
-    export let onUpdate
 
     let poolSwaps = []
 
