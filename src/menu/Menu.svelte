@@ -4,6 +4,7 @@
     import TokenStats from "../dex/TokenStats.svelte";
     import TXHistory from "../history/TXHistory.svelte";
     import Mempool from "../mempool/Mempool.svelte";
+    import QuickGraph from "../history/QuickGraph.svelte";
 
     export let componentType
     export let onChange
@@ -22,16 +23,22 @@
                 <a href="#poolswaphistory" class="pure-menu-link">Explore</a>
             </li>
 
-            <li class:pure-menu-selected={componentType === DEX}
-                on:click={() => onChange(DEX)}
+            <li class:pure-menu-selected={componentType === QuickGraph}
+                on:click={() => onChange(QuickGraph)}
                 class="pure-menu-item">
-                <a href="#dex" class="pure-menu-link">Track Poolswaps</a>
+                <a href="#quick-graph" class="pure-menu-link">Quick Graph</a>
             </li>
 
             <li class:pure-menu-selected={componentType === Mempool}
                 on:click={() => onChange(Mempool)}
                 class="pure-menu-item">
                 <a href="#mempool" class="pure-menu-link">Mempool</a>
+            </li>
+
+            <li class:pure-menu-selected={componentType === DEX}
+                on:click={() => onChange(DEX)}
+                class="pure-menu-item">
+                <a href="#dex" class="pure-menu-link">Your Pool Swaps</a>
             </li>
 
             <li class:pure-menu-selected={componentType === TokenStats}
@@ -44,7 +51,6 @@
                     Telegram
                 </a>
             </li>
-
         </ul>
     </div>
 </div>
