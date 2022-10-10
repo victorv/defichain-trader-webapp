@@ -43,7 +43,7 @@
             maintainAspectRatio: false,
             plugins: {
                 autocolors: false,
-                annotation: {
+                annotation: poolSwap.desiredResult ? {
                     annotations: {
                         line1: {
                             type: 'line',
@@ -53,7 +53,7 @@
                             borderWidth: 2,
                         }
                     }
-                },
+                } : null,
                 title: {
                     display: true,
                     text: 'Chart'
