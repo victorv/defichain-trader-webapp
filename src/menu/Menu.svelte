@@ -22,16 +22,16 @@
                 <a href="#poolswaphistory" class="pure-menu-link">Explore</a>
             </li>
 
-            <li class:pure-menu-selected={componentType === DEX}
-                on:click={() => onChange(DEX)}
-                class="pure-menu-item">
-                <a href="#dex" class="pure-menu-link">Track Poolswaps</a>
-            </li>
-
             <li class:pure-menu-selected={componentType === Mempool}
                 on:click={() => onChange(Mempool)}
                 class="pure-menu-item">
                 <a href="#mempool" class="pure-menu-link">Mempool</a>
+            </li>
+
+            <li class:pure-menu-selected={componentType === DEX}
+                on:click={() => onChange(DEX)}
+                class="pure-menu-item">
+                <a href="#dex" class="pure-menu-link">Your Pool Swaps</a>
             </li>
 
             <li class:pure-menu-selected={componentType === TokenStats}
