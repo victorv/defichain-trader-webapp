@@ -13,12 +13,9 @@
         chart.data.labels = estimates.map(e => `height: ${e[0]}, estimate: ${e[1]}`)
         chart.data.datasets[0].data = estimates.map(e => e[1])
 
-        let title = estimates[0][0]
-        if (estimates.length > 1) {
-            const mostRecent = estimates[estimates.length - 1][0]
-            title = `Blocks: ${title} - ${mostRecent}`
-        }
-        chart.options.plugins.title.text = title
+        const blocks = estimates[estimates.length - 1][0] - estimates[0][0]
+        const days = (blocks / 120.0 / 24.0).toFixed(2)
+        chart.options.plugins.title.text = `Days: ${days}`
 
         chart.update()
     }
