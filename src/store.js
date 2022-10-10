@@ -1,140 +1,80 @@
 import {writable} from "svelte/store";
 
-let activeAccount
-let activeState
+export const incomingMessages = writable({connected: false})
+export const outgoingMessages = writable(null)
+export const mempool = writable([])
+export const swaps = writable([])
 
-const getPoolSwapsFromLocalStorage = () => {
-    if (!localStorage) {
-        return []
-    }
-    const item = localStorage.getItem("poolSwaps")
-    if (!item) {
-        return []
-    }
-
-    const poolSwaps = JSON.parse(item)
-    if (Array.isArray(poolSwaps)) {
-        return poolSwaps
-    }
-    return []
+const getSwapID = swap => {
+    return `${swap.tokenFrom}+${swap.tokenTo}+${swap.amountFrom}+${swap.desiredResult}`
 }
 
-const getDesktopNotifications = () => {
-    if (!('Notification' in window) || Notification.permission !== 'granted') {
-        return false
-    }
-
-    if (!localStorage) {
-        return false
-    }
-    const item = localStorage.getItem("desktopNotifications")
-    if (item !== 'false' && item !== 'true') {
-        return false
-    }
-    return JSON.parse(item)
-}
-
-export const messages = writable({connected: false})
-
-export const store = writable({
-    poolSwaps: getPoolSwapsFromLocalStorage(),
-    desktopNotifications: getDesktopNotifications(),
-    tokenSymbolsById: {},
-})
-
-export function setAccount(account) {
-    activeAccount = account
-    updateStore({
-        account,
-        poolSwaps: account.poolSwaps.map(swap => ({
-            ...swap,
-            estimates: swap.estimates.map(pair => ({
-                timestamp: new Date(pair.first).toLocaleTimeString(),
-                estimate: pair.second
-            }))
-        })),
-    })
-
-    store.update(state => {
-        console.log(state)
-        return state
-    })
-}
-
-export function logout() {
-    window.location.reload()
-}
-
-export function setDesktopNotifications(desktopNotifications) {
-    store.update(state => ({
-        ...state,
-        desktopNotifications
-    }))
-}
-
-async function updateAccount(poolSwaps) {
-    if (!activeAccount) {
-        return
-    }
-
-    const response = await fetch(`/account`, {
-        method: 'POST',
-        body: JSON.stringify({
-            chatID: activeAccount.chatID,
-            poolSwaps: poolSwaps.map(swap => ({
+const storePoolSwaps = swaps => {
+    if (localStorage) {
+        localStorage.setItem("poolSwaps", JSON.stringify(swaps.map(
+            swap => ({
                 amountFrom: swap.amountFrom,
-                desiredResult: swap.desiredResult,
                 tokenFrom: swap.tokenFrom,
                 tokenTo: swap.tokenTo,
-            })),
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-
-    if (!response.ok) {
-        throw new Error('Unable to update account')
+                desiredResult: swap.desiredResult,
+            })
+        )))
     }
 }
 
+incomingMessages.subscribe(message => {
+    if (message.id === 'mempool-swap') {
+        mempool.update(state => state.concat(message.data))
+    } else if (message.id === 'block') {
+        mempool.set([])
+    } else if (message.id === 'swap-result') {
+        const swapID = getSwapID(message.data)
 
-export async function addPoolSwap(poolSwap) {
-    const poolSwaps = activeState.poolSwaps
-        .map(poolSwap => ({
-            ...poolSwap,
-            graph: false,
-            showBreakdown: false,
-        }))
-        .concat({
-            ...poolSwap,
-            showBreakdown: true
+        swaps.update(swaps => {
+            if (!swaps.find(swap => getSwapID(swap) === swapID)) {
+                const updated = swaps.concat(message.data)
+                storePoolSwaps(updated)
+                return updated
+            }
+
+            const updated = swaps.map(swap =>
+                ({
+                    ...swap,
+                    ...(getSwapID(swap) === swapID ? message.data : {}),
+                })
+            )
+            storePoolSwaps(updated)
+            return updated
         })
-    await updateAccount(poolSwaps)
-    updateStore({poolSwaps})
-}
-
-export function updateStore(updates) {
-    store.update(state => ({
-        ...state,
-        ...updates,
-    }))
-}
-
-export async function removePoolSwap(atIndex) {
-    const poolSwaps = activeState.poolSwaps.filter((_, index) => index !== atIndex)
-    await updateAccount(poolSwaps)
-    updateStore({poolSwaps})
-}
-
-store.subscribe(state => {
-    activeState = state
-    if (!localStorage) {
-        return
-    }
-    localStorage.setItem("desktopNotifications", JSON.stringify(state.desktopNotifications))
-    if (!activeAccount) {
-        localStorage.setItem("poolSwaps", JSON.stringify(state.poolSwaps || []))
+    } else if (message.id === 'swaps-removed') {
+        const removedSwaps = new Set(message.data.map(removedSwap => getSwapID(removedSwap)))
+        swaps.update(swaps => {
+            const updated = swaps.filter(swap => !removedSwaps.has(getSwapID(swap)))
+            storePoolSwaps(updated)
+            return updated
+        })
     }
 })
+
+export const store = writable({
+    account: {},
+})
+
+export const removePoolswap = swap => {
+    outgoingMessages.set({
+        id: 'remove-swap',
+        data: {
+            tokenFrom: swap.tokenFrom,
+            tokenTo: swap.tokenTo,
+            amountFrom: swap.amountFrom,
+            desiredResult: swap.desiredResult,
+        },
+    })
+}
+
+export const addPoolswap = swap => {
+    outgoingMessages.set({
+        id: 'add-swap',
+        data: swap,
+    })
+}

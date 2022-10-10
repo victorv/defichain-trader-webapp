@@ -5,21 +5,13 @@
     export let accountId
     export let allTokens
     export let Chart
-
-    let lastUpdated = 'Never'
-
-    const onUpdate = timestamp => lastUpdated = timestamp
 </script>
-
-<header>
-    <strong>DEX</strong> - Last Updated: {lastUpdated}
-</header>
 
 <div class="pool-swap-form">
     <PoolSwapForm {allTokens}/>
 </div>
 <div>
-    <PoolSwapOverview {Chart} {onUpdate}/>
+    <PoolSwapOverview {Chart}/>
 </div>
 
 <style>

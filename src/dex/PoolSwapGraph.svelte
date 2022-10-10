@@ -10,13 +10,13 @@
     let chart
 
     $: if (chart) {
-        chart.data.labels = estimates.map(e => `${e.timestamp}, result: ${e.estimate}`)
-        chart.data.datasets[0].data = estimates.map(e => e.estimate)
+        chart.data.labels = estimates.map(e => `height: ${e[0]}, estimate: ${e[1]}`)
+        chart.data.datasets[0].data = estimates.map(e => e[1])
 
-        let title = estimates[0].timestamp.toLocaleString()
+        let title = estimates[0][0]
         if (estimates.length > 1) {
-            const mostRecent = estimates[estimates.length - 1].timestamp.toLocaleString()
-            title = `${title} - ${mostRecent}`
+            const mostRecent = estimates[estimates.length - 1][0]
+            title = `Blocks: ${title} - ${mostRecent}`
         }
         chart.options.plugins.title.text = title
 
@@ -24,12 +24,12 @@
     }
 
     const data = {
-        labels: estimates.map(e => e.timestamp.toLocaleString()),
+        labels: estimates.map(e => `height: ${e[0]}, estimate: ${e[1]}`),
         datasets: [
             {
                 type: 'line',
                 label: `${poolSwap.amountFrom} ${poolSwap.tokenFrom} to ${poolSwap.tokenTo}`,
-                data: estimates.map(e => e.estimate),
+                data: estimates.map(e => e[1]),
                 fill: true,
                 borderColor: 'rgb(75, 192, 192)',
             }

@@ -1,9 +1,30 @@
 <script>
-    import {messages} from "./store";
+    import {addPoolswap, incomingMessages, outgoingMessages} from "./store";
 
     let socket
     let connected
     let error
+    let uuid
+
+    const getUUID = () => {
+        if (localStorage) {
+            let uuid = localStorage.getItem("uuid")
+            if (!uuid) {
+                uuid = crypto.randomUUID()
+            }
+            localStorage.setItem("uuid", uuid)
+            return uuid
+        }
+        return crypto.randomUUID()
+    }
+
+    uuid = getUUID()
+
+    outgoingMessages.subscribe(message => {
+        if (message != null) {
+            socket.send(JSON.stringify(message))
+        }
+    })
 
     const newSocket = () => {
         if (socket) {
@@ -23,6 +44,16 @@
         socket.onopen = () => {
             connected = true
             error = null
+            socket.send(JSON.stringify({
+                id: 'uuid',
+                data: uuid,
+            }))
+
+            const swaps = localStorage
+                ? JSON.parse(localStorage.getItem('poolSwaps') || '[]')
+                : []
+
+            swaps.forEach(swap => addPoolswap(swap))
         }
 
         socket.onclose = function () {
@@ -31,12 +62,8 @@
         }
 
         socket.onmessage = function (event) {
-            const data = JSON.parse(event.data)
-            messages.set({
-                connected,
-                error,
-                data,
-            })
+            const message = JSON.parse(event.data)
+            incomingMessages.set(message)
         }
     }
 
