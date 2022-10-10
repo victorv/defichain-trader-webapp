@@ -39,6 +39,13 @@
     const config = {
         type: 'line',
         options: {
+            hover: {
+                intersect: false
+            },
+            pointBorderColor: 'rgba(0, 0, 0, 0)',
+            pointBackgroundColor: 'rgba(0, 0, 0, 0)',
+            pointHoverBackgroundColor: 'rgb(54, 162, 235)',
+            pointHoverBorderColor: 'rgb(54, 162, 235)',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
