@@ -1,24 +1,13 @@
 <script>
     import {onDestroy} from "svelte";
     import PoolSwapHistory from "../history/PoolSwapHistory.svelte";
-    import {incomingMessages} from "../store";
+    import {mempool} from "../store";
 
     export let allTokens
 
     let items = []
 
-    const unsubscribe = incomingMessages.subscribe(message => {
-        if (!message.connected || !message.data || message.error) {
-            items = []
-            return
-        }
-
-        if (message.data.height) {
-            items = []
-        } else {
-            items = items.concat(message.data)
-        }
-    })
+    const unsubscribe = mempool.subscribe(mempoolItems => items = mempoolItems)
 
     onDestroy(unsubscribe)
 
