@@ -2,6 +2,7 @@
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import PoolSwapGraph from "../dex/PoolSwapGraph.svelte";
     import {onMount} from "svelte";
+    import {hasItems} from "../common/common";
 
     export let allTokens
     export let Chart
@@ -37,6 +38,6 @@
 
 <FromToTokenFilter supportAnyToken={true}
                    {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-{#if estimates}
+{#if hasItems(estimates)}
     <PoolSwapGraph {Chart} {estimates} {poolSwap}/>
 {/if}
