@@ -75,6 +75,11 @@ export const removePoolswap = swap => {
 export const addPoolswap = swap => {
     outgoingMessages.set({
         id: 'add-swap',
-        data: swap,
+        data: {
+            tokenFrom: swap.tokenFrom,
+            tokenTo: swap.tokenTo,
+            amountFrom: swap.amountFrom,
+            desiredResult: swap.desiredResult,
+        },
     })
 }
