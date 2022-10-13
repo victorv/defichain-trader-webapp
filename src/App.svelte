@@ -16,10 +16,6 @@
         Chart = chartConstructor
     }
 
-    const onLogin = () => {
-        componentType = DEX
-    }
-
     const init = async () => {
         const tokensRequest = fetch(`/tokens`).then(res => res.json())
         const poolPairsRequest = fetch(`/poolpairs`).then(res => res.json())
@@ -63,7 +59,7 @@
 
 <main bind:this={mainElement} tabindex="1">
     {#if allTokens}
-        <svelte:component this={componentType} {allTokens} {Chart} {onLogin}/>
+        <svelte:component this={componentType} {allTokens} {Chart}/>
     {:else if error}
         <div class="message">
             <p class="error">{error}</p>
