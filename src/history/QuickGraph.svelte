@@ -4,7 +4,7 @@
     import {onDestroy, onMount} from "svelte";
     import {hasItems} from "../common/common";
     import TradeChart from "../dex/TradeChart.svelte";
-    import {mempool} from "../store";
+    import {graphStore, mempool, setGraph} from "../store";
     import Help from "../common/Help.svelte";
 
     export let allTokens
@@ -18,10 +18,11 @@
     let graphType = 'trades'
 
     let items = []
+    const subscriptions = []
 
-    const unsubscribe = mempool.subscribe(mempoolItems => items = mempoolItems)
-
-    onDestroy(unsubscribe)
+    onDestroy(() => {
+        subscriptions.forEach(sub => sub())
+    })
 
     async function update() {
         estimates = null
@@ -46,6 +47,7 @@
     const onTokenSelectionChanged = async selection => {
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
+        setGraph(fromTokenSymbol, toTokenSymbol)
         await update()
     }
 
@@ -53,7 +55,25 @@
         graphType = newGraphType
     }
 
-    onMount(async () => await update())
+    onMount(async () => {
+        const unsubscribe1 = mempool.subscribe(mempoolItems => items = mempoolItems)
+        const unsubscribe2 = graphStore.subscribe(dataPoint => {
+            const estimate = dataPoint.estimate
+            if (dataPoint && estimates && estimates.length > 1) {
+                const previousEstimate = estimates[estimates.length - 1][1]
+                if (Math.abs(estimate - previousEstimate) > estimate * 0.0001) {
+                    let newEstimates = estimates.slice(1)
+                    newEstimates.push([0, estimate, previousEstimate])
+                    estimates = newEstimates
+                }
+            }
+        })
+        subscriptions.push(unsubscribe1, unsubscribe2)
+
+        await update()
+        // WARNING an unidentified error occurs when setGraph() is called before update()
+        setGraph(fromTokenSymbol, toTokenSymbol)
+    })
 </script>
 
 <form on:submit|preventDefault>

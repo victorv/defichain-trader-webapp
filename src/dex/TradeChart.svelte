@@ -11,6 +11,7 @@
     export let toTokenSymbol
 
     let canvasElement
+    let chart
 
     function getRandomData(dateStr) {
         let date = luxon.DateTime.fromRFC2822(dateStr);
@@ -26,6 +27,11 @@
             });
         }
         return data;
+    }
+
+    $: if (chart && estimates) {
+        chart.data.datasets[0].data = getRandomData('01 Apr 2017 00:00 Z')
+        chart.update()
     }
 
     const data = {
@@ -52,7 +58,7 @@
     }
 
     onMount(async () => {
-        new Chart(
+        chart = new Chart(
             canvasElement,
             config
         )

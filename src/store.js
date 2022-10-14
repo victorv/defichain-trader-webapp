@@ -4,6 +4,7 @@ export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)
 export const mempool = writable([])
 export const swaps = writable([])
+export const graphStore = writable({})
 
 const getSwapID = swap => {
     return `${swap.tokenFrom}+${swap.tokenTo}+${swap.amountFrom}+${swap.desiredResult}`
@@ -53,12 +54,24 @@ incomingMessages.subscribe(message => {
             storePoolSwaps(updated)
             return updated
         })
+    } else if (message.id === 'graph-data-point') {
+        graphStore.set(message.data)
     }
 })
 
 export const store = writable({
     account: {},
 })
+
+export const setGraph = (fromToken, toToken) => {
+    outgoingMessages.set({
+        id: 'set-graph',
+        data: {
+            fromToken,
+            toToken
+        },
+    })
+}
 
 export const removePoolswap = swap => {
     outgoingMessages.set({
