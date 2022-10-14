@@ -2,6 +2,7 @@
     import {onMount} from "svelte";
     import {asDollars} from "../common/common";
     import Percentage from "./Percentage.svelte";
+    import Help from "../common/Help.svelte";
 
     export let Chart
     export let items
@@ -60,10 +61,13 @@
 <div class="container">
     <canvas bind:this={canvasElement}></canvas>
     <div>
-        <table>
+        <table class="pure-table">
             <tr>
                 <td>Swap</td>
-                <td>Price Impact</td>
+                <td>
+                    Price Impact
+                    <Help help="Only trades with a price impact of at least 0.05% are displayed here" />
+                </td>
             </tr>
             {#each items as item}
                 <tr>
@@ -90,6 +94,14 @@
 </div>
 
 <style>
+    table {
+        table-layout: fixed;
+    }
+
+    td {
+        width: 50%;
+    }
+
     .hover-toggle:hover div {
         display: none;
     }

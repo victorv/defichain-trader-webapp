@@ -34,7 +34,11 @@
 
     .tooltip .tooltip-text {
         visibility: hidden;
+        top: 5vh;
+        left: calc(50% - 150px);
         width: 300px;
+        height: 40vh;
+        overflow: auto;
         padding: 1rem;
         background-color: black;
         color: #fff;
@@ -42,11 +46,11 @@
         border-radius: 6px;
 
         /* Position the tooltip */
-        position: absolute;
+        position: fixed;
         z-index: 1;
     }
 
-    .tooltip:hover .tooltip-text, .tooltip:focus .tooltip-text {
+    .tooltip:focus .tooltip-text, .tooltip:focus .tooltip-text {
         visibility: visible;
     }
 </style>

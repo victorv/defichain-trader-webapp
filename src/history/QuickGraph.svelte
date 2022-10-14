@@ -5,6 +5,7 @@
     import {hasItems} from "../common/common";
     import TradeChart from "../dex/TradeChart.svelte";
     import {mempool} from "../store";
+    import Help from "../common/Help.svelte";
 
     export let allTokens
     export let Chart
@@ -68,6 +69,7 @@
         <input on:click={() => changeGraph('trades')} bind:group={graphType} value={'trades'} type="radio"
                name="graph-types"/>
     </label>
+    <Help help="Both graphs are live. Graphs are not updated until a price difference of at least 0.01% has occurred."/>
 </form>
 {#if hasItems(estimates)}
     {#if graphType == 'trades'}
