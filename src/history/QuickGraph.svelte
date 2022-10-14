@@ -1,8 +1,10 @@
 <script>
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import PoolSwapGraph from "../dex/PoolSwapGraph.svelte";
-    import {onMount} from "svelte";
+    import {onDestroy, onMount} from "svelte";
     import {hasItems} from "../common/common";
+    import TradeChart from "../dex/TradeChart.svelte";
+    import {mempool} from "../store";
 
     export let allTokens
     export let Chart
@@ -12,6 +14,13 @@
     let toTokenSymbol = 'BTC'
     let poolSwap
     let estimates
+    let graphType = 'trades'
+
+    let items = []
+
+    const unsubscribe = mempool.subscribe(mempoolItems => items = mempoolItems)
+
+    onDestroy(unsubscribe)
 
     async function update() {
         estimates = null
@@ -39,12 +48,31 @@
         await update()
     }
 
+    const changeGraph = newGraphType => {
+        graphType = newGraphType
+    }
+
     onMount(async () => await update())
 </script>
 
-<FromToTokenFilter supportAnyToken={true}
-                   {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+<form on:submit|preventDefault>
+    <FromToTokenFilter supportAnyToken={true}
+                       {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+    <label>
+        History
+        <input on:click={() => changeGraph('history')} bind:group={graphType} value={'history'} type="radio"
+               name="graph-types"/>
+    </label>
+    <label>
+        Recent Trades
+        <input on:click={() => changeGraph('trades')} bind:group={graphType} value={'trades'} type="radio"
+               name="graph-types"/>
+    </label>
+</form>
 {#if hasItems(estimates)}
-    <button class="pure-button" on:click={update}>Refresh</button>
-    <PoolSwapGraph {Chart} {estimates} {poolSwap}/>
+    {#if graphType == 'trades'}
+        <TradeChart {items} {Chart} {estimates} {fromTokenSymbol} {toTokenSymbol}/>
+    {:else if graphType == 'history'}
+        <PoolSwapGraph {Chart} {estimates} {poolSwap}/>
+    {/if}
 {/if}

@@ -2,15 +2,14 @@
 <script>
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
-    import DEX from "./dex/DEX.svelte";
-    import TXHistory from "./history/TXHistory.svelte";
     import WebSocket from "./WebSocket.svelte";
+    import QuickGraph from "./history/QuickGraph.svelte";
 
     let allTokens
     let error
     let Chart
     let mainElement
-    let componentType = TXHistory
+    let componentType = QuickGraph
 
     window.fireChartJSLoad = chartConstructor => {
         Chart = chartConstructor

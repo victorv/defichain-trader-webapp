@@ -1,0 +1,123 @@
+<script>
+    import {onMount} from "svelte";
+    import {asDollars} from "../common/common";
+    import Percentage from "./Percentage.svelte";
+
+    export let Chart
+    export let items
+    export let estimates
+    export let fromTokenSymbol
+    export let toTokenSymbol
+
+    let canvasElement
+
+    function getRandomData(dateStr) {
+        let date = luxon.DateTime.fromRFC2822(dateStr);
+        const data = []
+        for (const estimate of estimates) {
+            date = date.plus({days: 1});
+            data.push({
+                x: date.valueOf(),
+                o: estimate[2],
+                h: Math.max(estimate[1], estimate[2]),
+                l: Math.min(estimate[2], estimate[1]),
+                c: estimate[1]
+            });
+        }
+        return data;
+    }
+
+    const data = {
+        datasets: [
+            {
+                label: `${fromTokenSymbol} to ${toTokenSymbol}`,
+                data: getRandomData('01 Apr 2017 00:00 Z'),
+            }
+        ]
+    }
+
+    const config = {
+        type: 'candlestick',
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    display: false
+                }
+            }
+        },
+        data
+    }
+
+    onMount(async () => {
+        new Chart(
+            canvasElement,
+            config
+        )
+    })
+</script>
+<div class="container">
+    <canvas bind:this={canvasElement}></canvas>
+    <div>
+        <table>
+            <tr>
+                <td>Swap</td>
+                <td>Price Impact</td>
+            </tr>
+            {#each items as item}
+                <tr>
+                    <td>
+                        <span>
+                            {item.tokenFrom} to {item.tokenTo}
+                        </span>
+                        <span>
+
+                        </span>
+                    </td>
+                    <td>
+                        <div class="hover-toggle">
+                            <div>
+                                <Percentage number={0.01}/>
+                            </div>
+                            <span>{asDollars(item.amountFrom)}</span>
+                        </div>
+                    </td>
+                </tr>
+            {/each}
+        </table>
+    </div>
+</div>
+
+<style>
+    .hover-toggle:hover div {
+        display: none;
+    }
+
+    .hover-toggle:hover span {
+        display: inline;
+    }
+
+    .hover-toggle span {
+        display: none;
+    }
+
+    span {
+        display: block;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: row;
+        height: 80vh;
+    }
+
+    .container div {
+        min-width: 200px;
+        width: 20%;
+    }
+
+    canvas {
+        max-width: 80%;
+    }
+</style>
