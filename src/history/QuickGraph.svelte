@@ -57,7 +57,7 @@
 </script>
 
 <form on:submit|preventDefault>
-    <FromToTokenFilter supportAnyToken={true}
+    <FromToTokenFilter supportAnyToken={false}
                        {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
     <label>
         History
