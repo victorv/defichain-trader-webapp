@@ -13,13 +13,11 @@
     let canvasElement
     let chart
 
-    function getRandomData(dateStr) {
-        let date = luxon.DateTime.fromRFC2822(dateStr);
+    function createDataPoints() {
         const data = []
         for (const estimate of estimates) {
-            date = date.plus({days: 1});
             data.push({
-                x: date.valueOf(),
+                x: parseInt(estimate[3], 10) * 1000,
                 o: estimate[2],
                 h: Math.max(estimate[1], estimate[2]),
                 l: Math.min(estimate[2], estimate[1]),
@@ -30,7 +28,7 @@
     }
 
     $: if (chart && estimates) {
-        chart.data.datasets[0].data = getRandomData('01 Apr 2017 00:00 Z')
+        chart.data.datasets[0].data = createDataPoints()
         chart.update()
     }
 
@@ -38,7 +36,7 @@
         datasets: [
             {
                 label: `${fromTokenSymbol} to ${toTokenSymbol}`,
-                data: getRandomData('01 Apr 2017 00:00 Z'),
+                data: createDataPoints(),
             }
         ]
     }
