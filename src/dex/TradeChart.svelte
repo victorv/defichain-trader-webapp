@@ -131,7 +131,6 @@
     }
 
     .container div {
-        min-width: 200px;
         width: 20%;
     }
 
