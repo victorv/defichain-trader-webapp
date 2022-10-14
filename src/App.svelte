@@ -31,7 +31,7 @@
             poolPairTokens.add(tokenSymbolsById[poolPair.idTokenB])
         }
 
-        allTokens = Array.from(poolPairTokens).sort()
+        allTokens = Array.from(poolPairTokens).filter(token => token !== 'BURN').sort()
     }
 
     onMount(async () => {
