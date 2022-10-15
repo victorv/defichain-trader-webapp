@@ -91,10 +91,13 @@
     <div>
         <table class="pure-table pure-table-striped">
             <tr>
-                <td>Swap</td>
+                <td>
+                    Swap
+                    <Help help="Represents a swap that is currently in the mempool"/>
+                </td>
                 <td>
                     Price Impact
-                    <Help help="Only trades with a price impact of at least 0.05% are displayed here"/>
+                    <Help help="Negative percentage means your trade will be more expensive. Positive percentage means your trade will be cheaper. +0% means it won't impact your trade. Hover over percentages to see the volume in USD."/>
                 </td>
             </tr>
             {#each mempool as item}
