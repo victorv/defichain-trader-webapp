@@ -10,20 +10,35 @@
     export let fromTokenSymbol
     export let toTokenSymbol
 
-    let canvasElement
-    let chart
-
-    $: if (chart && estimates) {
-        chart.data.datasets[0].data = createDataPoints()
-        chart.update()
+    function getRecentEstimates() {
+        return estimates.length < 120 ? estimates : estimates.slice(estimates.length - 119);
     }
 
-    $: mempool = items.sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact))
+    function getMempool() {
+        return items.sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact));
+    }
+
+    let canvasElement
+    let chart
+    let recentEstimates = getRecentEstimates()
+    let mempool = getMempool()
+
+    $: if (estimates) {
+        recentEstimates = getRecentEstimates()
+        if (chart) {
+            chart.data.datasets[0].data = createDataPoints()
+            chart.update()
+        }
+    }
+
+    $: if (items) {
+        mempool = getMempool()
+    }
 
     function createDataPoints() {
         const data = []
         let prevDataPoint
-        for (const estimate of estimates) {
+        for (const estimate of recentEstimates) {
 
             const o = prevDataPoint ? prevDataPoint.c : estimate[1]
             const c = estimate[1]
@@ -79,7 +94,7 @@
                 <td>Swap</td>
                 <td>
                     Price Impact
-                    <Help help="Only trades with a price impact of at least 0.05% are displayed here" />
+                    <Help help="Only trades with a price impact of at least 0.05% are displayed here"/>
                 </td>
             </tr>
             {#each mempool as item}
