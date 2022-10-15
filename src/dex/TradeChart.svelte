@@ -18,6 +18,8 @@
         chart.update()
     }
 
+    $: mempool = items.sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact))
+
     function createDataPoints() {
         const data = []
         let prevDataPoint
@@ -80,7 +82,7 @@
                     <Help help="Only trades with a price impact of at least 0.05% are displayed here" />
                 </td>
             </tr>
-            {#each items as item}
+            {#each mempool as item}
                 <tr>
                     <td>
                         <span>
