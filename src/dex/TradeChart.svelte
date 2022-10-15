@@ -13,6 +13,11 @@
     let canvasElement
     let chart
 
+    $: if (chart && estimates) {
+        chart.data.datasets[0].data = createDataPoints()
+        chart.update()
+    }
+
     function createDataPoints() {
         const data = []
         let prevDataPoint
@@ -32,11 +37,6 @@
             prevDataPoint = dataPoint
         }
         return data;
-    }
-
-    $: if (chart && estimates) {
-        chart.data.datasets[0].data = createDataPoints()
-        chart.update()
     }
 
     const data = {
