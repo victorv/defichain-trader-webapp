@@ -86,7 +86,7 @@
                     <td>
                         <div class="hover-toggle">
                             <div>
-                                <Percentage number={0.01}/>
+                                <Percentage number={item.priceImpact}/>
                             </div>
                             <span>{asDollars(item.amountFrom)}</span>
                         </div>
