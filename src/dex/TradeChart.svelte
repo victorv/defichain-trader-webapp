@@ -74,7 +74,7 @@
 <div class="container">
     <canvas bind:this={canvasElement}></canvas>
     <div>
-        <table class="pure-table">
+        <table class="pure-table pure-table-striped">
             <tr>
                 <td>Swap</td>
                 <td>
