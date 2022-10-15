@@ -15,14 +15,21 @@
 
     function createDataPoints() {
         const data = []
+        let prevDataPoint
         for (const estimate of estimates) {
-            data.push({
-                x: parseInt(estimate[3], 10) * 1000,
-                o: estimate[2],
-                h: Math.max(estimate[1], estimate[2]),
-                l: Math.min(estimate[2], estimate[1]),
-                c: estimate[1]
-            });
+
+            const o = prevDataPoint ? prevDataPoint.c : estimate[1]
+            const c = estimate[1]
+            const dataPoint = {
+                x: parseInt(estimate[2], 10) * 1000,
+                o,
+                h: Math.max(o, c),
+                l: Math.min(o, c),
+                c
+            }
+
+            data.push(dataPoint)
+            prevDataPoint = dataPoint
         }
         return data;
     }

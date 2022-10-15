@@ -63,7 +63,7 @@
                 const previousEstimate = estimates[estimates.length - 1][1]
                 if (Math.abs(estimate - previousEstimate) > estimate * 0.0001) {
                     let newEstimates = estimates.slice(1)
-                    newEstimates.push([0, estimate, previousEstimate, new Date().getTime() / 1000])
+                    newEstimates.push([0, estimate, new Date().getTime() / 1000])
                     estimates = newEstimates
                 }
             }
