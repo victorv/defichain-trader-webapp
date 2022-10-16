@@ -11,7 +11,8 @@
     export let toTokenSymbol
 
     function getRecentEstimates() {
-        return estimates.length < 120 ? estimates : estimates.slice(estimates.length - 119);
+        const max = Math.round(window.innerWidth / 40.0)
+        return estimates.length < max ? estimates : estimates.slice(estimates.length - (max - 1));
     }
 
     function getMempool() {
