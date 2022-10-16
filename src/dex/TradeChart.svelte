@@ -108,7 +108,12 @@
     <canvas bind:this={canvasElement}></canvas>
     <div>
         <header>
-            Upcoming block [1 {fromTokenSymbol} to {toTokenSymbol}]
+            <label>
+                <strong>Simulating
+                    <Help help="Price impact is calculated in relation to the swap below. This swap follows the rules set by a full node. If a direct path is available it takes precedence over any other paths."/>
+                </strong>
+                {asDollars(1000)} {fromTokenSymbol} to {toTokenSymbol}
+            </label>
             <label>
                 <strong>Impactful volume
                     <Help help="Total volume in USD of all impactful swaps in the mempool."/>
