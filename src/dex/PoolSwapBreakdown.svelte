@@ -9,8 +9,21 @@
 
     export let poolSwap
 
-    const withPath = poolSwap => {
-        const breakdown = poolSwap.breakdown[0]
+    let breakdownIndex = 0
+    let breakdown
+
+    const setBreakdown = index => {
+        if (hasItems(poolSwap.breakdown)) {
+            breakdownIndex = index
+            breakdown = withPath(poolSwap.breakdown[breakdownIndex])
+        }
+    }
+
+    $: {
+        setBreakdown(breakdownIndex)
+    }
+
+    const withPath = breakdown => {
         const tokens = [poolSwap.tokenFrom]
         for (const swap of breakdown.swaps) {
             tokens.push(swap.poolSymbol)
@@ -22,10 +35,30 @@
             path: tokens.join(' → ')
         }
     }
-
-    $: breakdown = hasItems(poolSwap.breakdown) ? withPath(poolSwap) : null
 </script>
 
+<header>
+    <ul>
+        {#each poolSwap.breakdown as option, index}
+            <li>
+                <button class="pure-button"
+                        on:click={() => setBreakdown(index)}
+                        class:info={index === breakdownIndex}>
+                    {#if index === 0}
+                        Best Path
+                    {:else if index === poolSwap.breakdown.length - 1}
+                        Worst Path
+                    {:else}
+                        Alternative Path ({index})
+                    {/if}
+                </button>
+                {#if index !== 0 && option.swaps.length === 1}
+                    <Help warning={true} help="Careful! If you perform a composite swap this is the path that will be selected for you. Manually perform each swap in Best Path to maximize your result."/>
+                {/if}
+            </li>
+        {/each}
+    </ul>
+</header>
 {#if breakdown}
     <table class="pure-table pure-table-striped">
         <tbody>
@@ -46,7 +79,8 @@
         <tr>
             <th role="rowheader">
                 Estimate
-                <Help warning={true} help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimated result. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
+                <Help warning={true}
+                      help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimated result. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
             </th>
             <td>
                 {breakdown.estimate} {poolSwap.tokenTo}
@@ -181,6 +215,18 @@
 {/if}
 
 <style>
+    button.info {
+        color: white;
+    }
+
+    ul {
+        list-style-type: none;
+        display: flex;
+        gap: 0.5rem;
+        padding: 0;
+        margin: 0;
+    }
+
     label {
         display: block;
     }
