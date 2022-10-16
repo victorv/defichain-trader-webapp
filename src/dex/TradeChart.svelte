@@ -11,7 +11,7 @@
     export let toTokenSymbol
 
     function getRecentEstimates() {
-        const max = Math.round(window.innerWidth / 40.0)
+        const max = Math.round(window.innerWidth / 20.0)
         return estimates.length < max ? estimates : estimates.slice(estimates.length - (max - 1));
     }
 
