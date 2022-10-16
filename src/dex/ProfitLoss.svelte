@@ -4,6 +4,7 @@
     import Percentage from "./Percentage.svelte";
 
     export let poolSwap
+    export let estimate
 </script>
 
-<Percentage number={calcProfitLoss(poolSwap)}/>
+<Percentage number={calcProfitLoss(poolSwap.desiredResult, estimate)}/>
