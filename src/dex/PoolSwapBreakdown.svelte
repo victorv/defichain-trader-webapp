@@ -9,22 +9,21 @@
 
     export let poolSwap
 
-    const withPath = breakdown => {
-        const tokens = []
+    const withPath = poolSwap => {
+        const breakdown = poolSwap.breakdown[0]
+        const tokens = [poolSwap.tokenFrom]
         for (const swap of breakdown.swaps) {
-            for (const token of [swap.tokenFrom, swap.tokenTo]) {
-                if (tokens.length === 0 || tokens[tokens.length - 1] !== token) {
-                    tokens.push(token)
-                }
-            }
+            tokens.push(swap.poolSymbol)
         }
+        tokens.push(poolSwap.tokenTo)
+
         return {
             ...breakdown,
             path: tokens.join(' → ')
         }
     }
 
-    $: breakdown = hasItems(poolSwap.breakdown) ? withPath(poolSwap.breakdown[0]) : null
+    $: breakdown = hasItems(poolSwap.breakdown) ? withPath(poolSwap) : null
 </script>
 
 {#if breakdown}
