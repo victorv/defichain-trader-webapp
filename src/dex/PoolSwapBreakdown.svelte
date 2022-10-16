@@ -53,7 +53,7 @@
                     {/if}
                 </button>
                 {#if index !== 0 && option.swaps.length === 1}
-                    <Help warning={true} help="Careful! If you perform a composite swap this is the path that will be selected for you. Manually perform each swap in Best Path to maximize your result."/>
+                    <Help warning={true} help="Careful! If you perform a composite swap this is the path that will be selected for you. You can take the Best Path by breaking your composite swap into multiple swaps that you perform manually in sequence. Check if the difference is worth it to you and note that swaps from <= 0.00001 are currently inaccurate."/>
                 {/if}
             </li>
         {/each}
