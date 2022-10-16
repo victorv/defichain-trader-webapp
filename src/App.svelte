@@ -2,22 +2,17 @@
 <script>
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
-    import DEX from "./dex/DEX.svelte";
-    import TXHistory from "./history/TXHistory.svelte";
     import WebSocket from "./WebSocket.svelte";
+    import QuickGraph from "./history/QuickGraph.svelte";
 
     let allTokens
     let error
     let Chart
     let mainElement
-    let componentType = TXHistory
+    let componentType = QuickGraph
 
     window.fireChartJSLoad = chartConstructor => {
         Chart = chartConstructor
-    }
-
-    const onLogin = () => {
-        componentType = DEX
     }
 
     const init = async () => {
@@ -36,7 +31,7 @@
             poolPairTokens.add(tokenSymbolsById[poolPair.idTokenB])
         }
 
-        allTokens = Array.from(poolPairTokens).sort()
+        allTokens = Array.from(poolPairTokens).filter(token => token !== 'BURN').sort()
     }
 
     onMount(async () => {
@@ -63,7 +58,7 @@
 
 <main bind:this={mainElement} tabindex="1">
     {#if allTokens}
-        <svelte:component this={componentType} {allTokens} {Chart} {onLogin}/>
+        <svelte:component this={componentType} {allTokens} {Chart}/>
     {:else if error}
         <div class="message">
             <p class="error">{error}</p>

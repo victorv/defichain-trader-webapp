@@ -1,5 +1,6 @@
 <script>
     import {onMount} from "svelte";
+    import {asDollars} from "../common/common";
 
     let filterType = 'bought-recently'
 
@@ -24,13 +25,6 @@
     async function changeFilterType(newFilterType) {
         filterType = newFilterType
         await refresh()
-    }
-
-    const asDollars = num => {
-        return new Intl.NumberFormat(`en-US`, {
-            currency: `USD`,
-            style: 'currency',
-        }).format(num)
     }
 
     onMount(async () => {
