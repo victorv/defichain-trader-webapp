@@ -73,7 +73,7 @@
                 Profit/loss
             </th>
             <td>
-                <ProfitLoss {poolSwap}/>
+                <ProfitLoss {poolSwap} estimate={breakdown.estimate}/>
             </td>
         </tr>
         <tr>

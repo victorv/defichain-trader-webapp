@@ -94,7 +94,7 @@
                             class="pure-button">
                         <Icon icon="graph"/>
                     </button>
-                    <ProfitLoss {poolSwap}/>
+                    <ProfitLoss {poolSwap} estimate={poolSwap.estimate}/>
                 </td>
             </tr>
             {#if poolSwap.graph && hasItems(poolSwap.estimates)}
