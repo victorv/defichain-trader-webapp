@@ -11,8 +11,8 @@
     export let Chart
 
     let abortController = new AbortController()
-    let fromTokenSymbol = 'USDT'
-    let toTokenSymbol = 'USDC'
+    let fromTokenSymbol = 'DFI'
+    let toTokenSymbol = 'BTC'
     let poolSwap
     let estimates
     let graphType = 'trades'
