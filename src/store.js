@@ -71,6 +71,7 @@ export const setGraph = (fromToken, toToken) => {
             toToken
         },
     })
+    mempool.set([])
 }
 
 export const removePoolswap = swap => {
