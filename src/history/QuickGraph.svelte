@@ -91,6 +91,7 @@
     </label>
     <Help help="Both graphs are live. Graphs are not updated until a price difference of at least 0.01% has occurred."/>
 </form>
+<div class="warning">Live graph updates are not working correctly at the moment. The calculation for historic estimates and live estimates do not align.</div>
 {#if hasItems(estimates)}
     {#if graphType == 'trades'}
         <TradeChart {items} {Chart} {estimates} {fromTokenSymbol} {toTokenSymbol}/>
