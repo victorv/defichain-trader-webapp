@@ -25,16 +25,17 @@
             <td>
                 {token["token_symbol"]}
             </td>
-            <td class:red={token["net_usd"] < 0.0} class:green={token["net_usd"] >= 0.0}>
+            <td class:red={token["net_usd"] < 0.0} class:green={token["net_usd"] >= 0.0}
+                title="{token['net']} {token['token_symbol']}">
                 {asDollars(token["net_usd"])}
             </td>
-            <td>
+            <td title="{token['bought']} {token['token_symbol']}">
                 {asDollars(token["bought_usd"])}
             </td>
             <td>
                 {token["bought_tx_count"]}
             </td>
-            <td>
+            <td title="{token['sold']} {token['token_symbol']}">
                 {asDollars(token["sold_usd"])}
             </td>
             <td>
