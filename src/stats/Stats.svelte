@@ -6,23 +6,29 @@
         'BoughtSold': BoughtSold,
     }
     let statType = 'BoughtSold'
+    let period = 120
 
     let error
     let items
 
-    async function fetchTokensStatistics() {
+    async function fetchStats() {
         error = null
         items = null
 
-        const response = await fetch(`/stats?template=bought_sold&period=1200000`)
+        const response = await fetch(`/stats?template=bought_sold&period=${period}`)
         items = await response.json()
     }
 
     async function refresh() {
-        await fetchTokensStatistics().catch(e => {
+        await fetchStats().catch(e => {
             error = `Unable to fetch results: ${e.message}`
             throw e
         })
+    }
+
+    async function changePeriod(e) {
+        period = +e.target.value
+        await refresh()
     }
 
     async function changeStatType(e) {
@@ -40,8 +46,14 @@
         <select class="pure-select" on:change={changeStatType}>
             <option value="BoughtSold">Bought/Sold</option>
         </select>
-        <select class="pure-select">
-            <option>Everything</option>
+        <select class="pure-select" on:change={changePeriod}>
+            <option value="120">1 hour</option>
+            <option value="1440">12 hours</option>
+            <option value="2880">1 day</option>
+            <option value="20160">1 week</option>
+            <option value="87600">1 month</option>
+            <option value="1051200">1 year</option>
+            <option value="900000000">Everything</option>
         </select>
         <button on:click={refresh} type="button" class="pure-button">Refresh</button>
     </form>
