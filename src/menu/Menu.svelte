@@ -44,7 +44,7 @@
             <li class:pure-menu-selected={componentType === TokenStats}
                 on:click={() => onChange(TokenStats)}
                 class="pure-menu-item">
-                <a href="#bought_sold" class="pure-menu-link">Bought/Sold</a>
+                <a href="#bought_sold" class="pure-menu-link">Stats</a>
             </li>
             <li class="pure-menu-item">
                 <a href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank" class="pure-menu-link">

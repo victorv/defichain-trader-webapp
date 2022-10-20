@@ -11,8 +11,11 @@
         error = null
         tokens = null
 
-        const response = await fetch(`/tokens/${filterType}`)
+        const response = await fetch(`/stats?template=bought_sold&period=1200000`)
         tokens = await response.json()
+        tokens = tokens.sort((a, b) => {
+            return Math.abs(b["net_usd"]) - Math.abs(a["net_usd"])
+        })
     }
 
     async function refresh() {
@@ -34,49 +37,47 @@
 
 {#if tokens && tokens.length}
     <div class="container">
-        <form on:submit|preventDefault>
-            <label>
-                Bought
-                <input on:click={() => changeFilterType('bought-recently')} bind:group={filterType} value={'bought-recently'} type="radio" name="filter-types"/>
-            </label>
-            <label>
-                Sold
-                <input on:click={() => changeFilterType('sold-recently')} bind:group={filterType} value={'sold-recently'} type="radio" name="filter-types"/>
-                during the most recent 120 blocks (1 hour on average)
-            </label>
-            <button on:click={refresh} type="button">Refresh</button>
+        <form on:submit|preventDefault class="pure-form">
+            <select class="pure-select">
+                <option>Bought/Sold</option>
+            </select>
+            <select class="pure-select">
+                <option>Everything</option>
+            </select>
+            <button on:click={refresh} type="button" class="pure-button">Refresh</button>
         </form>
-
     </div>
     <table class="pure-table pure-table-striped">
         <thead>
         <tr>
             <th>Token</th>
-            <th>{filterType} USD</th>
+            <th>Net</th>
+            <th>Bought</th>
             <th>TX Count</th>
-            <th>Most Recent Block Height</th>
-            <th>{filterType}</th>
+            <th>Sold</th>
+            <th>TX Count</th>
 
         </tr>
         </thead>
         {#each tokens as token}
             <tr>
                 <td>
-                    {token.tokenSymbol}
+                    {token["token_symbol"]}
+                </td>
+                <td class:red={token["net_usd"] < 0.0} class:green={token["net_usd"] >= 0.0}>
+                    {asDollars(token["net_usd"])}
                 </td>
                 <td>
-                    {asDollars(token.aggregateUSD)}
+                    {asDollars(token["bought_usd"])}
                 </td>
                 <td>
-                    {token.txCount}
+                    {token["bought_tx_count"]}
                 </td>
                 <td>
-                    <a href="https://defiscan.live/blocks/{token.mostRecentBlockHeight}" target="_blank">
-                        {token.mostRecentBlockHeight}
-                    </a>
+                    {asDollars(token["sold_usd"])}
                 </td>
                 <td>
-                    {token.aggregate} {token.tokenSymbol}
+                    {token["sold_tx_count"]}
                 </td>
             </tr>
         {/each}
@@ -96,6 +97,14 @@
 {/if}
 
 <style>
+    .green {
+        color: green;
+    }
+
+    .red {
+        color: red;
+    }
+
     form {
         padding: 0.5rem;
     }
