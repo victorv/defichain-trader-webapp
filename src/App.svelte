@@ -3,13 +3,13 @@
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
-    import QuickGraph from "./history/QuickGraph.svelte";
+    import Stats from "./stats/Stats.svelte";
 
     let allTokens
     let error
     let Chart
     let mainElement
-    let componentType = QuickGraph
+    let componentType = Stats
 
     window.fireChartJSLoad = chartConstructor => {
         Chart = chartConstructor
