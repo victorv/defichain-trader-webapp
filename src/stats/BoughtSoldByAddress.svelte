@@ -29,19 +29,19 @@
     {#each items as item}
         <tr>
             <td>
-                <a href="#">{item["dc_address"]}</a>
+                {item["dc_address"]}
             </td>
-            <td title="{item['total']} {item['token_symbol']}">
+            <td>
                 {asDollars(item["total"])}
             </td>
             <td class:red={item["net_usd"] < 0.0} class:green={item["net_usd"] >= 0.0}
                 title="{item['net']} {item['token_symbol']}">
                 {asDollars(item["net_usd"])}
             </td>
-            <td title="{item['bought']} {item['token_symbol']}">
+            <td>
                 {asDollars(item["bought_usd"])}
             </td>
-            <td title="{item['sold']} {item['token_symbol']}">
+            <td>
                 {asDollars(item["sold_usd"])}
             </td>
             <td>
