@@ -6,8 +6,13 @@
     export let supportAnyToken
 
     let tokens
+
+    function getTokens() {
+        return supportAnyToken ? ['Any'].concat(allTokens) : allTokens;
+    }
+
     $: {
-        tokens = allTokens
+        tokens = getTokens()
     }
 
     let fromTokenSymbol
@@ -27,12 +32,12 @@
         }
 
         if (!filterString) {
-            tokens = allTokens
+            tokens = getTokens()
             return
         }
 
         const test = filterString.toLowerCase()
-        tokens = allTokens.filter(token => {
+        tokens = getTokens().filter(token => {
             return token.toLowerCase().indexOf(test) === 0
         })
     }
@@ -59,12 +64,6 @@
 </div>
 <div class="pure-menu">
     <ul class="pure-menu-list">
-        {#if supportAnyToken}
-            <li on:click={() => onTokenSelected('Any')}
-                class="pure-menu-item">
-                <a href="#" class="pure-menu-link">Any</a>
-            </li>
-        {/if}
         {#each tokens as token}
             <li on:click={() => onTokenSelected(token)}
                 class="pure-menu-item">

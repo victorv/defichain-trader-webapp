@@ -1,7 +1,7 @@
 <svelte:options immutable/>
 <script>
     import DEX from "../dex/DEX.svelte";
-    import TokenStats from "../dex/TokenStats.svelte";
+    import Stats from "../stats/Stats.svelte";
     import TXHistory from "../history/TXHistory.svelte";
     import Mempool from "../mempool/Mempool.svelte";
     import QuickGraph from "../history/QuickGraph.svelte";
@@ -41,10 +41,10 @@
                 <a href="#dex" class="pure-menu-link">Your Pool Swaps</a>
             </li>
 
-            <li class:pure-menu-selected={componentType === TokenStats}
-                on:click={() => onChange(TokenStats)}
+            <li class:pure-menu-selected={componentType === Stats}
+                on:click={() => onChange(Stats)}
                 class="pure-menu-item">
-                <a href="#bought_sold" class="pure-menu-link">Bought/Sold</a>
+                <a href="#bought_sold" class="pure-menu-link">Stats</a>
             </li>
             <li class="pure-menu-item">
                 <a href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank" class="pure-menu-link">
