@@ -1,23 +1,42 @@
 <script>
     import {onMount} from "svelte";
     import BoughtSold from "./BoughtSold.svelte";
-    import TXCountByAddress from "./TXCountByAddress.svelte";
+    import BoughtSoldByAddress from "./BoughtSoldByAddress.svelte";
 
-    const components = {
-        'bought_sold': BoughtSold,
-        'tx_count_by_address': TXCountByAddress
-    }
-    let statType = 'bought_sold'
+    export let allTokens
+
+    const stats = [
+        { id: 'bought_sold', label: 'Bought/Sold', component: BoughtSold},
+        { id: 'bought_sold_by_address', label: 'Bought/Sold - Address', component: BoughtSoldByAddress}
+    ]
+
+    let stat = stats[1]
     let period = 120
 
     let error
     let items
 
+    let fromTokenSymbol
+    let toTokenSymbol
+
+    const onTokenSelectionChanged = async selection => {
+        fromTokenSymbol = selection.fromTokenSymbol
+        toTokenSymbol = selection.toTokenSymbol
+        await refresh()
+    }
+
     async function fetchStats() {
         error = null
         items = null
 
-        const response = await fetch(`/stats?template=${statType}&period=${period}`)
+        let url = `/stats?template=${stat.id}&period=${period}`
+        if (fromTokenSymbol && fromTokenSymbol !== 'Any') {
+            url += `&tokenFrom=${fromTokenSymbol}`
+        }
+        if (toTokenSymbol && toTokenSymbol !== 'Any') {
+            url += `&tokenTo=${toTokenSymbol}`
+        }
+        const response = await fetch(url)
         items = await response.json()
     }
 
@@ -34,7 +53,7 @@
     }
 
     async function changeStatType(e) {
-        statType = e.target.value
+        stat = stats.find(stat => stat.id === e.target.value)
         await refresh()
     }
 
@@ -45,9 +64,10 @@
 
 <div class="container">
     <form on:submit|preventDefault class="pure-form">
-        <select class="pure-select" on:change={changeStatType}>
-            <option value="bought_sold">Bought/Sold</option>
-            <option value="tx_count_by_address">TX count by address</option>
+        <select class="pure-select" on:change={changeStatType} bind:value={stat.id}>
+            {#each stats as stat}
+                <option value={stat.id}>{stat.label}</option>
+            {/each}
         </select>
         <select class="pure-select" on:change={changePeriod}>
             <option value="120">1 hour</option>
@@ -62,7 +82,7 @@
     </form>
 </div>
 {#if items && items.length}
-    <svelte:component this={components[statType]} {items}/>
+    <svelte:component this={stat.component} {items} {allTokens} {onTokenSelectionChanged} {fromTokenSymbol} {toTokenSymbol}/>
 {:else if items}
     <div class="message">
         <p class="info">0 results found</p>
