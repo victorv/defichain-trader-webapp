@@ -1,11 +1,13 @@
 <script>
     import {onMount} from "svelte";
     import BoughtSold from "./BoughtSold.svelte";
+    import TXCountByAddress from "./TXCountByAddress.svelte";
 
     const components = {
-        'BoughtSold': BoughtSold,
+        'bought_sold': BoughtSold,
+        'tx_count_by_address': TXCountByAddress
     }
-    let statType = 'BoughtSold'
+    let statType = 'bought_sold'
     let period = 120
 
     let error
@@ -15,7 +17,7 @@
         error = null
         items = null
 
-        const response = await fetch(`/stats?template=bought_sold&period=${period}`)
+        const response = await fetch(`/stats?template=${statType}&period=${period}`)
         items = await response.json()
     }
 
@@ -44,7 +46,8 @@
 <div class="container">
     <form on:submit|preventDefault class="pure-form">
         <select class="pure-select" on:change={changeStatType}>
-            <option value="BoughtSold">Bought/Sold</option>
+            <option value="bought_sold">Bought/Sold</option>
+            <option value="tx_count_by_address">TX count by address</option>
         </select>
         <select class="pure-select" on:change={changePeriod}>
             <option value="120">1 hour</option>

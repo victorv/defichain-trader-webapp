@@ -20,26 +20,26 @@
 
     </tr>
     </thead>
-    {#each sortedItems as token}
+    {#each sortedItems as item}
         <tr>
             <td>
-                {token["token_symbol"]}
+                {item["token_symbol"]}
             </td>
-            <td class:red={token["net_usd"] < 0.0} class:green={token["net_usd"] >= 0.0}
-                title="{token['net']} {token['token_symbol']}">
-                {asDollars(token["net_usd"])}
+            <td class:red={item["net_usd"] < 0.0} class:green={item["net_usd"] >= 0.0}
+                title="{item['net']} {item['token_symbol']}">
+                {asDollars(item["net_usd"])}
             </td>
-            <td title="{token['bought']} {token['token_symbol']}">
-                {asDollars(token["bought_usd"])}
-            </td>
-            <td>
-                {token["bought_tx_count"]}
-            </td>
-            <td title="{token['sold']} {token['token_symbol']}">
-                {asDollars(token["sold_usd"])}
+            <td title="{item['bought']} {item['token_symbol']}">
+                {asDollars(item["bought_usd"])}
             </td>
             <td>
-                {token["sold_tx_count"]}
+                {item["bought_tx_count"]}
+            </td>
+            <td title="{item['sold']} {item['token_symbol']}">
+                {asDollars(item["sold_usd"])}
+            </td>
+            <td>
+                {item["sold_tx_count"]}
             </td>
         </tr>
     {/each}
