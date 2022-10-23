@@ -5,6 +5,7 @@
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
+    import {screenStore} from "../store";
 
     export let allTokens
     export let refresh
@@ -19,6 +20,9 @@
     let toTokenSymbol
 
     let selectedTX
+    let screen
+
+    screenStore.subscribe(newScreen => screen = newScreen)
 
     async function update() {
         const filter = {}
@@ -92,13 +96,15 @@
     <table class="pure-table pure-table-striped">
         <thead>
         <tr>
-            <th>Transaction ID</th>
+            <th>TX ID</th>
             <th>Block</th>
-            <th>Fee</th>
             <th>Input Amount</th>
             <th>Output Amount</th>
-            <th>From</th>
-            <th>To</th>
+            {#if screen.large}
+                <th>Fee</th>
+                <th>From</th>
+                <th>To</th>
+            {/if}
         </tr>
         </thead>
         {#each poolSwaps as tx}
@@ -110,9 +116,11 @@
                             class="pure-button info-button">
                         <Icon icon="info"/>
                     </button>
-                    <a href="https://defiscan.live/transactions/{tx.txID}" target="_blank">
-                        {limitLength(tx.txID)}
-                    </a>
+                    {#if screen.large}
+                        <a href="https://defiscan.live/transactions/{tx.txID}" target="_blank">
+                            {limitLength(tx.txID)}
+                        </a>
+                    {/if}
                 </td>
                 <td>
                     {#if tx.block}
@@ -122,9 +130,6 @@
                     {:else}
                         First seen: {tx.mempool.blockHeight}
                     {/if}
-                </td>
-                <td>
-                    {tx.fee}
                 </td>
                 <td>
                     <button on:click={() => toggleEstimateFromTo(tx)}
@@ -153,20 +158,25 @@
                         N/A {tx.tokenTo}
                     {/if}
                 </td>
-                <td>
-                    <a href="https://defiscan.live/address/{tx.from}" target="_blank">
-                        {limitLength(tx.from)}
-                    </a>
-                </td>
-                <td>
-                    {#if tx.from != tx.to}
-                        <a href="https://defiscan.live/address/{tx.to}" target="_blank">
-                            {limitLength(tx.to)}
+                {#if screen.large}
+                    <td>
+                        {tx.fee}
+                    </td>
+                    <td>
+                        <a href="https://defiscan.live/address/{tx.from}" target="_blank">
+                            {limitLength(tx.from)}
                         </a>
-                    {:else}
-                        &lt;from address&gt;
-                    {/if}
-                </td>
+                    </td>
+                    <td>
+                        {#if tx.from != tx.to}
+                            <a href="https://defiscan.live/address/{tx.to}" target="_blank">
+                                {limitLength(tx.to)}
+                            </a>
+                        {:else}
+                            &lt;from address&gt;
+                        {/if}
+                    </td>
+                {/if}
             </tr>
             {#if tx === selectedTX}
                 <tr>
