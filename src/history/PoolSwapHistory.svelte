@@ -6,7 +6,6 @@
     import {hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {screenStore} from "../store";
-    import Limit from "../common/Limit.svelte";
 
     export let allTokens
     export let refresh
@@ -114,9 +113,9 @@
                         <Icon icon="info"/>
                     </button>
                     {#if screen.large}
-                        <a href="https://defiscan.live/transactions/{tx.txID}" target="_blank">
-                            <Limit text={tx.txID}/>
-                        </a>
+                        <a class="limited"
+                           href="https://defiscan.live/transactions/{tx.txID}"
+                           target="_blank">{tx.txID}</a>
                     {/if}
                 </td>
                 <td>
@@ -160,15 +159,15 @@
                         {tx.fee}
                     </td>
                     <td>
-                        <a href="https://defiscan.live/address/{tx.from}" target="_blank">
-                            <Limit text={tx.from}/>
-                        </a>
+                        <a class="limited"
+                           href="https://defiscan.live/address/{tx.from}"
+                           target="_blank">{tx.from}</a>
                     </td>
                     <td>
                         {#if tx.from != tx.to}
-                            <a href="https://defiscan.live/address/{tx.to}" target="_blank">
-                                <Limit text={tx.to}/>
-                            </a>
+                            <a class="limited"
+                               href="https://defiscan.live/address/{tx.to}"
+                               target="_blank">{tx.to}</a>
                         {:else}
                             &lt;from address&gt;
                         {/if}
