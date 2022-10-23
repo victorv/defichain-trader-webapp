@@ -10,12 +10,12 @@
         if (localStorage) {
             let uuid = localStorage.getItem("uuid")
             if (!uuid) {
-                uuid = crypto.randomUUID()
+                uuid = `${Math.random()}`
             }
             localStorage.setItem("uuid", uuid)
             return uuid
         }
-        return crypto.randomUUID()
+        return `${Math.random()}`
     }
 
     uuid = getUUID()
