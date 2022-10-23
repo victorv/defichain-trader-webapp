@@ -6,6 +6,7 @@
     import {hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {screenStore} from "../store";
+    import Limit from "../common/Limit.svelte";
 
     export let allTokens
     export let refresh
@@ -39,10 +40,6 @@
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
         await update()
-    }
-
-    const limitLength = s => {
-        return `${s.substring(0, 9)}...`
     }
 
     const toggleTXDetails = async tx => {
@@ -118,7 +115,7 @@
                     </button>
                     {#if screen.large}
                         <a href="https://defiscan.live/transactions/{tx.txID}" target="_blank">
-                            {limitLength(tx.txID)}
+                            <Limit text={tx.txID}/>
                         </a>
                     {/if}
                 </td>
@@ -164,13 +161,13 @@
                     </td>
                     <td>
                         <a href="https://defiscan.live/address/{tx.from}" target="_blank">
-                            {limitLength(tx.from)}
+                            <Limit text={tx.from}/>
                         </a>
                     </td>
                     <td>
                         {#if tx.from != tx.to}
                             <a href="https://defiscan.live/address/{tx.to}" target="_blank">
-                                {limitLength(tx.to)}
+                                <Limit text={tx.to}/>
                             </a>
                         {:else}
                             &lt;from address&gt;
