@@ -1,5 +1,6 @@
 <script>
     import TokenFilter from "./TokenFilter.svelte";
+    import Icon from "../common/Icon.svelte";
 
     export let allTokens
     export let onTokenSelectionChanged
@@ -17,6 +18,18 @@
                 toTokenSymbol
             }
         )
+    }
+
+    const swapTokenSelection = () => {
+        if (fromTokenSymbol === toTokenSymbol) {
+            return
+        }
+        console.log('swap')
+        const from = toTokenSymbol
+        const to = fromTokenSymbol
+        fromTokenSymbol = from
+        toTokenSymbol = to
+        fireUpdate()
     }
 
     const onFromTokenSelected = token => {
@@ -52,8 +65,10 @@
             {/if}
         </button>
     </div>
+    <a href="#" on:click|preventDefault={() => swapTokenSelection()} title="to - click to swap 'from' and 'to' symbols">
+        <Icon icon="exchange"/>
+    </a>
     <div>
-        <label for="to-token-button">to</label>
         <button on:click={() => onTokenSelected = onToTokenSelected}
                 class:pure-button-primary={onTokenSelected === onToTokenSelected}
                 disabled={onTokenSelected}
@@ -83,5 +98,9 @@
 
     .from-to label {
         display: inline;
+    }
+
+    a:hover {
+        color: blue;
     }
 </style>

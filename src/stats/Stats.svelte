@@ -81,9 +81,8 @@
         <button on:click={refresh} type="button" class="pure-button">Refresh</button>
     </form>
 </div>
-{#if items && items.length}
+{#if items}
     <svelte:component this={stat.component} {items} {allTokens} {onTokenSelectionChanged} {fromTokenSymbol} {toTokenSymbol}/>
-{:else if items}
     <div class="message">
         <p class="info">0 results found</p>
     </div>
