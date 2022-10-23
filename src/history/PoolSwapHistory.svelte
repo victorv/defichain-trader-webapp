@@ -95,14 +95,8 @@
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
             <label>
                 Sort
-                <select on:change={changeSortOrder}>
+                <select on:change={changeSortOrder} disabled>
                     <option value="">Most Recent - Old</option>
-                    <option disabled value="fee_asc">Fee - ascending</option>
-                    <option disabled value="fee_desc">Fee - descending</option>
-                    <option disabled value="input_amount_asc">Input Amount - ascending</option>
-                    <option disabled value="input_amount_desc">Input Amount - descending</option>
-                    <option disabled value="output_amount_asc">Output Amount - ascending</option>
-                    <option disabled value="output_amount_desc">Output Amount - descending</option>
                 </select>
             </label>
         </fieldset>
