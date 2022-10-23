@@ -83,9 +83,11 @@
 </div>
 {#if items}
     <svelte:component this={stat.component} {items} {allTokens} {onTokenSelectionChanged} {fromTokenSymbol} {toTokenSymbol}/>
-    <div class="message">
-        <p class="info">0 results found</p>
-    </div>
+    {#if items.length === 0}
+        <div class="message">
+            <p class="info">0 results found</p>
+        </div>
+    {/if}
 {:else if error}
     <div class="message">
         <p class="error">{error}</p>
