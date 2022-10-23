@@ -113,7 +113,7 @@
                     <button on:click={() => toggleTXDetails(tx)}
                             class:info={tx === selectedTX}
                             type="button"
-                            class="pure-button info-button">
+                            class="pure-button info-button icon">
                         <Icon icon="info"/>
                     </button>
                     {#if screen.large}
@@ -135,8 +135,8 @@
                     <button on:click={() => toggleEstimateFromTo(tx)}
                             class:info={swapFromTo && swapFromTo.tx === tx}
                             type="button"
-                            class="pure-button info-button">
-                        <Icon icon="info"/>
+                            class="pure-button info-button icon">
+                        <Icon icon="exchange"/>
                     </button>
                     {tx.amountFrom} {tx.tokenFrom}
                 </td>
@@ -145,8 +145,8 @@
                             disabled={!tx.amountTo}
                             class:info={swapToFrom && swapToFrom.tx === tx}
                             type="button"
-                            class="pure-button info-button">
-                        <Icon icon="info"/>
+                            class="pure-button info-button icon">
+                        <Icon icon="exchange"/>
                     </button>
                     {#if tx.amountTo}
                         {tx.amountTo} {tx.tokenTo}

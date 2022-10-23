@@ -46,3 +46,7 @@ th.banner {
 	background: #333;
 	color: white;
 }
+
+.pure-button.icon {
+	padding: 1px;
+}
