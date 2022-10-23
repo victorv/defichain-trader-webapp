@@ -17,7 +17,6 @@
     let swapToFrom
     let fromTokenSymbol
     let toTokenSymbol
-    let sortOrder
 
     let selectedTX
 
@@ -28,9 +27,6 @@
         }
         if (toTokenSymbol && toTokenSymbol != 'Any') {
             filter.toTokenSymbol = toTokenSymbol
-        }
-        if (sortOrder) {
-            filter.sort = sortOrder
         }
         await refresh(filter)
     }
@@ -81,11 +77,6 @@
         swapToFrom = await response.json()
         swapToFrom.tx = swap
     }
-
-    const changeSortOrder = async e => {
-        sortOrder = e.target.value
-        await update()
-    }
 </script>
 
 {#if filter !== false}
@@ -93,12 +84,6 @@
         <fieldset>
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-            <label>
-                Sort
-                <select on:change={changeSortOrder} disabled>
-                    <option value="">Most Recent - Old</option>
-                </select>
-            </label>
         </fieldset>
     </form>
 {/if}
