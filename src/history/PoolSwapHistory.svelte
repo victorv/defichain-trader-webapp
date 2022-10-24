@@ -130,9 +130,7 @@
                         </button>
                     {/if}
                     {#if tx.block}
-                        <a href="https://defiscan.live/blocks/{tx.block.blockHeight}" target="_blank">
-                            {tx.block.blockHeight}
-                        </a>
+                        {tx.block.blockHeight}
                     {:else}
                         First seen: {tx.mempool.blockHeight}
                     {/if}
