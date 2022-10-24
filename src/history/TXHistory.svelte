@@ -2,6 +2,7 @@
     import PoolSwapHistory from "./PoolSwapHistory.svelte";
     import {onMount} from "svelte";
     import Help from "../common/Help.svelte";
+    import Icon from "../common/Icon.svelte";
 
     export let allTokens
 
@@ -102,7 +103,9 @@
             <option>Pool Swaps</option>
         </select>
         <input bind:value={filterString} type="text" placeholder="TX ID/Address/Block Hash"/>
-        <button class="pure-button" type="submit">Refresh</button>
+        <button class="pure-button icon" type="submit">
+            <Icon icon="search"/>
+        </button>
     </fieldset>
 </form>
 

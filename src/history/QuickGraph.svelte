@@ -6,6 +6,7 @@
     import TradeChart from "../dex/TradeChart.svelte";
     import {graphStore, mempool, setGraph} from "../store";
     import Help from "../common/Help.svelte";
+    import Limit from "../common/Limit.svelte";
 
     export let allTokens
     export let Chart
@@ -76,22 +77,27 @@
     })
 </script>
 
-<form on:submit|preventDefault>
-    <FromToTokenFilter supportAnyToken={false}
-                       {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-    <label>
-        History
-        <input on:click={() => changeGraph('history')} bind:group={graphType} value={'history'} type="radio"
-               name="graph-types"/>
-    </label>
-    <label>
-        Recent Trades
-        <input on:click={() => changeGraph('trades')} bind:group={graphType} value={'trades'} type="radio"
-               name="graph-types"/>
-    </label>
-    <Help help="Both graphs are live. Graphs are not updated until a price difference of at least 0.01% has occurred."/>
+<form class="pure-form" on:submit|preventDefault>
+    <fieldset>
+        <FromToTokenFilter supportAnyToken={false}
+                           {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+        <label>
+            History
+            <input on:click={() => changeGraph('history')} bind:group={graphType} value={'history'} type="radio"
+                   name="graph-types"/>
+        </label>
+        <label>
+            Recent Trades
+            <input on:click={() => changeGraph('trades')} bind:group={graphType} value={'trades'} type="radio"
+                   name="graph-types"/>
+        </label>
+        <Help help="Both graphs are live. Graphs are not updated until a price difference of at least 0.01% has occurred."/>
+        <strong>
+            Known issues
+            <Help help="Live graph updates are not working correctly at the moment. The calculation for historic estimates and live estimates do not align."/>
+        </strong>
+    </fieldset>
 </form>
-<div class="warning">Live graph updates are not working correctly at the moment. The calculation for historic estimates and live estimates do not align.</div>
 {#if hasItems(estimates)}
     {#if graphType == 'trades'}
         <TradeChart {items} {Chart} {estimates} {fromTokenSymbol} {toTokenSymbol}/>
@@ -99,3 +105,9 @@
         <PoolSwapGraph {Chart} {estimates} {poolSwap}/>
     {/if}
 {/if}
+
+<style>
+    form {
+        padding: 0.2rem 0 0 0.2rem;
+    }
+</style>

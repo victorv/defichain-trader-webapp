@@ -3,12 +3,17 @@
     import {asDollars} from "../common/common";
     import Percentage from "./Percentage.svelte";
     import Help from "../common/Help.svelte";
+    import {screenStore} from "../store";
 
     export let Chart
     export let items
     export let estimates
     export let fromTokenSymbol
     export let toTokenSymbol
+
+    let screen
+
+    screenStore.subscribe(newScreen => screen = newScreen)
 
     function getRecentEstimates() {
         const max = Math.round(window.innerWidth / 20.0)
@@ -105,22 +110,9 @@
         )
     })
 </script>
-<div class="container">
-    <canvas bind:this={canvasElement}></canvas>
+<div class="container" class:large={screen.large} class:small={screen.small}>
     <div>
         <header>
-            <label>
-                <strong>Simulating
-                    <Help help="Price impact is calculated in relation to the swap below. This swap follows the rules set by a full node. If a direct path is available it takes precedence over any other paths."/>
-                </strong>
-                {asDollars(1000)} {fromTokenSymbol} to {toTokenSymbol}
-            </label>
-            <label>
-                <strong>Impactful volume
-                    <Help help="Total volume in USD of all impactful swaps in the mempool."/>
-                </strong>
-                {asDollars(volume)}
-            </label>
             <label>
                 <strong>Price impact
                     <Help help="The minimum number represents the case where only trades that make your trade more expensive go through. The maximum number represents the case where only trades that make your trade less expensive go through. N/A indicates that there are no impactful swaps in the mempool."/>
@@ -136,8 +128,12 @@
                 {:else}
                     N/A
                 {/if}
+                {asDollars(volume)}
             </label>
         </header>
+        <canvas bind:this={canvasElement}></canvas>
+    </div>
+    <div>
         <table class="pure-table pure-table-striped">
             <tr>
                 <td>
@@ -173,14 +169,6 @@
 </div>
 
 <style>
-    header label {
-        display: block;
-    }
-
-    header label strong {
-        display: block;
-    }
-
     table {
         table-layout: fixed;
     }
@@ -197,13 +185,23 @@
         display: flex;
         flex-direction: row;
         height: 80vh;
+        overflow: hidden;
     }
 
-    .container div {
-        width: 20%;
+    .container div:first-child {
+        width: 100vw;
     }
 
-    canvas {
-        max-width: 80%;
+    .large div:first-child {
+        width: 75vw;
+    }
+
+    .container div:last-child {
+        display: none;
+    }
+
+    .large div:last-child {
+        display: block;
+        width: 25vw;
     }
 </style>
