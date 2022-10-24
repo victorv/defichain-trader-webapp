@@ -113,3 +113,9 @@
     {/if}
     </tbody>
 </table>
+
+<style>
+    td {
+        word-break: break-all;
+    }
+</style>
