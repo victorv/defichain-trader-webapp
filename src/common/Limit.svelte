@@ -50,11 +50,9 @@
     }
 
     span {
-        position: absolute;
-        bottom: 0;
+        position: static;
         z-index: 100;
         opacity: 0;
-
         animation: pop-in 0.75s;
     }
 </style>
