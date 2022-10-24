@@ -6,6 +6,7 @@
     import TradeChart from "../dex/TradeChart.svelte";
     import {graphStore, mempool, setGraph} from "../store";
     import Help from "../common/Help.svelte";
+    import Limit from "../common/Limit.svelte";
 
     export let allTokens
     export let Chart
@@ -90,8 +91,10 @@
                name="graph-types"/>
     </label>
     <Help help="Both graphs are live. Graphs are not updated until a price difference of at least 0.01% has occurred."/>
+    <strong>
+        Known issues <Help help="Live graph updates are not working correctly at the moment. The calculation for historic estimates and live estimates do not align."/>
+    </strong>
 </form>
-<div class="warning">Live graph updates are not working correctly at the moment. The calculation for historic estimates and live estimates do not align.</div>
 {#if hasItems(estimates)}
     {#if graphType == 'trades'}
         <TradeChart {items} {Chart} {estimates} {fromTokenSymbol} {toTokenSymbol}/>
