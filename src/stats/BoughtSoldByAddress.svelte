@@ -2,12 +2,19 @@
 <script>
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import {asDollars} from "../common/common";
+    import {screenStore} from "../store";
+    import Limit from "../common/Limit.svelte";
 
     export let fromTokenSymbol
     export let toTokenSymbol
     export let allTokens
     export let items
     export let onTokenSelectionChanged
+
+    let screen
+
+    screenStore.subscribe(newScreen => screen = newScreen)
+
 </script>
 
 <form class="pure-form">
@@ -19,23 +26,21 @@
     <thead>
     <tr>
         <th>Address</th>
-        <th>Total</th>
         <th>Net</th>
         <th>Bought</th>
         <th>Sold</th>
-        <th>TX Count</th>
+        {#if screen.large}
+            <th>Total</th>
+            <th>TX Count</th>
+        {/if}
     </tr>
     </thead>
     {#each items as item}
         <tr>
             <td>
-                {item["dc_address"]}
+                <Limit text={item["dc_address"]}/>
             </td>
-            <td>
-                {asDollars(item["total"])}
-            </td>
-            <td class:red={item["net_usd"] < 0.0} class:green={item["net_usd"] >= 0.0}
-                title="{item['net']} {item['token_symbol']}">
+            <td class:red={item["net_usd"] < 0.0} class:green={item["net_usd"] >= 0.0}>
                 {asDollars(item["net_usd"])}
             </td>
             <td>
@@ -44,9 +49,14 @@
             <td>
                 {asDollars(item["sold_usd"])}
             </td>
-            <td>
-                {item["tx_count"]}
-            </td>
+            {#if screen.large}
+                <td>
+                    {asDollars(item["total"])}
+                </td>
+                <td>
+                    {item["tx_count"]}
+                </td>
+            {/if}
         </tr>
     {/each}
 </table>
