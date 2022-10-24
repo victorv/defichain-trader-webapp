@@ -17,7 +17,7 @@
 </script>
 
 <form class="pure-form">
-    <FromToTokenFilter supportAnyToken={true}
+    <FromToTokenFilter supportAnyToken={true} supportPseudo={true}
                        {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
 </form>
 

@@ -7,6 +7,7 @@
     export let fromTokenSymbol
     export let toTokenSymbol
     export let supportAnyToken
+    export let supportPseudo
 
     let onTokenSelected
 
@@ -14,8 +15,8 @@
         onTokenSelected = null
         onTokenSelectionChanged(
             {
-                fromTokenSymbol,
-                toTokenSymbol
+                fromTokenSymbol: fromTokenSymbol && fromTokenSymbol.replaceAll(' ', '_'),
+                toTokenSymbol: toTokenSymbol && toTokenSymbol.replaceAll(' ', '_'),
             }
         )
     }
@@ -24,7 +25,6 @@
         if (fromTokenSymbol === toTokenSymbol) {
             return
         }
-        console.log('swap')
         const from = toTokenSymbol
         const to = fromTokenSymbol
         fromTokenSymbol = from
@@ -57,9 +57,9 @@
                 class="pure-button"
                 type="button">
             {#if fromTokenSymbol}
-                {fromTokenSymbol}
+                {fromTokenSymbol.replaceAll('_', ' ')}
             {:else if supportAnyToken}
-                Any Token
+                Any
             {:else}
                 Select token
             {/if}
@@ -76,9 +76,9 @@
                 class="pure-button"
                 type="button">
             {#if toTokenSymbol}
-                {toTokenSymbol}
+                {toTokenSymbol.replaceAll('_', ' ')}
             {:else if supportAnyToken}
-                Any Token
+                Any
             {:else}
                 Select token
             {/if}
@@ -87,7 +87,7 @@
 </div>
 
 {#if onTokenSelected}
-    <TokenFilter {allTokens} {supportAnyToken} {onTokenSelected} {onTokenSelectionCancelled}/>
+    <TokenFilter {allTokens} {supportAnyToken} {supportPseudo} {onTokenSelected} {onTokenSelectionCancelled}/>
 {/if}
 
 <style>
