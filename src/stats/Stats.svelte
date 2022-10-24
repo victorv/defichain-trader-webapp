@@ -2,6 +2,7 @@
     import {onMount} from "svelte";
     import BoughtSold from "./BoughtSold.svelte";
     import BoughtSoldByAddress from "./BoughtSoldByAddress.svelte";
+    import Icon from "../common/Icon.svelte";
 
     export let allTokens
 
@@ -78,7 +79,9 @@
             <option value="1051200">1 year</option>
             <option value="900000000">Everything</option>
         </select>
-        <button on:click={refresh} type="button" class="pure-button">Refresh</button>
+        <button on:click={refresh} type="button" class="pure-button icon">
+            <Icon icon="search"/>
+        </button>
     </form>
 </div>
 {#if items}
