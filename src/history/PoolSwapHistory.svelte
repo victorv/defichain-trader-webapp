@@ -92,7 +92,9 @@
     <table class="pure-table pure-table-striped">
         <thead>
         <tr>
-            <th>TX ID</th>
+            {#if screen.large}
+                <th>TX ID</th>
+            {/if}
             <th>Block</th>
             <th>Input Amount</th>
             <th>Output Amount</th>
@@ -105,20 +107,29 @@
         </thead>
         {#each poolSwaps as tx}
             <tr class:selected-row={tx === selectedTX || (swapFromTo && swapFromTo.tx === tx) || (swapToFrom && swapToFrom.tx === tx)}>
-                <td>
-                    <button on:click={() => toggleTXDetails(tx)}
-                            class:info={tx === selectedTX}
-                            type="button"
-                            class="pure-button info-button icon">
-                        <Icon icon="info"/>
-                    </button>
-                    {#if screen.large}
+                {#if screen.large}
+                    <td>
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+
                         <a class="limited"
                            href="https://defiscan.live/transactions/{tx.txID}"
                            target="_blank">{tx.txID}</a>
-                    {/if}
-                </td>
+                    </td>
+                {/if}
                 <td>
+                    {#if screen.small}
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+                    {/if}
                     {#if tx.block}
                         <a href="https://defiscan.live/blocks/{tx.block.blockHeight}" target="_blank">
                             {tx.block.blockHeight}
