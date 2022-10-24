@@ -1,11 +1,16 @@
 <script>
     import {asDollars} from "../common/common";
+    import {screenStore} from "../store";
 
     export let items
 
     $: sortedItems = items.sort((a, b) => {
         return Math.abs(b["net_usd"]) - Math.abs(a["net_usd"])
     })
+
+    let screen
+
+    screenStore.subscribe(newScreen => screen = newScreen)
 </script>
 
 <table class="pure-table pure-table-striped">
@@ -14,9 +19,13 @@
         <th>Token</th>
         <th>Net</th>
         <th>Bought</th>
-        <th>TX Count</th>
+        {#if screen.large}
+            <th>TX Count</th>
+        {/if}
         <th>Sold</th>
-        <th>TX Count</th>
+        {#if screen.large}
+            <th>TX Count</th>
+        {/if}
 
     </tr>
     </thead>
@@ -32,15 +41,19 @@
             <td title="{item['bought']} {item['token_symbol']}">
                 {asDollars(item["bought_usd"])}
             </td>
-            <td>
-                {item["bought_tx_count"]}
-            </td>
+            {#if screen.large}
+                <td>
+                    {item["bought_tx_count"]}
+                </td>
+            {/if}
             <td title="{item['sold']} {item['token_symbol']}">
                 {asDollars(item["sold_usd"])}
             </td>
-            <td>
-                {item["sold_tx_count"]}
-            </td>
+            {#if screen.large}
+                <td>
+                    {item["sold_tx_count"]}
+                </td>
+            {/if}
         </tr>
     {/each}
 </table>
