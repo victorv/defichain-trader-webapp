@@ -4,12 +4,13 @@
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
     import Stats from "./stats/Stats.svelte";
+    import Account from "./account/Account.svelte";
 
     let allTokens
     let error
     let Chart
     let mainElement
-    let componentType = Stats
+    let componentType = Account
 
     window.fireChartJSLoad = chartConstructor => {
         Chart = chartConstructor
