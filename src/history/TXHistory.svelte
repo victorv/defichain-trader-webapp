@@ -101,7 +101,7 @@
         <select>
             <option>Pool Swaps</option>
         </select>
-        <input bind:value={filterString} type="text" size="64" placeholder="TX ID/Address/Block Hash"/>
+        <input bind:value={filterString} type="text" placeholder="TX ID/Address/Block Hash"/>
         <button class="pure-button" type="submit">Refresh</button>
     </fieldset>
 </form>
