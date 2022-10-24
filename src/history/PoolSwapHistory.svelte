@@ -5,6 +5,7 @@
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
+    import {screenStore} from "../store";
 
     export let allTokens
     export let refresh
@@ -17,9 +18,11 @@
     let swapToFrom
     let fromTokenSymbol
     let toTokenSymbol
-    let sortOrder
 
     let selectedTX
+    let screen
+
+    screenStore.subscribe(newScreen => screen = newScreen)
 
     async function update() {
         const filter = {}
@@ -29,9 +32,6 @@
         if (toTokenSymbol && toTokenSymbol != 'Any') {
             filter.toTokenSymbol = toTokenSymbol
         }
-        if (sortOrder) {
-            filter.sort = sortOrder
-        }
         await refresh(filter)
     }
 
@@ -39,10 +39,6 @@
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
         await update()
-    }
-
-    const limitLength = s => {
-        return `${s.substring(0, 9)}...`
     }
 
     const toggleTXDetails = async tx => {
@@ -81,11 +77,6 @@
         swapToFrom = await response.json()
         swapToFrom.tx = swap
     }
-
-    const changeSortOrder = async e => {
-        sortOrder = e.target.value
-        await update()
-    }
 </script>
 
 {#if filter !== false}
@@ -93,49 +84,52 @@
         <fieldset>
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-            <label>
-                Sort
-                <select on:change={changeSortOrder}>
-                    <option value="">Most Recent - Old</option>
-                    <option disabled value="fee_asc">Fee - ascending</option>
-                    <option disabled value="fee_desc">Fee - descending</option>
-                    <option disabled value="input_amount_asc">Input Amount - ascending</option>
-                    <option disabled value="input_amount_desc">Input Amount - descending</option>
-                    <option disabled value="output_amount_asc">Output Amount - ascending</option>
-                    <option disabled value="output_amount_desc">Output Amount - descending</option>
-                </select>
-            </label>
         </fieldset>
     </form>
 {/if}
 
 {#if items && items.length}
-    <table class="pure-table pure-table-striped">
+    <table class:small={screen.small} class="pure-table pure-table-striped">
         <thead>
         <tr>
-            <th>Transaction ID</th>
+            {#if screen.large}
+                <th>TX ID</th>
+            {/if}
             <th>Block</th>
-            <th>Fee</th>
             <th>Input Amount</th>
             <th>Output Amount</th>
-            <th>From</th>
-            <th>To</th>
+            {#if screen.large}
+                <th>Fee</th>
+                <th>From</th>
+                <th>To</th>
+            {/if}
         </tr>
         </thead>
         {#each poolSwaps as tx}
             <tr class:selected-row={tx === selectedTX || (swapFromTo && swapFromTo.tx === tx) || (swapToFrom && swapToFrom.tx === tx)}>
+                {#if screen.large}
+                    <td>
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+
+                        <a class="limited"
+                           href="https://defiscan.live/transactions/{tx.txID}"
+                           target="_blank">{tx.txID}</a>
+                    </td>
+                {/if}
                 <td>
-                    <button on:click={() => toggleTXDetails(tx)}
-                            class:info={tx === selectedTX}
-                            type="button"
-                            class="pure-button info-button">
-                        <Icon icon="info"/>
-                    </button>
-                    <a href="https://defiscan.live/transactions/{tx.txID}" target="_blank">
-                        {limitLength(tx.txID)}
-                    </a>
-                </td>
-                <td>
+                    {#if screen.small}
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+                    {/if}
                     {#if tx.block}
                         <a href="https://defiscan.live/blocks/{tx.block.blockHeight}" target="_blank">
                             {tx.block.blockHeight}
@@ -145,27 +139,26 @@
                     {/if}
                 </td>
                 <td>
-                    {tx.fee}
-                </td>
-                <td>
                     <button on:click={() => toggleEstimateFromTo(tx)}
                             class:info={swapFromTo && swapFromTo.tx === tx}
                             type="button"
-                            class="pure-button info-button">
-                        <Icon icon="info"/>
+                            class="pure-button info-button icon">
+                        <Icon icon="exchange"/>
                     </button>
-                    {tx.amountFrom} {tx.tokenFrom}
+                    <span>{tx.amountFrom}</span>
+                    <span>{tx.tokenFrom}</span>
                 </td>
                 <td>
                     <button on:click={() => toggleEstimateToFrom(tx)}
                             disabled={!tx.amountTo}
                             class:info={swapToFrom && swapToFrom.tx === tx}
                             type="button"
-                            class="pure-button info-button">
-                        <Icon icon="info"/>
+                            class="pure-button info-button icon">
+                        <Icon icon="exchange"/>
                     </button>
                     {#if tx.amountTo}
-                        {tx.amountTo} {tx.tokenTo}
+                        <span>{tx.amountTo}</span>
+                        <span>{tx.tokenTo}</span>
                         {#if tx.tokenTo !== tx.tokenToAlt}
                             or {tx.tokenToAlt}
                             <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
@@ -174,20 +167,25 @@
                         N/A {tx.tokenTo}
                     {/if}
                 </td>
-                <td>
-                    <a href="https://defiscan.live/address/{tx.from}" target="_blank">
-                        {limitLength(tx.from)}
-                    </a>
-                </td>
-                <td>
-                    {#if tx.from != tx.to}
-                        <a href="https://defiscan.live/address/{tx.to}" target="_blank">
-                            {limitLength(tx.to)}
-                        </a>
-                    {:else}
-                        &lt;from address&gt;
-                    {/if}
-                </td>
+                {#if screen.large}
+                    <td>
+                        {tx.fee}
+                    </td>
+                    <td>
+                        <a class="limited"
+                           href="https://defiscan.live/address/{tx.from}"
+                           target="_blank">{tx.from}</a>
+                    </td>
+                    <td>
+                        {#if tx.from != tx.to}
+                            <a class="limited"
+                               href="https://defiscan.live/address/{tx.to}"
+                               target="_blank">{tx.to}</a>
+                        {:else}
+                            &lt;from address&gt;
+                        {/if}
+                    </td>
+                {/if}
             </tr>
             {#if tx === selectedTX}
                 <tr>
@@ -242,5 +240,9 @@
 
     td[colspan="7"] {
         padding: 0.5rem;
+    }
+
+    table.small td > * {
+        display: block;
     }
 </style>

@@ -5,6 +5,27 @@ export const outgoingMessages = writable(null)
 export const mempool = writable([])
 export const swaps = writable([])
 export const graphStore = writable({})
+export const screenStore = writable({
+    large: false,
+    small: true,
+})
+
+const mediaQuery = matchMedia('(max-width: 1200px)')
+const updateBody = () => {
+    const small = mediaQuery.matches
+    screenStore.set({
+        large: !small,
+        small,
+    })
+    document.body.className = small ? 'small' : 'large'
+}
+updateBody()
+
+mediaQuery.onchange = updateBody
+
+
+
+
 
 const getSwapID = swap => {
     return `${swap.tokenFrom}+${swap.tokenTo}+${swap.amountFrom}+${swap.desiredResult}`
