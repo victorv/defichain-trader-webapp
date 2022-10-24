@@ -2,6 +2,7 @@
     export let text
     let focused = false
     let message
+    let timeout
 
     const copyToClipboard = async () => {
         focused = !focused
@@ -11,6 +12,9 @@
                 message = {text: 'Copied'}
             } catch (e) {
                 message = {text: 'Failed to copy'}
+            } finally {
+                clearTimeout(timeout)
+                timeout = setTimeout(() => message = null, 750)
             }
         }
     }
@@ -19,13 +23,8 @@
 <a on:click|preventDefault={copyToClipboard}
    class="limited"
    class:focused
-   href="#">{text}</a>
-
-{#if message}
-    {#key message}
-        <span class:info={message.text === 'Copied'} class:error={message.text !== 'Copied'}>{message.text}</span>
-    {/key}
-{/if}
+   href="#">{text}{#if message}<span class:info={message.text === 'Copied'} class:error={message.text !== 'Copied'}>{message.text}</span>{/if}
+</a>
 
 <style>
     @keyframes pop-in {
@@ -50,7 +49,7 @@
     }
 
     span {
-        position: static;
+        position: absolute;
         z-index: 100;
         opacity: 0;
         animation: pop-in 0.75s;
