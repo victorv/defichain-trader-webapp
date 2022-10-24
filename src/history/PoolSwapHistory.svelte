@@ -89,7 +89,7 @@
 {/if}
 
 {#if items && items.length}
-    <table class="pure-table pure-table-striped">
+    <table class:small={screen.small} class="pure-table pure-table-striped">
         <thead>
         <tr>
             {#if screen.large}
@@ -145,7 +145,8 @@
                             class="pure-button info-button icon">
                         <Icon icon="exchange"/>
                     </button>
-                    {tx.amountFrom} {tx.tokenFrom}
+                    <span>{tx.amountFrom}</span>
+                    <span>{tx.tokenFrom}</span>
                 </td>
                 <td>
                     <button on:click={() => toggleEstimateToFrom(tx)}
@@ -156,7 +157,8 @@
                         <Icon icon="exchange"/>
                     </button>
                     {#if tx.amountTo}
-                        {tx.amountTo} {tx.tokenTo}
+                        <span>{tx.amountTo}</span>
+                        <span>{tx.tokenTo}</span>
                         {#if tx.tokenTo !== tx.tokenToAlt}
                             or {tx.tokenToAlt}
                             <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
@@ -238,5 +240,9 @@
 
     td[colspan="7"] {
         padding: 0.5rem;
+    }
+
+    table.small td > * {
+        display: block;
     }
 </style>
