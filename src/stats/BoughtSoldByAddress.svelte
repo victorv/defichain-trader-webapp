@@ -14,7 +14,6 @@
     let screen
 
     screenStore.subscribe(newScreen => screen = newScreen)
-
 </script>
 
 <form class="pure-form">
