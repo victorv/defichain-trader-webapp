@@ -4,11 +4,18 @@
     export let onTokenSelected
     export let onTokenSelectionCancelled
     export let supportAnyToken
+    export let supportPseudo
 
     let tokens
 
     function getTokens() {
-        return supportAnyToken ? ['Any'].concat(allTokens) : allTokens;
+        let tokens = (supportPseudo ? [
+            '#Crypto',
+            '#Stock',
+            '#DUSD or stock',
+            '#USDT or USDC',
+        ] : []).concat(allTokens)
+        return supportAnyToken ? ['#Any'].concat(tokens) : tokens;
     }
 
     $: {
@@ -21,13 +28,17 @@
     let filterString
     let filterElement
 
+    const selectToken = token => {
+        onTokenSelected(token.replace('#', ''))
+    }
+
     const focusFilterElement = e => {
         e.focus()
     }
 
     const filterTokenList = e => {
         if (e.which === 13 && tokens.length) {
-            onTokenSelected(tokens[0])
+            selectToken(tokens[0])
             return
         }
 
@@ -65,7 +76,7 @@
 <div class="pure-menu">
     <ul class="pure-menu-list">
         {#each tokens as token}
-            <li on:click={() => onTokenSelected(token)}
+            <li on:click={() => selectToken(token)}
                 class="pure-menu-item">
                 <a href="#" class="pure-menu-link">{token}</a>
             </li>
