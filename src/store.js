@@ -46,7 +46,7 @@ const storePoolSwaps = swaps => {
 
 incomingMessages.subscribe(message => {
     if (message.id === 'mempool-swap') {
-        mempool.update(state => state.concat(message.data))
+        mempool.update(state => [message.data, ...state])
     } else if (message.id === 'block') {
         mempool.set([])
     } else if (message.id === 'swap-result') {
