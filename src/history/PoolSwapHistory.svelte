@@ -14,6 +14,7 @@
     export let refresh
     export let items
     export let filter
+    export let mempool
 
     let now = new Date().getTime()
     let interval
@@ -153,9 +154,11 @@
                         <strong>{tx.block.blockHeight}</strong>
                     {:else}
                         <TimePastSince start={tx.mempool.time} end={now} />
-                        <br/>
-                        <strong>{tx.mempool.blockHeight}</strong>
-                        <Help warning={true} help="This TX has not been confirmed so far"/>
+                        {#if !mempool}
+                            <br/>
+                            <strong>{tx.mempool.blockHeight}</strong>
+                            <Help warning={true} help="This TX has not been confirmed so far"/>
+                        {/if}
                     {/if}
                 </td>
                 <td>

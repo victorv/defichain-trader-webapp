@@ -109,7 +109,7 @@
     </fieldset>
 </form>
 
-<PoolSwapHistory {allTokens} {items} {refresh}/>
+<PoolSwapHistory {allTokens} {items} {refresh} mempool={false}/>
 
 {#if hasMore && !error}
     <section class="pager">
