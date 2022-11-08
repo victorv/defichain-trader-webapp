@@ -7,6 +7,7 @@
     import QuickGraph from "../history/QuickGraph.svelte";
     import {screenStore} from "../store";
     import Icon from "../common/Icon.svelte";
+    import Links from "../Links/Links.svelte";
 
     export let componentType
     export let onChange
@@ -68,9 +69,17 @@
                 class="pure-menu-item">
                 <a href="#bought_sold" class="pure-menu-link">Stats</a>
             </li>
+            <li class="pure-menu-item"
+                on:click={() => change(Links)}>
+                <a href="#contact"
+                   class="pure-menu-link">
+                    Links
+                </a>
+            </li>
             <li class="pure-menu-item">
-                <a on:click={() => open = false} href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank" class="pure-menu-link">
-                    Telegram
+                <a on:click={() => open = false} href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank"
+                   class="pure-menu-link">
+                    <Icon icon="login"/>
                 </a>
             </li>
         </ul>
