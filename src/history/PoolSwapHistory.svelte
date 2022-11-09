@@ -7,13 +7,22 @@
     import Help from "../common/Help.svelte";
     import {screenStore} from "../store";
     import Limit from "../common/Limit.svelte";
+    import TimePastSince from "../common/TimePastSince.svelte";
+    import {onDestroy, onMount} from "svelte";
 
     export let allTokens
     export let refresh
     export let items
     export let filter
+    export let mempool
+
+    let now = new Date().getTime()
+    let interval
 
     $: poolSwaps = items
+    $: if (items) {
+        now = new Date().getTime()
+    }
 
     let swapFromTo
     let swapToFrom
@@ -22,6 +31,16 @@
 
     let selectedTX
     let screen
+
+    onMount(() => {
+        interval = setInterval(() => {
+            now = new Date().getTime()
+        }, 30000)
+    })
+
+    onDestroy(() => {
+        clearInterval(interval)
+    })
 
     screenStore.subscribe(newScreen => screen = newScreen)
 
@@ -130,9 +149,16 @@
                         </button>
                     {/if}
                     {#if tx.block}
-                        {tx.block.blockHeight}
+                        <TimePastSince start={tx.block.medianTime * 1000} end={now} />
+                        <br/>
+                        <strong>{tx.block.blockHeight}</strong>
                     {:else}
-                        First seen: {tx.mempool.blockHeight}
+                        <TimePastSince start={tx.mempool.time} end={now} />
+                        {#if !mempool}
+                            <br/>
+                            <strong>{tx.mempool.blockHeight}</strong>
+                            <Help warning={true} help="This TX has not been confirmed so far"/>
+                        {/if}
                     {/if}
                 </td>
                 <td>

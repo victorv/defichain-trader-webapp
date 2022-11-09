@@ -3,7 +3,6 @@
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
-    import Stats from "./stats/Stats.svelte";
     import Account from "./account/Account.svelte";
 
     let allTokens
