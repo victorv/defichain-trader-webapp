@@ -17,7 +17,7 @@
 </script>
 
 {#if items && items.length}
-    <PoolSwapHistory {allTokens} {items} {refresh} filter={false}/>
+    <PoolSwapHistory {allTokens} {items} {refresh} filter={false} mempool={true}/>
 {:else}
     <div>
     <span class="info">

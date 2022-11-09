@@ -55,6 +55,12 @@
             </td>
         </tr>
         <tr>
+            <th role="rowheader">Median Time</th>
+            <td>
+                {new Date(tx.block.medianTime * 1000).toString()}
+            </td>
+        </tr>
+        <tr>
             <th role="rowheader">Block Height</th>
             <td>
                 {tx.block.blockHeight}
