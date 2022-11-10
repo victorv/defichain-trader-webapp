@@ -1,9 +1,6 @@
 <script>
-    import {onMount} from "svelte";
-    import {asDollars} from "../common/common";
-    import Percentage from "./Percentage.svelte";
-    import Help from "../common/Help.svelte";
-    import {screenStore} from "../store";
+        import {onMount} from "svelte";
+        import {screenStore} from "../store";
 
     export let Chart
     export let items
@@ -110,98 +107,16 @@
         )
     })
 </script>
-<div class="container" class:large={screen.large} class:small={screen.small}>
-    <div>
-        <header>
-            <label>
-                <strong>Price impact
-                    <Help help="The minimum number represents the case where only trades that make your trade more expensive go through. The maximum number represents the case where only trades that make your trade less expensive go through. N/A indicates that there are no impactful swaps in the mempool."/>
-                </strong>
-                {#if minImpact !== -0.0 && maxImpact !== 0}
-                    <Percentage number={minImpact}/>
-                    -
-                    <Percentage number={maxImpact}/>
-                {:else if minImpact !== -0}
-                    <Percentage number={minImpact}/>
-                {:else if maxImpact !== 0}
-                    <Percentage number={maxImpact}/>
-                {:else}
-                    N/A
-                {/if}
-                {asDollars(volume)}
-            </label>
-        </header>
+
+<div class="container">
         <canvas bind:this={canvasElement}></canvas>
-    </div>
-    <div>
-        <table class="pure-table pure-table-striped">
-            <tr>
-                <td>
-                    Swap
-                    <Help help="Represents a swap that is currently in the mempool."/>
-                </td>
-                <td>
-                    Price Impact
-                    <Help help="Negative percentage means your trade will be more expensive. Positive percentage means your trade will be cheaper. If only the volume in USD is displayed it means this trade won't impact your trade."/>
-                </td>
-            </tr>
-            {#each mempool as item}
-                <tr>
-                    <td>
-                        <span>
-                            {item.tokenFrom} to {item.tokenTo}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="hover-toggle">
-                            {#if item.priceImpact !== 0.0}
-                                <div>
-                                    <Percentage number={item.priceImpact}/>
-                                </div>
-                            {/if}
-                            <span>{asDollars(item.fromAmountUSD)}</span>
-                        </div>
-                    </td>
-                </tr>
-            {/each}
-        </table>
-    </div>
 </div>
 
 <style>
-    table {
-        table-layout: fixed;
-    }
-
-    td {
-        width: 50%;
-    }
-
-    span {
-        display: block;
-    }
-
     .container {
         display: flex;
         flex-direction: row;
         height: 80vh;
         overflow: hidden;
-    }
-
-    .container div:first-child {
-        width: 100vw;
-    }
-
-    .large div:first-child {
-        width: 75vw;
-    }
-
-    .container div:last-child {
-        display: none;
-    }
-
-    .large div:last-child {
-        display: block;
-        width: 25vw;
     }
 </style>
