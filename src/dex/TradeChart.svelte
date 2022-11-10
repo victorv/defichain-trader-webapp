@@ -63,8 +63,10 @@
 
             const o = prevDataPoint ? prevDataPoint.c : estimate[1]
             const c = estimate[1]
+            const x = parseInt(estimate[2], 10) * 1000
+
             const dataPoint = {
-                x: parseInt(estimate[2], 10) * 1000,
+                x: prevDataPoint && prevDataPoint.x === x ? x + 1 : x,
                 o,
                 h: Math.max(o, c),
                 l: Math.min(o, c),
