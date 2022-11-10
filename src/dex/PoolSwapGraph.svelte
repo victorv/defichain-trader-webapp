@@ -29,6 +29,14 @@
                 data: estimates.map(e => e[1]),
                 fill: true,
                 borderColor: 'rgb(75, 192, 192)',
+            },
+            {
+                label: 'Desired Result',
+                data: new Array(estimates.length)
+                    .fill(poolSwap.desiredResult),
+                fill: false,
+                pointRadius: 0,
+                borderColor: 'red',
             }
         ]
     }
@@ -45,24 +53,6 @@
             pointHoverBorderColor: 'rgb(54, 162, 235)',
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                autocolors: false,
-                annotation: poolSwap.desiredResult ? {
-                    annotations: {
-                        line1: {
-                            type: 'line',
-                            yMin: poolSwap.desiredResult,
-                            yMax: poolSwap.desiredResult,
-                            borderColor: 'rgb(255, 99, 132)',
-                            borderWidth: 2,
-                        }
-                    }
-                } : null,
-                title: {
-                    display: true,
-                    text: 'Chart'
-                }
-            },
             scales: {
                 x: {
                     display: false
