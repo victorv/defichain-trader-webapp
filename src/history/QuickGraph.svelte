@@ -6,7 +6,6 @@
     import TradeChart from "../dex/TradeChart.svelte";
     import {graphStore, mempool, setGraph} from "../store";
     import Help from "../common/Help.svelte";
-    import Limit from "../common/Limit.svelte";
 
     export let allTokens
     export let Chart
