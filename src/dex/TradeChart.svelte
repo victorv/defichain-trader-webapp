@@ -1,6 +1,6 @@
 <script>
-        import {onMount} from "svelte";
-        import {screenStore} from "../store";
+    import {onMount} from "svelte";
+    import {screenStore} from "../store";
 
     export let Chart
     export let items
