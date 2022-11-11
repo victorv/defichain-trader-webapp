@@ -73,6 +73,8 @@
     const config = {
         type: 'candlestick',
         options: {
+            normalized: true,
+            parsing: false,
             plugins: {
                 legend: {
                     display: false

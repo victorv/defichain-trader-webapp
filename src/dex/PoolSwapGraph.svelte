@@ -40,6 +40,8 @@
     const config = {
         type: 'line',
         options: {
+            normalized: true,
+            parsing: false,
             hover: {
                 intersect: false
             },
