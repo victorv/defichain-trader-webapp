@@ -82,7 +82,6 @@
     const data = {
         datasets: [
             {
-                label: `${fromTokenSymbol} to ${toTokenSymbol}`,
                 data: createDataPoints(),
             }
         ]
@@ -91,6 +90,11 @@
     const config = {
         type: 'candlestick',
         options: {
+            plugins: {
+                legend: {
+                    display: false
+                },
+            },
             responsive: true,
             maintainAspectRatio: false,
 
