@@ -1,6 +1,7 @@
 <script>
     import {onMount} from "svelte";
     import {screenStore} from "../store";
+    import MempoolImpact from "../chart/MempoolImpact.svelte";
 
     export let Chart
     export let items
@@ -21,21 +22,10 @@
         return items.sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact) || b.fromAmountUSD - a.fromAmountUSD);
     }
 
-    function sum(values) {
-        let summed = 0.0
-        for (const value of values) {
-            summed += value
-        }
-        return summed
-    }
-
     let canvasElement
     let chart
     let recentEstimates = getRecentEstimates()
     let mempool = getMempool()
-    let volume = 0.0
-    let minImpact = 0.0
-    let maxImpact = 0.0
 
     $: if (estimates) {
         recentEstimates = getRecentEstimates()
@@ -47,13 +37,6 @@
 
     $: if (items) {
         mempool = getMempool()
-        const negativeImpact = mempool.filter(item => item.priceImpact < 0.0)
-        const positiveImpact = mempool.filter(item => item.priceImpact > 0.0)
-
-        volume = sum(negativeImpact.map(item => item.fromAmountUSD)) + sum(positiveImpact.map(item => item.fromAmountUSD))
-
-        minImpact = -sum(negativeImpact.map(item => Math.abs(item.priceImpact)))
-        maxImpact = sum(positiveImpact.map(item => item.priceImpact))
     }
 
     function createDataPoints() {
@@ -110,7 +93,9 @@
     })
 </script>
 
+<MempoolImpact {mempool}/>
 <div class="container">
+
     <canvas bind:this={canvasElement}></canvas>
 </div>
 
