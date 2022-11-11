@@ -31,6 +31,7 @@
             label: 'Desired Result',
             data: estimates.map(e => ({x: e[2] * 1000, y: poolSwap.desiredResult})),
             fill: false,
+            hoverRadius: 0,
             pointRadius: 0,
             borderColor: 'red',
         })
