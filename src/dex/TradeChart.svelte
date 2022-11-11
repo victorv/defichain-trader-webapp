@@ -107,7 +107,7 @@
 </script>
 
 <div class="container">
-        <canvas bind:this={canvasElement}></canvas>
+    <canvas bind:this={canvasElement}></canvas>
 </div>
 
 <style>
