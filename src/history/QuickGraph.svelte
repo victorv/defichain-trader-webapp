@@ -18,6 +18,17 @@
     export let allTokens
     export let Chart
 
+    const timelines = [
+        { id: 20160, label: '1 week'},
+        { id: 5760, label: '2 days'},
+        { id: 2880, label: '1 day'},
+        { id: 1440, label: '12 hours'},
+        { id: 120, label: '1 hour'}
+    ]
+    const timeline = {
+        blocks: timelines[0].id
+    }
+
     let abortController = new AbortController()
     let fromTokenSymbol = 'DFI'
     let toTokenSymbol = 'BTC'
@@ -60,7 +71,7 @@
                 tokenTo: toTokenSymbol,
                 amountFrom: 1.0,
             }
-            const response = await fetch(`/graph?poolswap=1.0 ${fromTokenSymbol} to ${toTokenSymbol}`, {
+            const response = await fetch(`/graph?poolswap=1.0 ${fromTokenSymbol} to ${toTokenSymbol}&blocks=${timeline.blocks}`, {
                 signal: abortController.signal,
             })
             let newEstimates = await response.json()
@@ -77,6 +88,11 @@
 
     const changeGraph = newGraphType => {
         graphType = newGraphType
+    }
+
+    const changeTimeline = async e => {
+        timeline.blocks = +e.target.value
+        await update()
     }
 
     onMount(async () => {
@@ -124,6 +140,11 @@
             Known issues
             <Help help="Live graph updates are not working correctly at the moment. The calculation for historic estimates and live estimates do not align."/>
         </strong>
+        <select class="pure-select" on:change={changeTimeline} bind:value={timeline.blocks}>
+            {#each timelines as timeline}
+                <option value={timeline.id}>{timeline.label}</option>
+            {/each}
+        </select>
     </fieldset>
 </form>
 {#if hasItems(maxEstimates)}
