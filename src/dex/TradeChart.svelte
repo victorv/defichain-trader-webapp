@@ -13,22 +13,15 @@
 
     screenStore.subscribe(newScreen => screen = newScreen)
 
-    function getRecentEstimates() {
-        const max = Math.round(window.innerWidth / 20.0)
-        return estimates.length < max ? estimates : estimates.slice(estimates.length - (max - 1));
-    }
-
     function getMempool() {
         return items.sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact) || b.fromAmountUSD - a.fromAmountUSD);
     }
 
     let canvasElement
     let chart
-    let recentEstimates = getRecentEstimates()
     let mempool = getMempool()
 
     $: if (estimates) {
-        recentEstimates = getRecentEstimates()
         if (chart) {
             chart.data.datasets[0].data = createDataPoints()
             chart.update()
@@ -42,7 +35,7 @@
     function createDataPoints() {
         const data = []
         let prevDataPoint
-        for (const estimate of recentEstimates) {
+        for (const estimate of estimates) {
 
             const o = prevDataPoint ? prevDataPoint.c : estimate[1]
             const c = estimate[1]

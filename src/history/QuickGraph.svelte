@@ -1,3 +1,11 @@
+<script context="module">
+    const getDatasetLimit = () => Math.round(window.innerWidth / 7.0)
+
+    function limitDataset(dataset, maxDataPoints) {
+        return dataset.length < maxDataPoints ? dataset : dataset.slice(dataset.length - (maxDataPoints - 1));
+    }
+</script>
+
 <script>
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import PoolSwapGraph from "../dex/PoolSwapGraph.svelte";
@@ -15,17 +23,32 @@
     let toTokenSymbol = 'BTC'
     let poolSwap
     let estimates
+    let maxEstimates
     let graphType = 'trades'
+    let pendingUpdate
 
     let items = []
     const subscriptions = []
 
+    const updateEstimates = newEstimates => {
+        estimates = newEstimates
+        maxEstimates = estimates === null ? null : limitDataset(estimates, getDatasetLimit())
+    }
+
+    const applyDatasetLimit = () => {
+        clearTimeout(pendingUpdate)
+        pendingUpdate = setTimeout(() => updateEstimates(estimates), 500)
+    }
+
     onDestroy(() => {
+        clearTimeout(pendingUpdate)
+        screen.orientation.removeEventListener('change', applyDatasetLimit)
+        window.removeEventListener('resize', applyDatasetLimit)
         subscriptions.forEach(sub => sub())
     })
 
     async function update() {
-        estimates = null
+        updateEstimates(null)
         poolSwap = null
 
         if (fromTokenSymbol && toTokenSymbol && fromTokenSymbol !== 'Any' && toTokenSymbol !== 'Any') {
@@ -40,7 +63,8 @@
             const response = await fetch(`/graph?poolswap=1.0 ${fromTokenSymbol} to ${toTokenSymbol}`, {
                 signal: abortController.signal,
             })
-            estimates = await response.json()
+            let newEstimates = await response.json()
+            updateEstimates(newEstimates)
         }
     }
 
@@ -56,7 +80,12 @@
     }
 
     onMount(async () => {
-        const unsubscribe1 = mempool.subscribe(mempoolItems => items = mempoolItems)
+        screen.orientation.addEventListener('change', applyDatasetLimit)
+        window.addEventListener('resize', applyDatasetLimit)
+
+        const unsubscribe1 = mempool.subscribe(mempoolItems => {
+            items = mempoolItems
+        })
         const unsubscribe2 = graphStore.subscribe(dataPoint => {
             const estimate = dataPoint.estimate
             if (dataPoint && estimates && estimates.length > 1) {
@@ -64,7 +93,7 @@
                 if (Math.abs(estimate - previousEstimate) > estimate * 0.0001) {
                     let newEstimates = estimates.slice(1)
                     newEstimates.push([0, estimate, new Date().getTime() / 1000])
-                    estimates = newEstimates
+                    updateEstimates(newEstimates)
                 }
             }
         })
@@ -97,11 +126,11 @@
         </strong>
     </fieldset>
 </form>
-{#if hasItems(estimates)}
+{#if hasItems(maxEstimates)}
     {#if graphType == 'trades'}
-        <TradeChart {items} {Chart} {estimates} {fromTokenSymbol} {toTokenSymbol}/>
+        <TradeChart {items} {Chart} estimates={maxEstimates} {fromTokenSymbol} {toTokenSymbol}/>
     {:else if graphType == 'history'}
-        <PoolSwapGraph {Chart} {estimates} {poolSwap}/>
+        <PoolSwapGraph {Chart} estimates={maxEstimates} {poolSwap}/>
     {/if}
 {/if}
 
