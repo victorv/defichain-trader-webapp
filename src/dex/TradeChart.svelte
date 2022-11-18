@@ -3,96 +3,65 @@
     import {screenStore} from "../store";
     import MempoolImpact from "../chart/MempoolImpact.svelte";
 
-    export let Chart
     export let items
     export let estimates
     export let fromTokenSymbol
     export let toTokenSymbol
+    export let resizeSeed
 
     let screen
 
     screenStore.subscribe(newScreen => screen = newScreen)
 
-    function getMempool() {
-        return items.sort((a, b) => Math.abs(b.priceImpact) - Math.abs(a.priceImpact) || b.fromAmountUSD - a.fromAmountUSD);
-    }
-
     let canvasElement
     let chart
-    let mempool = getMempool()
+    let series
+
+    const createSeriesOptions = data => (
+        {
+            priceFormat: {
+                type: 'price',
+                minMove: data.find(e => e.low < 0.1) ? 0.00000001 : 0.1,
+                precision: data.find(e => e.low < 0.1) ? 8 : 2
+            },
+        }
+    )
+
+    const createDataPoints = () => {
+        const data = estimates.map(e => ({
+            open: e[1],
+            close: e[0],
+            low: e[2],
+            high: e[3],
+            time: e[4] / 1000,
+        }))
+        return data
+    }
+
+    $: if (resizeSeed && chart) {
+        chart.resize(window.innerWidth, window.innerHeight * 0.8)
+        chart.timeScale().fitContent()
+    }
 
     $: if (estimates) {
         if (chart) {
-            chart.data.datasets[0].data = createDataPoints()
-            chart.update()
+            const data = createDataPoints()
+            series.applyOptions(createSeriesOptions(data))
+            series.setData(data)
         }
-    }
-
-    $: if (items) {
-        mempool = getMempool()
-    }
-
-    function createDataPoints() {
-        const data = []
-        let prevDataPoint
-        for (const estimate of estimates) {
-
-            const o = prevDataPoint ? prevDataPoint.c : estimate[1]
-            const c = estimate[1]
-            const x = estimate[2] * 1000
-
-            const dataPoint = {
-                x: prevDataPoint && prevDataPoint.x === x ? x + 1 : x,
-                o,
-                h: Math.max(o, c),
-                l: Math.min(o, c),
-                c
-            }
-
-            data.push(dataPoint)
-            prevDataPoint = dataPoint
-        }
-        return data;
-    }
-
-    const data = {
-        datasets: [
-            {
-                data: createDataPoints(),
-            }
-        ]
-    }
-
-    const config = {
-        type: 'candlestick',
-        options: {
-            normalized: true,
-            parsing: false,
-            plugins: {
-                legend: {
-                    display: false
-                },
-            },
-            responsive: true,
-            maintainAspectRatio: false,
-
-        },
-        data
     }
 
     onMount(async () => {
-        chart = new Chart(
-            canvasElement,
-            config
-        )
+        chart = LightweightCharts.createChart(canvasElement);
+        const data = createDataPoints()
+        series = chart.addCandlestickSeries(createSeriesOptions(data))
+        series.setData(data)
+        chart.timeScale().fitContent()
     })
 </script>
 
-<MempoolImpact {mempool}/>
-<div class="container">
-
-    <canvas bind:this={canvasElement}></canvas>
-</div>
+<MempoolImpact mempool={items}/>
+<div bind:this={canvasElement} class="container"></div>
 
 <style>
     .container {
