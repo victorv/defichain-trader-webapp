@@ -53,7 +53,7 @@
 
 <main bind:this={mainElement} tabindex="1">
     {#if allTokens}
-        <svelte:component this={componentType} {allTokens} {Chart}/>
+        <svelte:component this={componentType} {allTokens}/>
     {:else if error}
         <div class="message">
             <p class="error">{error}</p>
