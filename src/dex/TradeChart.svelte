@@ -56,6 +56,9 @@
         const data = createDataPoints()
         series = chart.addCandlestickSeries(createSeriesOptions(data))
         series.setData(data)
+        chart.timeScale().applyOptions({
+            timeVisible: true,
+        })
         chart.timeScale().fitContent()
     })
 </script>
