@@ -8,6 +8,7 @@
     import {screenStore} from "../store";
     import Icon from "../common/Icon.svelte";
     import Links from "../Links/Links.svelte";
+    import Account from "../account/Account.svelte";
 
     export let componentType
     export let onChange
@@ -77,7 +78,8 @@
                 </a>
             </li>
             <li class="pure-menu-item">
-                <a on:click={() => open = false} href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank"
+                <a on:click={() => change(Account)}
+                   href="#account"
                    class="pure-menu-link">
                     <Icon icon="login"/>
                 </a>
