@@ -18,24 +18,51 @@
     let series
     let areaSeries
 
-    const createSeriesOptions = data => (
-        {
+    const calcPriceFormat = n => {
+        if (n < 0.00000001) return [0.00000001, 8]
+        if (n < 0.000001) return [0.000001, 7]
+        if (n < 0.00001) return [0.00001, 6]
+        if (n < 0.0001) return [0.0001, 5]
+        if (n < 0.001) return [0.001, 4]
+        if (n < 0.01) return [0.01, 3]
+        if (n < 0.1) return [0.1, 2]
+        return [1, 0]
+    }
+
+    const createSeriesOptions = data => {
+        let n = Math.min(...data.map(e => e.low)) * 0.001
+        let [minMove, precision] = calcPriceFormat(n)
+
+        console.log(minMove, precision, n)
+        const options = {
             priceFormat: {
                 type: 'price',
-                minMove: data.find(e => e.low < 0.1) ? 0.00000001 : 0.1,
-                precision: data.find(e => e.low < 0.1) ? 8 : 2
+                minMove,
+                precision
             },
         }
-    )
+        return options
+    }
 
     const createDataPoints = () => {
-        const data = estimates.map(e => ({
-            open: e[0],
-            close: e[1],
-            low: e[2],
-            high: e[3],
-            time: e[4] / 1000,
-        }))
+        const data = []
+
+        let prevCandle
+        for(const e of estimates) {
+            const candle = {
+                open: e[0],
+                close: e[1],
+                low: e[2],
+                high: e[3],
+                time: e[4] / 1000,
+            }
+
+            if (prevCandle && candle.open === candle.close) {
+                candle.open = prevCandle.close
+            }
+            prevCandle = candle
+            data.push(candle)
+        }
         return data
     }
 
