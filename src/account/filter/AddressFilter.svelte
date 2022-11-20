@@ -47,11 +47,11 @@
 <form class="pure-form pure-form-stacked" on:submit|preventDefault>
     <fieldset>
 
-        <h1>Address whitelists</h1>
+        <h1>Addresses</h1>
 
         {#if whitelist}
-            <label>Create new whitelist
-                <input bind:value={whitelist.name}/>
+            <label>Create new address group
+                <input bind:value={whitelist.name} placeholder="Group name"/>
             </label>
             <table class="pure-table whitelist">
                 <thead>
@@ -93,10 +93,10 @@
             <button disabled={!whitelist.name || whitelist.addresses.length === 0}
                     on:click={saveWhitelist}
                     type="button"
-                    class="pure-button pure-button-primary">Save whitelist
+                    class="pure-button pure-button-primary">Save group
             </button>
         {:else}
-            <strong>My Whitelists</strong>
+            <strong>My addresses</strong>
             <button on:click={newWhitelist} class="pure-button pure-button-primary">
                 New
             </button>
