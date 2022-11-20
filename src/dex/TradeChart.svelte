@@ -29,8 +29,8 @@
 
     const createDataPoints = () => {
         const data = estimates.map(e => ({
-            open: e[1],
-            close: e[0],
+            open: e[0],
+            close: e[1],
             low: e[2],
             high: e[3],
             time: e[4] / 1000,
