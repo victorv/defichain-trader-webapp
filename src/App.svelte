@@ -7,13 +7,8 @@
 
     let allTokens
     let error
-    let Chart
     let mainElement
     let componentType = Account
-
-    window.fireChartJSLoad = chartConstructor => {
-        Chart = chartConstructor
-    }
 
     const init = async () => {
         const tokensRequest = fetch(`/tokens`).then(res => res.json())

@@ -5,26 +5,19 @@
 </script>
 <script>
     import {removePoolswap, swaps} from "../store";
-    import PoolSwapGraph from "./PoolSwapGraph.svelte";
     import ProfitLoss from "./ProfitLoss.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "./PoolSwapBreakdown.svelte";
     import {hasItems} from "../common/common";
-
-    export let Chart
+    import QuickGraph from "../history/QuickGraph.svelte";
 
     let poolSwaps = []
+    let swap
 
     swaps.subscribe(swaps => poolSwaps = swaps)
 
-    const fetchEstimates = async swap => {
-        const response = await fetch(`/graph?poolswap=${swap.amountFrom} ${swap.tokenFrom} to ${swap.tokenTo}`)
-        return await response.json()
-    }
-
-    const toggleGraph = async forIndex => {
-        const swap = poolSwaps[forIndex]
-        const estimates = swap.graph ? null : await fetchEstimates(swap)
+    const toggleGraph = forIndex => {
+        swap = poolSwaps[forIndex]
 
         swaps.update(poolSwaps =>
             poolSwaps.map((poolSwap, index) =>
@@ -32,7 +25,6 @@
                     ...poolSwap,
                     showBreakdown: false,
                     graph: index === forIndex ? !poolSwap.graph : false,
-                    estimates,
                 })
             )
         )
@@ -88,7 +80,6 @@
                 </td>
                 <td>
                     <button on:click={() => toggleGraph(index)}
-                            disabled={!Chart}
                             class:info={poolSwap.graph}
                             type="button"
                             class="pure-button">
@@ -97,10 +88,10 @@
                     <ProfitLoss {poolSwap} estimate={poolSwap.estimate}/>
                 </td>
             </tr>
-            {#if poolSwap.graph && hasItems(poolSwap.estimates)}
+            {#if poolSwap.graph}
                 <tr>
                     <td colspan="2">
-                        <PoolSwapGraph {Chart} estimates={poolSwap.estimates} {poolSwap}/>
+                        <QuickGraph amount={swap.fromAmount} fromTokenSymbol={swap.tokenFrom} toTokenSymbol={swap.tokenTo}/>
                     </td>
                 </tr>
             {/if}
