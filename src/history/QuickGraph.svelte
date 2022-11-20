@@ -19,7 +19,7 @@
         {id: oneMonth, label: '1 month'},
     ]
     const timeline = {
-        blocks: timelines[0].id
+        blocks: timelines[3].id
     }
 
     let abortController = new AbortController()

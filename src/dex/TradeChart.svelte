@@ -16,6 +16,7 @@
     let canvasElement
     let chart
     let series
+    let areaSeries
 
     const createSeriesOptions = data => (
         {
@@ -46,15 +47,28 @@
     $: if (estimates) {
         if (chart) {
             const data = createDataPoints()
-            series.applyOptions(createSeriesOptions(data))
+            const options = createSeriesOptions(data)
+            series.applyOptions(options)
             series.setData(data)
+            areaSeries.setData(data.map(e => ({
+                time: e.time,
+                value: (e.open + e.close) / 2.0
+            })))
         }
     }
 
     onMount(async () => {
         chart = LightweightCharts.createChart(canvasElement);
         const data = createDataPoints()
-        series = chart.addCandlestickSeries(createSeriesOptions(data))
+
+        const options = createSeriesOptions(data)
+        areaSeries = chart.addAreaSeries(options)
+        areaSeries.setData(data.map(e => ({
+            time: e.time,
+            value: (e.open + e.close) / 2.0
+        })))
+
+        series = chart.addCandlestickSeries(options)
         series.setData(data)
         chart.timeScale().applyOptions({
             timeVisible: true,
