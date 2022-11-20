@@ -3,19 +3,12 @@
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
-    import Stats from "./stats/Stats.svelte";
-    import PoolSwapHistory from "./history/PoolSwapHistory.svelte";
     import TXHistory from "./history/TXHistory.svelte";
 
     let allTokens
     let error
-    let Chart
     let mainElement
     let componentType = TXHistory
-
-    window.fireChartJSLoad = chartConstructor => {
-        Chart = chartConstructor
-    }
 
     const init = async () => {
         const tokensRequest = fetch(`/tokens`).then(res => res.json())
@@ -60,7 +53,7 @@
 
 <main bind:this={mainElement} tabindex="1">
     {#if allTokens}
-        <svelte:component this={componentType} {allTokens} {Chart}/>
+        <svelte:component this={componentType} {allTokens}/>
     {:else if error}
         <div class="message">
             <p class="error">{error}</p>

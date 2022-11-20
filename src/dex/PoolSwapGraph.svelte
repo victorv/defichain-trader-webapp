@@ -10,32 +10,38 @@
     let chart
 
     $: if (chart) {
-        chart.data.labels = estimates.map(e => `height: ${e[0]}, estimate: ${e[1]}`)
-        chart.data.datasets[0].data = estimates.map(e => e[1])
-
-        const blocks = estimates[estimates.length - 1][0] - estimates[0][0]
-        const days = (blocks / 120.0 / 24.0).toFixed(2)
-        chart.options.plugins.title.text = `Days: ${days}`
-
+        chart.data.datasets[0].data = estimates.map(e => ({x: e[2] * 1000, y: e[1]}))
         chart.update()
     }
 
     const data = {
-        labels: estimates.map(e => `height: ${e[0]}, estimate: ${e[1]}`),
         datasets: [
             {
                 type: 'line',
                 label: `${poolSwap.amountFrom} ${poolSwap.tokenFrom} to ${poolSwap.tokenTo}`,
-                data: estimates.map(e => e[1]),
+                data: estimates.map(e => ({x: e[2] * 1000, y: e[1]})),
                 fill: true,
                 borderColor: 'rgb(75, 192, 192)',
             }
         ]
     }
 
+    if(poolSwap.desiredResult) {
+        data.datasets.push({
+            label: 'Desired Result',
+            data: estimates.map(e => ({x: e[2] * 1000, y: poolSwap.desiredResult})),
+            fill: false,
+            hoverRadius: 0,
+            pointRadius: 0,
+            borderColor: 'red',
+        })
+    }
+
     const config = {
         type: 'line',
         options: {
+            normalized: true,
+            parsing: false,
             hover: {
                 intersect: false
             },
@@ -45,30 +51,17 @@
             pointHoverBorderColor: 'rgb(54, 162, 235)',
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                autocolors: false,
-                annotation: poolSwap.desiredResult ? {
-                    annotations: {
-                        line1: {
-                            type: 'line',
-                            yMin: poolSwap.desiredResult,
-                            yMax: poolSwap.desiredResult,
-                            borderColor: 'rgb(255, 99, 132)',
-                            borderWidth: 2,
-                        }
-                    }
-                } : null,
-                title: {
-                    display: true,
-                    text: 'Chart'
-                }
-            },
             scales: {
                 x: {
-                    display: false
+                    type: 'time',
+                    distribution: 'series',
+                    time: {
+                        minUnit: 'day'
+                    }
                 }
             }
         },
+
         data,
     }
 
