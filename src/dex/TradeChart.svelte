@@ -29,13 +29,24 @@
     )
 
     const createDataPoints = () => {
-        const data = estimates.map(e => ({
-            open: e[0],
-            close: e[1],
-            low: e[2],
-            high: e[3],
-            time: e[4] / 1000,
-        }))
+        const data = []
+
+        let prevCandle
+        for(const e of estimates) {
+            const candle = {
+                open: e[0],
+                close: e[1],
+                low: e[2],
+                high: e[3],
+                time: e[4] / 1000,
+            }
+
+            if (prevCandle && candle.open === candle.close) {
+                candle.open = prevCandle.close
+            }
+            prevCandle = candle
+            data.push(candle)
+        }
         return data
     }
 
