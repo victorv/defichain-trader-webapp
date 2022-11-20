@@ -6,7 +6,9 @@
     import {graphStore, mempool, setGraph} from "../store";
 
     export let allTokens
-    export let Chart
+    export let fromTokenSymbol = 'DFI'
+    export let toTokenSymbol = 'BTC'
+    export let amount = 1.0
 
     const oneHour = 120
     const oneDay = oneHour * 24
@@ -23,8 +25,6 @@
     }
 
     let abortController = new AbortController()
-    let fromTokenSymbol = 'DFI'
-    let toTokenSymbol = 'BTC'
     let poolSwap
     let estimates
     let maxEstimates
@@ -63,7 +63,7 @@
                 tokenTo: toTokenSymbol,
                 amountFrom: 1.0,
             }
-            const response = await fetch(`/graph?poolswap=1.0 ${fromTokenSymbol} to ${toTokenSymbol}&blocks=${timeline.blocks}`, {
+            const response = await fetch(`/graph?poolswap=${amount} ${fromTokenSymbol} to ${toTokenSymbol}&blocks=${timeline.blocks}`, {
                 signal: abortController.signal,
             })
             let newEstimates = await response.json()
@@ -123,7 +123,7 @@
     </fieldset>
 </form>
 {#if hasItems(estimates)}
-    <TradeChart {items} {Chart} {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+    <TradeChart {items} {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
 {/if}
 
 <style>
