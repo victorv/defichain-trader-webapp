@@ -8,8 +8,15 @@
     export let allTokens
     export let Chart
 
+    const oneHour = 120
+    const oneDay = oneHour * 24
+    const fiveDays = oneDay * 5
+    const oneMonth = oneDay * 31
     const timelines = [
-        { id: 20160 * 31, label: 'days'},
+        {id: oneHour, label: '1 hour'},
+        {id: oneDay, label: '1 day'},
+        {id: fiveDays, label: '5 days'},
+        {id: oneMonth, label: '1 month'},
     ]
     const timeline = {
         blocks: timelines[0].id
@@ -86,7 +93,7 @@
         const unsubscribe2 = graphStore.subscribe(dataPoint => {
             const estimate = dataPoint.estimate
             if (dataPoint && estimates) {
-                if(estimates.length > 0) {
+                if (estimates.length > 0) {
                     const latestEstimate = estimates[estimates.length - 1][1]
                     if (estimate == latestEstimate) {
                         return
