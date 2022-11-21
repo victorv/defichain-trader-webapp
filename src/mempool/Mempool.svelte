@@ -16,9 +16,8 @@
     }
 </script>
 
-{#if items && items.length}
-    <PoolSwapHistory {allTokens} {items} {refresh} filter={false} mempool={true}/>
-{:else}
+<PoolSwapHistory {allTokens} {items} {refresh} filter={false} mempool={true}/>
+{#if !items || !items.length}
     <div>
     <span class="info">
         Keep open to receive transactions...

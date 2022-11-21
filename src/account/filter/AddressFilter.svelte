@@ -1,17 +1,13 @@
 <script>
     import Icon from "../../common/Icon.svelte";
     import {accountStore, updateAccount} from "../../store";
+    import {onDestroy, onMount} from "svelte";
 
     let account
-    let addressGroups
+    let addressGroups = []
     let addressGroup
     let address = ''
-
-    accountStore.subscribe(newAccount => account = newAccount)
-
-    $: if (account) {
-        addressGroups = account.addressGroups || []
-    }
+    let sub
 
     const cancelWhitelist = () => addressGroup = null
 
@@ -52,6 +48,13 @@
     const editAddressGroup = target => {
         addressGroup = addressGroups.find(ag => ag.name === target.name)
     }
+
+    onMount(() => {
+        sub = accountStore.subscribe(newAccount => account = newAccount)
+        addressGroups = account.addressGroups || []
+    })
+
+    onDestroy(() => sub())
 </script>
 
 <form class="pure-form pure-form-stacked" on:submit|preventDefault>
