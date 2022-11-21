@@ -1,57 +1,64 @@
 <script>
     import Icon from "../../common/Icon.svelte";
+    import {accountStore, updateAccount} from "../../store";
 
-    let whitelists = []
-    let whitelist
+    let account
+    let addressGroups
+    let addressGroup
     let address = ''
 
-    const cancelWhitelist = () => whitelist = null
+    accountStore.subscribe(newAccount => account = newAccount)
 
-    const newWhitelist = () => {
-        whitelist = {
+    $: if (account) {
+        addressGroups = account.addressGroups || []
+    }
+
+    const cancelWhitelist = () => addressGroup = null
+
+    const newAddressGroup = () => {
+        addressGroup = {
             name: '',
             addresses: [],
         }
     }
 
     const removeAddress = address => {
-        whitelist = {
-            ...whitelist,
-            addresses: whitelist.addresses.filter(v => v !== address),
+        addressGroup = {
+            ...addressGroup,
+            addresses: addressGroup.addresses.filter(v => v !== address),
         }
     }
 
     const addAddress = () => {
-        whitelist = {
-            ...whitelist,
-            addresses: whitelist.addresses.concat(address),
+        addressGroup = {
+            ...addressGroup,
+            addresses: addressGroup.addresses.concat(address),
         }
         address = ''
     }
 
-    const saveWhitelist = () => {
-        whitelists = whitelists.concat(whitelist)
-        whitelist = null
+    const saveAddressGroup = () => {
+        removeAddressGroup(addressGroup)
+        addressGroups = addressGroups.concat(addressGroup)
+        addressGroup = null
+        updateAccount({addressGroups})
     }
 
-    const removeWhitelist = w => {
-        whitelists = whitelists.filter(v => v.name !== w.name)
+    const removeAddressGroup = target => {
+        addressGroups = addressGroups.filter(ag => ag.name !== target.name)
+        updateAccount({addressGroups})
     }
 
-    const editWhitelist = w => {
-        whitelist = whitelists.find(v => v.name === w.name)
+    const editAddressGroup = target => {
+        addressGroup = addressGroups.find(ag => ag.name === target.name)
     }
 </script>
 
-<a href="#" on:click|preventDefault>Back</a>
 <form class="pure-form pure-form-stacked" on:submit|preventDefault>
     <fieldset>
-
-        <h1>Addresses</h1>
-
-        {#if whitelist}
-            <label>Create new address group
-                <input bind:value={whitelist.name} placeholder="Group name"/>
+        {#if addressGroup}
+            <label>Name your group and add addresses
+                <input bind:value={addressGroup.name} placeholder="Group name"/>
             </label>
             <table class="pure-table whitelist">
                 <thead>
@@ -61,7 +68,7 @@
                                 disabled={!address}
                                 class="pure-button pure-button-primary"
                                 type="submit">
-                            Add
+                            Add Address
                         </button>
                     </td>
                     <td>
@@ -70,7 +77,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {#each whitelist.addresses as address}
+                {#each addressGroup.addresses as address}
                     <tr class="pure-menu-item">
                         <td>
                             <button on:click={() => removeAddress(address)}
@@ -90,17 +97,17 @@
                     type="button"
                     class="pure-button">Cancel
             </button>
-            <button disabled={!whitelist.name || whitelist.addresses.length === 0}
-                    on:click={saveWhitelist}
+            <button disabled={!addressGroup.name || addressGroup.addresses.length === 0}
+                    on:click={saveAddressGroup}
                     type="button"
                     class="pure-button pure-button-primary">Save group
             </button>
         {:else}
             <strong>My addresses</strong>
-            <button on:click={newWhitelist} class="pure-button pure-button-primary">
-                New
+            <button on:click={newAddressGroup} class="pure-button pure-button-primary">
+                New Address Group
             </button>
-            {#if whitelists.length > 0}
+            {#if addressGroups.length > 0}
                 <table class="pure-table">
                     <thead>
                     <tr>
@@ -108,14 +115,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {#each whitelists as whitelist}
+                    {#each addressGroups as whitelist}
                         <tr class="pure-menu-item">
                             <td>
-                                <button on:click={() => removeWhitelist(whitelist)}
+                                <button on:click={() => removeAddressGroup(whitelist)}
                                         class="pure-button icon">
                                     <Icon icon="remove"/>
                                 </button>
-                                <button on:click={() => editWhitelist(whitelist)}
+                                <button on:click={() => editAddressGroup(whitelist)}
                                         class="pure-button icon">
                                     <Icon icon="edit"/>
                                 </button>

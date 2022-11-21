@@ -1,5 +1,35 @@
 import {writable} from "svelte/store";
 
+const getAccount = () => {
+    if (localStorage) {
+        const item = localStorage.getItem('account')
+        if (item) {
+            const account = JSON.parse(item)
+            if (account && typeof account === 'object') {
+                return account
+            }
+        }
+    }
+    return {
+        addressGroups: []
+    }
+}
+
+export const accountStore = writable(getAccount())
+
+export const updateAccount = partialAccount => {
+    accountStore.update(account => ({
+        ...account,
+        ...partialAccount
+    }))
+}
+
+accountStore.subscribe(account => {
+    if (localStorage && account && typeof account === 'object') {
+        localStorage.setItem('account', JSON.stringify(account))
+    }
+})
+
 export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)
 export const mempool = writable([])
@@ -22,8 +52,6 @@ const updateBody = () => {
 updateBody()
 
 mediaQuery.onchange = updateBody
-
-
 
 
 
