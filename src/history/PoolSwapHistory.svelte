@@ -98,6 +98,60 @@
         return undefined
     }
 
+    const clearAllFilters = async () => {
+        txID = undefined
+        minBlock = undefined
+        maxBlock = undefined
+        minInputAmount = undefined
+        maxInputAmount = undefined
+        minOutputAmount = undefined
+        maxOutputAmount = undefined
+        minFee = undefined
+        maxFee = undefined
+        fromAddress = undefined
+        toAddress = undefined
+        await updateSearch()
+    }
+
+    const clearTXID = async () => {
+        txID = undefined
+        await updateSearch()
+    }
+
+    const clearBlockRange = async () => {
+        minBlock = undefined
+        maxBlock = undefined
+        await updateSearch()
+    }
+
+    const clearInputAmountRange = async () => {
+        minInputAmount = undefined
+        maxInputAmount = undefined
+        await updateSearch()
+    }
+
+    const clearOutputAmountRange = async () => {
+        minOutputAmount = undefined
+        maxOutputAmount = undefined
+        await updateSearch()
+    }
+
+    const clearFeeRange = async () => {
+        minFee = undefined
+        maxFee = undefined
+        await updateSearch()
+    }
+
+    const clearFromAddress = async () => {
+        fromAddress = undefined
+        await updateSearch()
+    }
+
+    const clearToAddress = async () => {
+        toAddress = undefined
+        await updateSearch()
+    }
+
     const createSearch = () => {
         const newSearch = {
             txID,
@@ -186,6 +240,7 @@
         <fieldset>
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+            <button class="pure-button" on:click={clearAllFilters}>Clear Filters</button>
         </fieldset>
     </form>
 {/if}
@@ -199,7 +254,8 @@
                     <th>
                         TX ID
                         {#if !mempool}
-                            <button type="button" class="icon pure-button">X</button>
+                            <button on:click={clearTXID}
+                                    type="button" class="icon pure-button">X</button>
                             <div>
                                 <input type="text" bind:value={txID}/>
                             </div>
@@ -211,7 +267,8 @@
                         Time
                     {:else}
                         Block
-                        <button type="button" class="icon pure-button">X</button>
+                        <button on:click={clearBlockRange}
+                                type="button" class="icon pure-button">X</button>
                         <div>
                             <input type="number" bind:value={minBlock}/>
                             -
@@ -221,7 +278,8 @@
                 </th>
                 <th>
                     Input Amount
-                    <button type="button" class="icon pure-button">X</button>
+                    <button on:click={clearInputAmountRange}
+                            type="button" class="icon pure-button">X</button>
                     <div>
                         $<input type="number" bind:value={minInputAmount}/>
                         -
@@ -230,7 +288,8 @@
                 </th>
                 <th>
                     Output Amount
-                    <button type="button" class="icon pure-button">X</button>
+                    <button on:click={clearOutputAmountRange}
+                             type="button" class="icon pure-button">X</button>
                     <div>
                         $<input type="number" bind:value={minOutputAmount}/>
                         -
@@ -240,7 +299,8 @@
                 {#if screen.large}
                     <th>
                         Fee
-                        <button type="button" class="icon pure-button">X</button>
+                        <button on:click={clearFeeRange}
+                                type="button" class="icon pure-button">X</button>
                         <div>
                             <input type="number" bind:value={minFee}/>
                             -
@@ -249,7 +309,8 @@
                     </th>
                     <th>
                         From
-                        <button type="button" class="icon pure-button">X</button>
+                        <button on:click={clearFromAddress}
+                                type="button" class="icon pure-button">X</button>
                         <div>
                             <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
                                 <option value="">Any</option>
@@ -257,12 +318,13 @@
                                     <option value={group.name}>{group.name}</option>
                                 {/each}
                             </select>
-                            <input type="text" bind:value={toAddress}/>
+                            <input type="text" bind:value={fromAddress}/>
                         </div>
                     </th>
                     <th>
                         To
-                        <button type="button" class="icon pure-button">X</button>
+                        <button on:click={clearToAddress}
+                                type="button" class="icon pure-button">X</button>
                         <div>
                             <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
                                 <option value="">Any</option>
@@ -270,7 +332,7 @@
                                     <option value={group.name}>{group.name}</option>
                                 {/each}
                             </select>
-                            <input type="text" bind:value={fromAddress}/>
+                            <input type="text" bind:value={toAddress}/>
                         </div>
                     </th>
                 {/if}
