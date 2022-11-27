@@ -33,7 +33,6 @@
         let n = Math.min(...data.map(e => e.low)) * 0.001
         let [minMove, precision] = calcPriceFormat(n)
 
-        console.log(minMove, precision, n)
         const options = {
             priceFormat: {
                 type: 'price',
@@ -57,7 +56,7 @@
                 time: e[4] / 1000,
             }
 
-            if (prevCandle && candle.open === candle.close) {
+            if (prevCandle) {
                 candle.open = prevCandle.close
             }
             prevCandle = candle
