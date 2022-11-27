@@ -248,6 +248,29 @@
         <fieldset>
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+
+            {#if account && !mempool}
+                <label>
+                    From Addresses
+                    <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
+                        <option value="">Any</option>
+                        {#each account.addressGroups as group}
+                            <option value={group.name}>{group.name}</option>
+                        {/each}
+                    </select>
+                </label>
+
+                <label>
+                    To Addresses
+                    <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
+                        <option value="">Any</option>
+                        {#each account.addressGroups as group}
+                            <option value={group.name}>{group.name}</option>
+                        {/each}
+                    </select>
+                </label>
+            {/if}
+
             <button on:click={() => filterForm = !filterForm}
                     class="pure-button icon">
                 <Icon icon="filter"/>
@@ -257,28 +280,8 @@
 {/if}
 
 {#if filterForm}
-    <form class="pure-form-stacked" on:submit|preventDefault={submitFilterForm}>
+    <form class="pure-form pure-form-stacked" on:submit|preventDefault={submitFilterForm}>
         <fieldset>
-            <label>
-                "From Address" whitelist
-                <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
-                    <option value="">Any</option>
-                    {#each account.addressGroups as group}
-                        <option value={group.name}>{group.name}</option>
-                    {/each}
-                </select>
-            </label>
-
-            <label>
-                "To Address" whitelist
-                <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
-                    <option value="">Any</option>
-                    {#each account.addressGroups as group}
-                        <option value={group.name}>{group.name}</option>
-                    {/each}
-                </select>
-            </label>
-
             <label>
                 "From Address"
                 <input type="text" bind:value={fromAddress}/>
@@ -342,6 +345,11 @@
         </fieldset>
     </form>
 {:else}
+    {#if account && !mempool}
+        <form class="pure-form active-filters">
+
+        </form>
+    {/if}
     <table class:small={screen.small} class="pure-table pure-table-striped">
         {#if account && search}
             <thead>
