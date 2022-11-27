@@ -3,7 +3,7 @@
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
-    import {hasItems} from "../common/common";
+    import {asDollars, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {accountStore, screenStore, updateAccount} from "../store";
     import Limit from "../common/Limit.svelte";
@@ -12,6 +12,7 @@
 
     let account
     let search
+    let filterForm
 
     export let allTokens
     export let refresh
@@ -110,6 +111,8 @@
         maxFee = undefined
         fromAddress = undefined
         toAddress = undefined
+
+        filterForm = false
         await updateSearch()
     }
 
@@ -233,6 +236,11 @@
         swapToFrom = await response.json()
         swapToFrom.tx = swap
     }
+
+    const submitFilterForm = async () => {
+        filterForm = false
+        await updateSearch()
+    }
 </script>
 
 {#if filter !== false}
@@ -240,12 +248,100 @@
         <fieldset>
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-            <button class="pure-button" on:click={clearAllFilters}>Clear Filters</button>
+            <button on:click={() => filterForm = !filterForm}
+                    class="pure-button icon">
+                <Icon icon="filter"/>
+            </button>
         </fieldset>
     </form>
 {/if}
 
-<form on:submit|preventDefault={updateSearch}>
+{#if filterForm}
+    <form class="pure-form-stacked" on:submit|preventDefault={submitFilterForm}>
+        <fieldset>
+            <label>
+                "From Address" whitelist
+                <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
+                    <option value="">Any</option>
+                    {#each account.addressGroups as group}
+                        <option value={group.name}>{group.name}</option>
+                    {/each}
+                </select>
+            </label>
+
+            <label>
+                "To Address" whitelist
+                <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
+                    <option value="">Any</option>
+                    {#each account.addressGroups as group}
+                        <option value={group.name}>{group.name}</option>
+                    {/each}
+                </select>
+            </label>
+
+            <label>
+                "From Address"
+                <input type="text" bind:value={fromAddress}/>
+            </label>
+
+            <label>
+                "To Address"
+                <input type="text" bind:value={toAddress}/>
+            </label>
+
+            {#if !mempool}
+                <label>
+                    TX ID
+                    <input type="text" bind:value={txID}/>
+                </label>
+            {/if}
+
+            <label>
+                Min block height
+                <input type="number" bind:value={minBlock}/>
+            </label>
+
+            <label>
+                Max block height
+                <input type="number" bind:value={maxBlock}/>
+            </label>
+
+
+            <label>
+                Min input amount (USD)
+                <input type="number" bind:value={minInputAmount}/>
+            </label>
+
+            <label>
+                Max input amount (USD)
+                <input type="number" bind:value={maxInputAmount}/>
+            </label>
+
+
+            <label>
+                Min output amount (USD)
+                <input type="number" bind:value={minOutputAmount}/>
+            </label>
+
+            <label>
+                Max output amount (USD)
+                <input type="number" bind:value={maxOutputAmount}/>
+            </label>
+
+            <label>
+                Min fee
+                <input type="number" bind:value={minFee}/>
+            </label>
+            <label>
+                Max fee
+                <input type="number" bind:value={maxFee}/>
+            </label>
+
+            <button on:click={clearAllFilters} class="pure-button" type="button">Clear all</button>
+            <button class="pure-button" type="submit">Apply filters</button>
+        </fieldset>
+    </form>
+{:else}
     <table class:small={screen.small} class="pure-table pure-table-striped">
         {#if account && search}
             <thead>
@@ -253,13 +349,6 @@
                 {#if screen.large}
                     <th>
                         TX ID
-                        {#if !mempool}
-                            <button on:click={clearTXID}
-                                    type="button" class="icon pure-button">X</button>
-                            <div>
-                                <input type="text" bind:value={txID}/>
-                            </div>
-                        {/if}
                     </th>
                 {/if}
                 <th>
@@ -267,73 +356,23 @@
                         Time
                     {:else}
                         Block
-                        <button on:click={clearBlockRange}
-                                type="button" class="icon pure-button">X</button>
-                        <div>
-                            <input type="number" bind:value={minBlock}/>
-                            -
-                            <input type="number" bind:value={maxBlock}/>
-                        </div>
                     {/if}
                 </th>
                 <th>
                     Input Amount
-                    <button on:click={clearInputAmountRange}
-                            type="button" class="icon pure-button">X</button>
-                    <div>
-                        $<input type="number" bind:value={minInputAmount}/>
-                        -
-                        $<input type="number" bind:value={maxInputAmount}/>
-                    </div>
                 </th>
                 <th>
                     Output Amount
-                    <button on:click={clearOutputAmountRange}
-                             type="button" class="icon pure-button">X</button>
-                    <div>
-                        $<input type="number" bind:value={minOutputAmount}/>
-                        -
-                        $<input type="number" bind:value={maxOutputAmount}/>
-                    </div>
                 </th>
                 {#if screen.large}
                     <th>
                         Fee
-                        <button on:click={clearFeeRange}
-                                type="button" class="icon pure-button">X</button>
-                        <div>
-                            <input type="number" bind:value={minFee}/>
-                            -
-                            <input type="number" bind:value={maxFee}/>
-                        </div>
                     </th>
                     <th>
                         From
-                        <button on:click={clearFromAddress}
-                                type="button" class="icon pure-button">X</button>
-                        <div>
-                            <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
-                                <option value="">Any</option>
-                                {#each account.addressGroups as group}
-                                    <option value={group.name}>{group.name}</option>
-                                {/each}
-                            </select>
-                            <input type="text" bind:value={fromAddress}/>
-                        </div>
                     </th>
                     <th>
                         To
-                        <button on:click={clearToAddress}
-                                type="button" class="icon pure-button">X</button>
-                        <div>
-                            <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
-                                <option value="">Any</option>
-                                {#each account.addressGroups as group}
-                                    <option value={group.name}>{group.name}</option>
-                                {/each}
-                            </select>
-                            <input type="text" bind:value={toAddress}/>
-                        </div>
                     </th>
                 {/if}
             </tr>
@@ -386,6 +425,10 @@
                         </button>
                         <span>{tx.amountFrom}</span>
                         <span>{tx.tokenFrom}</span>
+                        <br/>
+                        <span>
+                            <strong>{asDollars(tx.fromAmountUSD)}</strong>
+                        </span>
                     </td>
                     <td>
                         <button on:click={() => toggleEstimateToFrom(tx)}
@@ -405,6 +448,10 @@
                         {:else}
                             N/A {tx.tokenTo}
                         {/if}
+                        <br/>
+                        <span>
+                            <strong>{asDollars(tx.toAmountUSD)}</strong>
+                        </span>
                     </td>
                     {#if screen.large}
                         <td>
@@ -459,8 +506,7 @@
             </tbody>
         {/if}
     </table>
-    <button type="submit"></button>
-</form>
+{/if}
 
 <style>
     form {
@@ -486,5 +532,13 @@
 
     th input, th select {
         max-width: 4rem;
+    }
+
+    .red {
+        color: red;
+        font-weight: bold;
+        padding: 0;
+        border: none;
+        background: none;
     }
 </style>
