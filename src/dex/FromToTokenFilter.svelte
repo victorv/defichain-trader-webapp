@@ -49,7 +49,6 @@
 
 <div class="from-to">
     <div>
-        <label for="from-token-button">From</label>
         <button on:click={() => onTokenSelected = onFromTokenSelected}
                 class:pure-button-primary={onTokenSelected === onFromTokenSelected}
                 disabled={onTokenSelected}
@@ -59,7 +58,7 @@
             {#if fromTokenSymbol}
                 {fromTokenSymbol.replaceAll('_', ' ')}
             {:else if supportAnyToken}
-                Any
+                Any token
             {:else}
                 Select token
             {/if}
@@ -78,7 +77,7 @@
             {#if toTokenSymbol}
                 {toTokenSymbol.replaceAll('_', ' ')}
             {:else if supportAnyToken}
-                Any
+                Any token
             {:else}
                 Select token
             {/if}

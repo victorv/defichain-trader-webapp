@@ -1,8 +1,9 @@
 <script>
     import PoolSwapHistory from "./PoolSwapHistory.svelte";
-    import {onMount} from "svelte";
+    import {onDestroy, onMount} from "svelte";
     import Help from "../common/Help.svelte";
     import Icon from "../common/Icon.svelte";
+    import {accountStore} from "../store";
 
     export let allTokens
 
@@ -11,9 +12,10 @@
     let error
 
     let loading
-    let filterString = ''
     let currentFilter
 
+    let account
+    let sub
     let hasMore
     let pager = {offset: 0}
 
@@ -41,11 +43,6 @@
 
         const requestBody = {...filter, ...(currentFilter || {})}
 
-        if (filterString) {
-            requestBody.filterString = filterString
-        } else if (filterString === 'NA') {
-            requestBody.filterString = ''
-        }
         if (getMore) {
             requestBody.pager = pager
         }
@@ -92,9 +89,11 @@
         })
     }
 
-    onMount(async () => {
-        await refresh({})
+    onMount(() => {
+        sub = accountStore.subscribe(newAccount => account = newAccount)
     })
+
+    onDestroy(() => sub())
 </script>
 
 <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
@@ -102,7 +101,6 @@
         <select>
             <option>Pool Swaps</option>
         </select>
-        <input bind:value={filterString} type="text" placeholder="TX ID/Address/Block Hash"/>
         <button class="pure-button icon" type="submit">
             <Icon icon="search"/>
         </button>

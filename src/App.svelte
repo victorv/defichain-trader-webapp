@@ -3,12 +3,12 @@
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
-    import TXHistory from "./history/TXHistory.svelte";
+    import Account from "./account/Account.svelte";
 
     let allTokens
     let error
     let mainElement
-    let componentType = TXHistory
+    let componentType = Account
 
     const init = async () => {
         const tokensRequest = fetch(`/tokens`).then(res => res.json())
