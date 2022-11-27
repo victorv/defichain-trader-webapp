@@ -121,26 +121,42 @@
         await updateSearch()
     }
 
-    const clearBlockRange = async () => {
+    const clearMinBlock = async () => {
         minBlock = undefined
+        await updateSearch()
+    }
+
+    const clearMaxBlock = async () => {
         maxBlock = undefined
         await updateSearch()
     }
 
-    const clearInputAmountRange = async () => {
+    const clearMinInputAmount = async () => {
         minInputAmount = undefined
+        await updateSearch()
+    }
+
+    const clearMaxInputAmount = async () => {
         maxInputAmount = undefined
         await updateSearch()
     }
 
-    const clearOutputAmountRange = async () => {
+    const clearMinOutputAmount = async () => {
         minOutputAmount = undefined
+        await updateSearch()
+    }
+
+    const clearMaxOutputAmount = async () => {
         maxOutputAmount = undefined
         await updateSearch()
     }
 
-    const clearFeeRange = async () => {
+    const clearMinFee = async () => {
         minFee = undefined
+        await updateSearch()
+    }
+
+    const clearMaxFee = async () => {
         maxFee = undefined
         await updateSearch()
     }
@@ -251,7 +267,7 @@
 
             {#if account && !mempool}
                 <label>
-                    From Addresses
+                    From
                     <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
                         <option value="">Any</option>
                         {#each account.addressGroups as group}
@@ -261,7 +277,7 @@
                 </label>
 
                 <label>
-                    To Addresses
+                    To
                     <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
                         <option value="">Any</option>
                         {#each account.addressGroups as group}
@@ -301,54 +317,112 @@
 
             <label>
                 Min block height
-                <input type="number" bind:value={minBlock}/>
+                <input min="0" step="1" type="number" bind:value={minBlock}/>
             </label>
 
             <label>
                 Max block height
-                <input type="number" bind:value={maxBlock}/>
+                <input min="0" step="1" type="number" bind:value={maxBlock}/>
             </label>
 
 
             <label>
                 Min input amount (USD)
-                <input type="number" bind:value={minInputAmount}/>
+                <input min="0" step="0.00000001" type="number" bind:value={minInputAmount}/>
             </label>
 
             <label>
                 Max input amount (USD)
-                <input type="number" bind:value={maxInputAmount}/>
+                <input min="0" step="0.00000001" type="number" bind:value={maxInputAmount}/>
             </label>
 
 
             <label>
                 Min output amount (USD)
-                <input type="number" bind:value={minOutputAmount}/>
+                <input min="0" step="0.00000001" type="number" bind:value={minOutputAmount}/>
             </label>
 
             <label>
                 Max output amount (USD)
-                <input type="number" bind:value={maxOutputAmount}/>
+                <input min="0" step="0.00000001" type="number" bind:value={maxOutputAmount}/>
             </label>
 
             <label>
                 Min fee
-                <input type="number" bind:value={minFee}/>
+                <input min="0" step="0.00000001" type="number" bind:value={minFee}/>
             </label>
             <label>
                 Max fee
-                <input type="number" bind:value={maxFee}/>
+                <input min="0" step="0.00000001" type="number" bind:value={maxFee}/>
             </label>
-
-            <button on:click={clearAllFilters} class="pure-button" type="button">Clear all</button>
             <button class="pure-button" type="submit">Apply filters</button>
         </fieldset>
     </form>
 {:else}
     {#if account && !mempool}
-        <form class="pure-form active-filters">
-
+        <form class="pure-form active-filters" on:submit|preventDefault>
+            {#if minFee || maxFee || minBlock || maxBlock ||
+            minInputAmount || maxInputAmount || minOutputAmount || maxOutputAmount ||
+            txID || fromAddress || toAddress}
+                <button on:click={clearAllFilters} class="pure-button" type="button">Remove filters</button>
+            {/if}
+            {#if minFee}
+                <button on:click={clearMinFee} class="pure-button" type="button">
+                    <strong class="red">X</strong> min fee: <strong>{minFee}</strong>
+                </button>
+            {/if}
+            {#if maxFee}
+                <button on:click={clearMaxFee} class="pure-button" type="button">
+                    <strong class="red">X</strong> max fee: <strong>{maxFee}</strong>
+                </button>
+            {/if}
+            {#if minBlock}
+                <button on:click={clearMinBlock} class="pure-button" type="button">
+                    <strong class="red">X</strong> min block height: <strong>{minBlock}</strong>
+                </button>
+            {/if}
+            {#if maxBlock}
+                <button on:click={clearMaxBlock} class="pure-button" type="button">
+                    <strong class="red">X</strong> max block height: <strong>{maxBlock}</strong>
+                </button>
+            {/if}
+            {#if minInputAmount}
+                <button on:click={clearMinInputAmount} class="pure-button" type="button">
+                    <strong class="red">X</strong> min input amount: <strong>${minInputAmount}</strong>
+                </button>
+            {/if}
+            {#if maxInputAmount}
+                <button on:click={clearMaxInputAmount} class="pure-button" type="button">
+                    <strong class="red">X</strong> max input amount: <strong>${maxInputAmount}</strong>
+                </button>
+            {/if}
+            {#if minOutputAmount}
+                <button on:click={clearMinOutputAmount} class="pure-button" type="button">
+                    <strong class="red">X</strong> min output amount: <strong>${minOutputAmount}</strong>
+                </button>
+            {/if}
+            {#if maxOutputAmount}
+                <button on:click={clearMaxOutputAmount} class="pure-button" type="button">
+                    <strong class="red">X</strong> max output amount: <strong>${maxOutputAmount}</strong>
+                </button>
+            {/if}
+            {#if txID}
+                <button on:click={clearTXID} class="pure-button" type="button">
+                    <strong class="red">X</strong> TX ID: <strong>{txID}</strong>
+                </button>
+            {/if}
+            {#if fromAddress}
+                <button on:click={clearFromAddress} class="pure-button" type="button">
+                    <strong class="red">X</strong> From: <strong>{fromAddress}</strong>
+                </button>
+            {/if}
+            {#if toAddress}
+                <button on:click={clearToAddress} class="pure-button" type="button">
+                    <strong class="red">X</strong> To: <strong>{toAddress}</strong>
+                </button>
+            {/if}
         </form>
+        <br/>
     {/if}
     <table class:small={screen.small} class="pure-table pure-table-striped">
         {#if account && search}
@@ -542,11 +616,11 @@
         max-width: 4rem;
     }
 
+    .active-filters button {
+        margin-bottom: 0.2rem;
+    }
+
     .red {
         color: red;
-        font-weight: bold;
-        padding: 0;
-        border: none;
-        background: none;
     }
 </style>
