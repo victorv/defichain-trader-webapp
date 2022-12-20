@@ -1,6 +1,5 @@
 <svelte:options immutable/>
 <script>
-    import DEX from "../dex/DEX.svelte";
     import Stats from "../stats/Stats.svelte";
     import TXHistory from "../history/TXHistory.svelte";
     import Mempool from "../mempool/Mempool.svelte";
@@ -53,35 +52,23 @@
                 <a href="#quick-graph" class="pure-menu-link">Quick Graph</a>
             </li>
 
-            <li class:pure-menu-selected={componentType === Mempool}
-                on:click={() => change(Mempool)}
-                class="pure-menu-item">
-                <a href="#mempool" class="pure-menu-link">Mempool</a>
-            </li>
-
-            <li class:pure-menu-selected={componentType === DEX}
-                on:click={() => change(DEX)}
-                class="pure-menu-item">
-                <a href="#dex" class="pure-menu-link">Your Pool Swaps</a>
-            </li>
-
             <li class:pure-menu-selected={componentType === Stats}
                 on:click={() => change(Stats)}
                 class="pure-menu-item">
                 <a href="#bought_sold" class="pure-menu-link">Stats</a>
+            </li>
+            <li class="pure-menu-item">
+                <a on:click={() => change(Account)}
+                   href="#account"
+                   class="pure-menu-link">
+                    Account
+                </a>
             </li>
             <li class="pure-menu-item"
                 on:click={() => change(Links)}>
                 <a href="#contact"
                    class="pure-menu-link">
                     Links
-                </a>
-            </li>
-            <li class="pure-menu-item">
-                <a on:click={() => change(Account)}
-                   href="#account"
-                   class="pure-menu-link">
-                    <Icon icon="login"/>
                 </a>
             </li>
         </ul>

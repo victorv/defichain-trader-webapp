@@ -4,12 +4,14 @@
     import Help from "../common/Help.svelte";
     import Icon from "../common/Icon.svelte";
     import {accountStore} from "../store";
+    import Mempool from "../mempool/Mempool.svelte";
 
     export let allTokens
 
     let abortController = new AbortController()
     let items
     let error
+    let mempool = false
 
     let loading
     let currentFilter
@@ -101,39 +103,49 @@
         <select>
             <option>Pool Swaps</option>
         </select>
-        <button class="pure-button icon" type="submit">
+        <button disabled={mempool} class="pure-button icon" type="submit">
             <Icon icon="search"/>
         </button>
+        <label>
+            Mempool
+            <input bind:checked={mempool} type="checkbox"/>
+        </label>
+        <Help help="Make a cup of tea, relax and watch transactions that were just announced come in. Maybe you will even see your own transaction here shortly after you have submitted the signed transaction."/>
     </fieldset>
 </form>
 
-<PoolSwapHistory {allTokens} {items} {refresh} mempool={false}/>
+{#if mempool}
+    <Mempool {allTokens}/>
+{:else}
+    <PoolSwapHistory {allTokens} {items} {refresh} mempool={false}/>
 
-{#if hasMore && !error}
-    <section class="pager">
-        <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button" type="button">
-            Show more
-        </button>
-        {#if currentFilter && currentFilter.sort}
-            <Help help="Paging currently only works for Most Recent - Old"/>
-        {/if}
-    </section>
-{/if}
+    {#if hasMore && !error}
+        <section class="pager">
+            <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button"
+                    type="button">
+                Show more
+            </button>
+            {#if currentFilter && currentFilter.sort}
+                <Help help="Paging currently only works for Most Recent - Old"/>
+            {/if}
+        </section>
+    {/if}
 
-{#if items && !items.length}
-    <div class="message">
-        <p class="info">
-            0 results found
-        </p>
-    </div>
-{:else if error}
-    <div class="message">
-        <p class="error">{error}</p>
-    </div>
-{:else if loading}
-    <div class="message">
-        <p class="info">Loading results...</p>
-    </div>
+    {#if items && !items.length}
+        <div class="message">
+            <p class="info">
+                0 results found
+            </p>
+        </div>
+    {:else if error}
+        <div class="message">
+            <p class="error">{error}</p>
+        </div>
+    {:else if loading}
+        <div class="message">
+            <p class="info">Loading results...</p>
+        </div>
+    {/if}
 {/if}
 
 <style>

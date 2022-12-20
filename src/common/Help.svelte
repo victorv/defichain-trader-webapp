@@ -8,7 +8,7 @@
 </script>
 
 <div class:white={whiteText} class:blue={!whiteText} class:warn={warning} class="tooltip" tabindex="0">{#if warning}[!]{:else}[?]{/if}
-    <span class="tooltip-text">{help}</span>
+    <span class="tooltip-text">{@html help}</span>
 </div>
 
 <style>

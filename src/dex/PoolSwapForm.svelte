@@ -71,7 +71,7 @@
         {#if fromTokenSymbol && toTokenSymbol}
             <div>
                 <div>
-                    <label for="from-amount">
+                    <label for="from-amount" on:click|preventDefault>
                         From Amount
                         <Help help="Example: if you want to swap 1 BTC to USDT. You would enter 1 here."/>
                     </label>
@@ -85,7 +85,7 @@
                            type="number">
                 </div>
                 <div>
-                    <label for="desired-result">
+                    <label for="desired-result" on:click|preventDefault>
                         Desired Result
                         <Help help="Used to calculate your profit or loss. If your desired result is 1 BTC. And the actual result is 0.9 BTC you have a loss of 10%. Set it accordingly to receive notifications at the right time. You can enter an exact value if you know your desired result."/>
                     </label>
@@ -99,7 +99,7 @@
                            type="number">
                 </div>
                 <div>
-                    <label>
+                    <label on:click|preventDefault>
                         Quick Desired Result
                         <Help help="Sets the desired result to the live result for your swap plus the selected percentage. Example: you are swapping 1 BTC to USDT when 1 BTC is worth 20k USDT. You select 10%. Then your desired result will now be 22k USDT."/>
                     </label>
@@ -132,7 +132,7 @@
                     </div>
                 </div>
                 <div>
-                    <label for="desired-result-multiplier">
+                    <label for="desired-result-multiplier" on:click|preventDefault>
                         Advanced Desired Result
                         <Help help="Sets the desired result to the live result for your swap after multiplying it with your custom multiplier. Example: you are swapping 1 BTC to USDT when 1 BTC is worth 20k USDT. Your custom multiplier is 1.1. Then your desired result will now be 22k USDT."/>
                     </label>

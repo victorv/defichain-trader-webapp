@@ -30,11 +30,11 @@ accountStore.subscribe(account => {
     }
 })
 
+export const uuidStore = writable(null)
 export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)
 export const mempool = writable([])
 export const swaps = writable([])
-export const graphStore = writable({})
 export const screenStore = writable({
     large: false,
     small: true,
@@ -52,8 +52,6 @@ const updateBody = () => {
 updateBody()
 
 mediaQuery.onchange = updateBody
-
-
 
 const getSwapID = swap => {
     return `${swap.tokenFrom}+${swap.tokenTo}+${swap.amountFrom}+${swap.desiredResult}`
@@ -73,7 +71,9 @@ const storePoolSwaps = swaps => {
 }
 
 incomingMessages.subscribe(message => {
-    if (message.id === 'mempool-swap') {
+    if(message.id === 'uuid') {
+        uuidStore.set(message.data)
+    } else if (message.id === 'mempool-swap') {
         mempool.update(state => state.concat(message.data))
     } else if (message.id === 'block') {
         mempool.set([])
@@ -103,25 +103,12 @@ incomingMessages.subscribe(message => {
             storePoolSwaps(updated)
             return updated
         })
-    } else if (message.id === 'graph-data-point') {
-        graphStore.set(message.data)
     }
 })
 
 export const store = writable({
     account: {},
 })
-
-export const setGraph = (fromToken, toToken) => {
-    outgoingMessages.set({
-        id: 'set-graph',
-        data: {
-            fromToken,
-            toToken
-        },
-    })
-    mempool.set([])
-}
 
 export const removePoolswap = swap => {
     outgoingMessages.set({

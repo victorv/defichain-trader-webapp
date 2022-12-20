@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script>
     import {calcProfitLoss} from "../common/common";
     import Percentage from "./Percentage.svelte";

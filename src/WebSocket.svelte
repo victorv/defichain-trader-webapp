@@ -5,21 +5,6 @@
     let socket
     let connected
     let error
-    let uuid
-
-    const getUUID = () => {
-        if (localStorage) {
-            let uuid = localStorage.getItem("uuid")
-            if (!uuid) {
-                uuid = `${Math.random()}`
-            }
-            localStorage.setItem("uuid", uuid)
-            return uuid
-        }
-        return `${Math.random()}`
-    }
-
-    uuid = getUUID()
 
     outgoingMessages.subscribe(message => {
         if (message != null) {
@@ -47,10 +32,6 @@
             connecting = false
             connected = true
             error = null
-            socket.send(JSON.stringify({
-                id: 'uuid',
-                data: uuid,
-            }))
 
             const swaps = localStorage
                 ? JSON.parse(localStorage.getItem('poolSwaps') || '[]')
