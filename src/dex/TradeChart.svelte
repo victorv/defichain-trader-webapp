@@ -1,9 +1,7 @@
 <script>
     import {onMount} from "svelte";
     import {screenStore} from "../store";
-    import MempoolImpact from "../chart/MempoolImpact.svelte";
 
-    export let items
     export let estimates
     export let fromTokenSymbol
     export let toTokenSymbol
@@ -103,7 +101,6 @@
     })
 </script>
 
-<MempoolImpact mempool={items}/>
 <div bind:this={canvasElement} class="container"></div>
 
 <style>

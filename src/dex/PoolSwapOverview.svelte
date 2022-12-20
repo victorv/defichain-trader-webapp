@@ -85,7 +85,7 @@
                             class="pure-button">
                         <Icon icon="graph"/>
                     </button>
-                    <ProfitLoss {poolSwap} estimate={poolSwap.estimate}/>
+                    {poolSwap.estimate} = <ProfitLoss {poolSwap} estimate={poolSwap.estimate}/>
                 </td>
             </tr>
             {#if poolSwap.graph}

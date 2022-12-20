@@ -5,7 +5,7 @@
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {asDollars, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
-    import {accountStore, screenStore, updateAccount} from "../store";
+    import {accountStore, screenStore, updateAccount, uuidStore} from "../store";
     import Limit from "../common/Limit.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import {onDestroy, onMount} from "svelte";
@@ -34,7 +34,7 @@
     let toAddressGroup
     let toAddress
 
-    let sub
+    let subs = []
     let now = new Date().getTime()
     let interval
 
@@ -51,8 +51,10 @@
     let selectedTX
     let screen
 
+    let uuid
+
     onMount(async () => {
-        sub = accountStore.subscribe(newAccount => {
+        const sub1 = accountStore.subscribe(newAccount => {
             account = newAccount
             search = (mempool ? account.mempoolSearch : account.swapSearch) || {}
             txID = search.txID
@@ -70,6 +72,13 @@
             toAddress = search.toAddress
         })
 
+        const sub2 = uuidStore.subscribe(newUUID => {
+            uuid = newUUID
+        })
+
+        subs.push(sub1)
+        subs.push(sub2)
+
         interval = setInterval(() => {
             now = new Date().getTime()
         }, 30000)
@@ -79,7 +88,7 @@
 
     onDestroy(() => {
         clearInterval(interval)
-        sub()
+        subs.forEach(sub => sub())
     })
 
     screenStore.subscribe(newScreen => screen = newScreen)
@@ -257,6 +266,28 @@
         filterForm = false
         await updateSearch()
     }
+
+    const createTelegramNotification = async () => {
+        const description = prompt("Describe your notification in short")
+        if (description && description.length < 100) {
+            const newSearch = createSearch()
+            newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
+            newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
+            const response = await fetch(`/notification?uuid=${uuid}&description=${encodeURIComponent(description)}`, {
+                method: 'POST',
+                body: JSON.stringify(newSearch),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            if (response.ok) {
+                window.open(`https://telegram.me/DeFiChainTraderBot?start=${uuid}`)
+            } else {
+                alert('Sorry we are unable to create this notification')
+            }
+        }
+    }
 </script>
 
 {#if filter !== false}
@@ -264,7 +295,6 @@
         <fieldset>
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-
             {#if account && !mempool}
                 <label>
                     From
@@ -286,7 +316,6 @@
                     </select>
                 </label>
             {/if}
-
             <button on:click={() => filterForm = !filterForm}
                     class="pure-button icon">
                 <Icon icon="filter"/>
@@ -298,16 +327,6 @@
 {#if filterForm}
     <form class="pure-form pure-form-stacked" on:submit|preventDefault={submitFilterForm}>
         <fieldset>
-            <label>
-                "From Address"
-                <input type="text" bind:value={fromAddress}/>
-            </label>
-
-            <label>
-                "To Address"
-                <input type="text" bind:value={toAddress}/>
-            </label>
-
             {#if !mempool}
                 <label>
                     TX ID
@@ -315,47 +334,68 @@
                 </label>
             {/if}
 
-            <label>
-                Min block height
-                <input min="0" step="1" type="number" bind:value={minBlock}/>
-            </label>
+            <div class="row">
+                <label>
+                    From Address
+                    <input type="text" bind:value={fromAddress}/>
+                </label>
 
-            <label>
-                Max block height
-                <input min="0" step="1" type="number" bind:value={maxBlock}/>
-            </label>
+                <label>
+                    To Address
+                    <input type="text" bind:value={toAddress}/>
+                </label>
+            </div>
 
+            <div class="row">
+                <label>
+                    Min block height
+                    <input min="0" step="1" type="number" bind:value={minBlock}/>
+                </label>
 
-            <label>
-                Min input amount (USD)
-                <input min="0" step="0.00000001" type="number" bind:value={minInputAmount}/>
-            </label>
+                <label>
+                    Max block height
+                    <input min="0" step="1" type="number" bind:value={maxBlock}/>
+                </label>
+            </div>
 
-            <label>
-                Max input amount (USD)
-                <input min="0" step="0.00000001" type="number" bind:value={maxInputAmount}/>
-            </label>
+            <div class="row">
+                <label>
+                    Min input amount (USD)
+                    <input min="0" step="0.00000001" type="number" bind:value={minInputAmount}/>
+                </label>
 
+                <label>
+                    Max input amount (USD)
+                    <input min="0" step="0.00000001" type="number" bind:value={maxInputAmount}/>
+                </label>
+            </div>
 
-            <label>
-                Min output amount (USD)
-                <input min="0" step="0.00000001" type="number" bind:value={minOutputAmount}/>
-            </label>
+            <div class="row">
+                <label>
+                    Min output amount (USD)
+                    <input min="0" step="0.00000001" type="number" bind:value={minOutputAmount}/>
+                </label>
 
-            <label>
-                Max output amount (USD)
-                <input min="0" step="0.00000001" type="number" bind:value={maxOutputAmount}/>
-            </label>
+                <label>
+                    Max output amount (USD)
+                    <input min="0" step="0.00000001" type="number" bind:value={maxOutputAmount}/>
+                </label>
+            </div>
 
-            <label>
-                Min fee
-                <input min="0" step="0.00000001" type="number" bind:value={minFee}/>
-            </label>
-            <label>
-                Max fee
-                <input min="0" step="0.00000001" type="number" bind:value={maxFee}/>
-            </label>
+            <div class="row">
+                <label>
+                    Min fee
+                    <input min="0" step="0.00000001" type="number" bind:value={minFee}/>
+                </label>
+                <label>
+                    Max fee
+                    <input min="0" step="0.00000001" type="number" bind:value={maxFee}/>
+                </label>
+            </div>
             <button class="pure-button" type="submit">Apply filters</button>
+            <button on:click={createTelegramNotification} class="pure-button" type="button">Create Telegram
+                notification
+            </button>
         </fieldset>
     </form>
 {:else}
@@ -622,5 +662,11 @@
 
     .red {
         color: red;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
     }
 </style>

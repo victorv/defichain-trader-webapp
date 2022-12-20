@@ -3,7 +3,6 @@
     import {onDestroy, onMount} from "svelte";
     import {hasItems} from "../common/common";
     import TradeChart from "../dex/TradeChart.svelte";
-    import {graphStore, mempool, setGraph} from "../store";
 
     export let allTokens
     export let fromTokenSymbol = 'DFI'
@@ -31,7 +30,6 @@
     let pendingUpdate
     let resizeSeed
 
-    let items = []
     const subscriptions = []
 
     const updateEstimates = newEstimates => {
@@ -61,7 +59,7 @@
             poolSwap = {
                 tokenFrom: fromTokenSymbol,
                 tokenTo: toTokenSymbol,
-                amountFrom: 1.0,
+                amountFrom: amount || 1.0,
             }
             const response = await fetch(`/graph?poolswap=${amount} ${fromTokenSymbol} to ${toTokenSymbol}&blocks=${timeline.blocks}`, {
                 signal: abortController.signal,
@@ -74,7 +72,6 @@
     const onTokenSelectionChanged = async selection => {
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
-        setGraph(fromTokenSymbol, toTokenSymbol)
         await update()
     }
 
@@ -87,27 +84,7 @@
         screen.orientation.addEventListener('change', resize)
         window.addEventListener('resize', resize)
 
-        const unsubscribe1 = mempool.subscribe(mempoolItems => {
-            items = mempoolItems
-        })
-        const unsubscribe2 = graphStore.subscribe(dataPoint => {
-            const estimate = dataPoint.estimate
-            if (dataPoint && estimates) {
-                if (estimates.length > 0) {
-                    const latestEstimate = estimates[estimates.length - 1][1]
-                    if (estimate == latestEstimate) {
-                        return
-                    }
-                }
-                // estimates.push([0, estimate, new Date().getTime()])
-                updateEstimates(estimates)
-            }
-        })
-        subscriptions.push(unsubscribe1, unsubscribe2)
-
         await update()
-        // WARNING an unidentified error occurs when setGraph() is called before update()
-        setGraph(fromTokenSymbol, toTokenSymbol)
     })
 </script>
 
@@ -123,7 +100,7 @@
     </fieldset>
 </form>
 {#if hasItems(estimates)}
-    <TradeChart {items} {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+    <TradeChart {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
 {/if}
 
 <style>

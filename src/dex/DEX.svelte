@@ -1,8 +1,8 @@
 <script>
     import PoolSwapForm from "./PoolSwapForm.svelte";
     import PoolSwapOverview from "./PoolSwapOverview.svelte";
+    import Help from "../common/Help.svelte";
 
-    export let accountId
     export let allTokens
     export let Chart
 </script>

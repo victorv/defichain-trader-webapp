@@ -1,41 +1,30 @@
 <script>
     import AddressFilter from "./filter/AddressFilter.svelte";
+    import DEX from "../dex/DEX.svelte";
 
-    let componentType = AddressFilter
+    export let allTokens
+    export let Chart
+
+    let componentType = DEX
 
     const options = [
         {label: 'Addresses', component: AddressFilter},
-        {label: 'Pool Swaps'},
-        {label: 'Liquidity', disabled: true},
-        {label: 'Loans', disabled: true},
-        {label: 'Collateral', disabled: true},
-        {label: 'Auction Bid', disabled: true}
+        {label: 'Swaps', component: DEX},
     ]
 </script>
 
-{#if !componentType}
-    <div class="pure-menu">
-        <span class="pure-menu-heading">My filters</span>
-        <ul class="pure-menu-list">
-            {#each options as option}
-                {#if !option.disabled}
-                    <li class="pure-menu-item">
-                        <a on:click|preventDefault={() => componentType = option.component}
-                           href="#"
-                           class="pure-menu-link">{option.label}</a>
-                    </li>
-                {/if}
-            {/each}
-        </ul>
-    </div>
-{/if}
+<div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+        {#each options as option}
+            <li class:pure-menu-selected={componentType === option.component} class="pure-menu-item">
+                <a on:click|preventDefault={() => componentType = option.component}
+                   href="#"
+                   class="pure-menu-link">{option.label}</a>
+            </li>
+        {/each}
+    </ul>
+</div>
 
 {#if componentType}
-    <svelte:component this={componentType}/>
+    <svelte:component {allTokens} {Chart} this={componentType}/>
 {/if}
-
-<style>
-    .pure-menu-heading {
-        font-weight: bold;
-    }
-</style>
