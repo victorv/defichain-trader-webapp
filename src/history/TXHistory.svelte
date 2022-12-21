@@ -12,6 +12,7 @@
     let items
     let error
     let mempool = false
+    let filtersActive
 
     let loading
     let currentFilter
@@ -20,6 +21,8 @@
     let sub
     let hasMore
     let pager = {offset: 0}
+
+    const filterState = state => filtersActive = state
 
     const createPager = items => {
         if (items && items.length) {
@@ -109,17 +112,17 @@
         <label>
             Mempool
             <input bind:checked={mempool} type="checkbox"/>
+            <Help help="Make a cup of tea, relax and watch transactions that were just announced come in. Maybe you will even see your own transaction here shortly after you have submitted it from your wallet."/>
         </label>
-        <Help help="Make a cup of tea, relax and watch transactions that were just announced come in. Maybe you will even see your own transaction here shortly after you have submitted the signed transaction."/>
     </fieldset>
 </form>
 
 {#if mempool}
     <Mempool {allTokens}/>
 {:else}
-    <PoolSwapHistory {allTokens} {items} {refresh} mempool={false}/>
+    <PoolSwapHistory {filterState} {allTokens} {items} {refresh} mempool={false}/>
 
-    {#if hasMore && !error}
+    {#if hasMore && !error && !filtersActive}
         <section class="pager">
             <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button"
                     type="button">

@@ -19,6 +19,7 @@
     export let items
     export let filter
     export let mempool
+    export let filterState
 
     let txID
     let minBlock
@@ -122,6 +123,7 @@
         toAddress = undefined
 
         filterForm = false
+        filterState(filterForm)
         await updateSearch()
     }
 
@@ -264,6 +266,7 @@
 
     const submitFilterForm = async () => {
         filterForm = false
+        filterState(filterForm)
         await updateSearch()
     }
 
@@ -282,7 +285,8 @@
                 }
             })
             if (response.ok) {
-                window.open(`https://telegram.me/DeFiChainTraderBot?start=${uuid}`)
+                const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
+                window.open(`https://telegram.me/${bot}?start=${uuid}`)
             } else {
                 alert('Sorry we are unable to create this notification')
             }
@@ -296,7 +300,7 @@
             <FromToTokenFilter supportAnyToken={true}
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
             {#if account && !mempool}
-                <label>
+                <p class="from-to">
                     From
                     <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
                         <option value="">Any</option>
@@ -304,9 +308,6 @@
                             <option value={group.name}>{group.name}</option>
                         {/each}
                     </select>
-                </label>
-
-                <label>
                     To
                     <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
                         <option value="">Any</option>
@@ -314,12 +315,14 @@
                             <option value={group.name}>{group.name}</option>
                         {/each}
                     </select>
-                </label>
+
+                    <button on:click={() => {filterForm = !filterForm; filterState(filterForm)}}
+                            class="pure-button icon">
+                        <Icon icon="filter"/>
+                    </button>
+                </p>
             {/if}
-            <button on:click={() => filterForm = !filterForm}
-                    class="pure-button icon">
-                <Icon icon="filter"/>
-            </button>
+
         </fieldset>
     </form>
 {/if}
@@ -631,8 +634,12 @@
 {/if}
 
 <style>
-    form {
-        padding: 0.2rem 0 0 0.2rem;
+    form, fieldset {
+        padding: 0;
+    }
+
+    .from-to {
+        display: inline-block;
     }
 
     tr.selected-row td {
