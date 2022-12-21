@@ -16,7 +16,7 @@
     }
 </script>
 
-<PoolSwapHistory {allTokens} {items} {refresh} filter={false} mempool={true}/>
+<PoolSwapHistory filterState={() => {}} {allTokens} {items} {refresh} filter={false} mempool={true}/>
 {#if !items || !items.length}
     <div>
     <span class="info">
