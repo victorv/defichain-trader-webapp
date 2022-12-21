@@ -74,27 +74,23 @@
             const options = createSeriesOptions(data)
             series.applyOptions(options)
             series.setData(data)
-            areaSeries.setData(data.map(e => ({
-                time: e.time,
-                value: (e.open + e.close) / 2.0
-            })))
         }
     }
 
     onMount(async () => {
-        chart = LightweightCharts.createChart(canvasElement);
+        chart = LightweightCharts.createChart(canvasElement, {
+            handleScale: {
+                mouseWheel: false,
+            },
+        });
         const data = createDataPoints()
 
         const options = createSeriesOptions(data)
-        areaSeries = chart.addAreaSeries(options)
-        areaSeries.setData(data.map(e => ({
-            time: e.time,
-            value: (e.open + e.close) / 2.0
-        })))
 
         series = chart.addCandlestickSeries(options)
         series.setData(data)
         chart.timeScale().applyOptions({
+            mouseWheel: false,
             timeVisible: true,
         })
         chart.timeScale().fitContent()
