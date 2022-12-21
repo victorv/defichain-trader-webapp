@@ -282,7 +282,8 @@
                 }
             })
             if (response.ok) {
-                window.open(`https://telegram.me/DeFiChainTraderBot?start=${uuid}`)
+                const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
+                window.open(`https://telegram.me/${bot}?start=${uuid}`)
             } else {
                 alert('Sorry we are unable to create this notification')
             }
