@@ -7,6 +7,7 @@
     import Mempool from "../mempool/Mempool.svelte";
 
     export let allTokens
+    export let filterOverrides
 
     let abortController = new AbortController()
     let items
@@ -46,7 +47,7 @@
         error = null
         items = getMore ? items : null
 
-        const requestBody = {...filter, ...(currentFilter || {})}
+        const requestBody = {...filter, ...(currentFilter || {}), ...(filterOverrides || {})}
 
         if (getMore) {
             requestBody.pager = pager
@@ -101,26 +102,28 @@
     onDestroy(() => sub())
 </script>
 
-<form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
-    <fieldset>
-        <select>
-            <option>Pool Swaps</option>
-        </select>
-        <button disabled={mempool} class="pure-button icon" type="submit">
-            <Icon icon="search"/>
-        </button>
-        <label>
-            Mempool
-            <input bind:checked={mempool} type="checkbox"/>
-            <Help help="Make a cup of tea, relax and watch transactions that were just announced come in. Maybe you will even see your own transaction here shortly after you have submitted it from your wallet."/>
-        </label>
-    </fieldset>
-</form>
+{#if !filterOverrides}
+    <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
+        <fieldset>
+            <select>
+                <option>Pool Swaps</option>
+            </select>
+            <button disabled={mempool} class="pure-button icon" type="submit">
+                <Icon icon="search"/>
+            </button>
+            <label on:click|preventDefault>
+                Mempool
+                <input bind:checked={mempool} type="checkbox"/>
+                <Help help="Make a cup of tea, relax and watch transactions that were just announced come in. Maybe you will even see your own transaction here shortly after you have submitted it from your wallet."/>
+            </label>
+        </fieldset>
+    </form>
+{/if}
 
 {#if mempool}
     <Mempool {allTokens}/>
 {:else}
-    <PoolSwapHistory {filterState} {allTokens} {items} {refresh} mempool={false}/>
+    <PoolSwapHistory {filterState} {allTokens} {items} {refresh} filter={!filterOverrides} mempool={false}/>
 
     {#if hasMore && !error && !filtersActive}
         <section class="pager">
