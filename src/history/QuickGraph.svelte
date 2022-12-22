@@ -100,7 +100,7 @@
     </fieldset>
 </form>
 {#if hasItems(estimates)}
-    <TradeChart {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+    <TradeChart {allTokens} {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
 {/if}
 
 <style>
