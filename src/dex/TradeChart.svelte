@@ -99,20 +99,20 @@
                 filterOverrides = {
                     fromTokenSymbol,
                     toTokenSymbol,
-                    minBlock: estimate[5]
+                    maxBlock: estimate[5]
                 }
 
                 const endDate = luxon.DateTime.fromMillis(estimate[4]).toLocaleString(luxon.DateTime.DATETIME_SHORT)
-                let startDate = 'now'
+                let startDate
 
-                const nextEstimate = estimates[estimateIndex + 1]
-                if (nextEstimate) {
-                    filterOverrides.maxBlock = nextEstimate[5]
-                    startDate = luxon.DateTime.fromMillis(nextEstimate[4]).toLocaleString(luxon.DateTime.DATETIME_SHORT)
+                const prevEstimate = estimates[estimateIndex - 1]
+                if (prevEstimate) {
+                    filterOverrides.minBlock = prevEstimate[5]
+                    startDate = luxon.DateTime.fromMillis(prevEstimate[4]).toLocaleString(luxon.DateTime.DATETIME_SHORT)
                 }
 
                 popup = {
-                    timespan: `${startDate} - ${endDate}`,
+                    timespan: startDate ? `${endDate} - ${startDate}` : `up to ${endDate}`,
                     ...dataPoint
                 }
             }
