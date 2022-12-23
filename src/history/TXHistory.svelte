@@ -131,9 +131,6 @@
                     type="button">
                 Show more
             </button>
-            {#if currentFilter && currentFilter.sort}
-                <Help help="Paging currently only works for Most Recent - Old"/>
-            {/if}
         </section>
     {/if}
 
