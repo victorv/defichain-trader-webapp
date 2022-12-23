@@ -111,10 +111,9 @@
             <button disabled={mempool} class="pure-button icon" type="submit">
                 <Icon icon="search"/>
             </button>
-            <label on:click|preventDefault>
+            <label>
                 Mempool
                 <input bind:checked={mempool} type="checkbox"/>
-                <Help help="Make a cup of tea, relax and watch transactions that were just announced come in. Maybe you will even see your own transaction here shortly after you have submitted it from your wallet."/>
             </label>
         </fieldset>
     </form>
