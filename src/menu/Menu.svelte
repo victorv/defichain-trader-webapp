@@ -2,11 +2,10 @@
 <script>
     import Stats from "../stats/Stats.svelte";
     import TXHistory from "../history/TXHistory.svelte";
-    import Mempool from "../mempool/Mempool.svelte";
     import QuickGraph from "../history/QuickGraph.svelte";
     import {screenStore} from "../store";
     import Icon from "../common/Icon.svelte";
-    import Links from "../Links/Links.svelte";
+    import Guide from "../info/Guide.svelte";
     import Account from "../account/Account.svelte";
 
     export let componentType
@@ -65,10 +64,10 @@
                 </a>
             </li>
             <li class="pure-menu-item"
-                on:click={() => change(Links)}>
+                on:click={() => change(Guide)}>
                 <a href="#contact"
                    class="pure-menu-link">
-                    Links
+                    Guide
                 </a>
             </li>
         </ul>

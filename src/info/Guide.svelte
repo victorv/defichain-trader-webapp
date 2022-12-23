@@ -2,10 +2,11 @@
     import Icon from "../common/Icon.svelte";
 </script>
 
-<div class:pure-menu-horizontal={screen.large}
-     class:pure-menu-vertical={screen.small}
-     class:open
-     class="pure-menu">
+App version: <a href="https://gitlab.com/defichain-trader.com/webapp/-/commit/{window.commitHash}">{window.commitHash}</a>
+
+<p>Guide coming in 2023</p>
+
+<div class="pure-menu-horizontal">
     <ul class="pure-menu-list">
         <li class="pure-menu-item">
             <a href="https://t.me/+gmg_XL0Nnpg3MjNk" target="_blank"
