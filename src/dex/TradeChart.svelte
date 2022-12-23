@@ -138,7 +138,7 @@
     <div class="popup">
         <header>
             <button on:click={() => filterOverrides = null} class="pure-button" type="button">Close</button>
-            <strong>{popup.timespan}</strong>, <strong>o:</strong> {popup.open} <strong>c:</strong> {popup.close}
+            <strong>unfinished feature, updates next year :)</strong>, <strong>o:</strong> {popup.open} <strong>c:</strong> {popup.close}
             <strong>l:</strong> {popup.low} <strong>h:</strong> {popup.high}
         </header>
         <div class="content">
