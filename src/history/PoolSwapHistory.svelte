@@ -288,7 +288,7 @@
                 const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
                 window.open(`https://telegram.me/${bot}?start=${uuid}`)
             } else {
-                alert('Sorry we are unable to create this notification')
+                alert('Sorry we are unable to create this notification: ' + response.statusText)
             }
         }
     }
@@ -319,6 +319,9 @@
                     <button on:click={() => {filterForm = !filterForm; filterState(filterForm)}}
                             class="pure-button icon">
                         <Icon icon="filter"/>
+                    </button>
+                    <button disabled={!hasItems(poolSwaps) || txID} on:click={createTelegramNotification} class="pure-button" type="button">Create
+                        notification
                     </button>
                 </p>
             {/if}
@@ -396,9 +399,6 @@
                 </label>
             </div>
             <button class="pure-button" type="submit">Apply filters</button>
-            <button on:click={createTelegramNotification} class="pure-button" type="button">Create Telegram
-                notification
-            </button>
         </fieldset>
     </form>
 {:else}
