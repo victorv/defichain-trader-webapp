@@ -102,7 +102,7 @@
     onDestroy(() => sub())
 </script>
 
-{#if !filterOverrides}
+{#if !filterOverrides && !filtersActive}
     <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
         <fieldset>
             <select>
@@ -133,20 +133,22 @@
         </section>
     {/if}
 
-    {#if items && !items.length}
-        <div class="message">
-            <p class="info">
-                0 results found
-            </p>
-        </div>
-    {:else if error}
-        <div class="message">
-            <p class="error">{error}</p>
-        </div>
-    {:else if loading}
-        <div class="message">
-            <p class="info">Loading results...</p>
-        </div>
+    {#if !filtersActive}
+        {#if items && !items.length}
+            <div class="message">
+                <p class="info">
+                    0 results found
+                </p>
+            </div>
+        {:else if error}
+            <div class="message">
+                <p class="error">{error}</p>
+            </div>
+        {:else if loading}
+            <div class="message">
+                <p class="info">Loading results...</p>
+            </div>
+        {/if}
     {/if}
 {/if}
 
