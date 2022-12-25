@@ -184,19 +184,19 @@
 
     const createSearch = () => {
         const newSearch = {
-            txID,
-            minBlock,
-            maxBlock,
-            minInputAmount,
-            maxInputAmount,
-            minOutputAmount,
-            maxOutputAmount,
-            minFee,
-            maxFee,
-            fromAddressGroup,
-            fromAddress,
-            toAddressGroup,
-            toAddress
+            txID: txID || undefined,
+            minBlock: minBlock || undefined,
+            maxBlock: maxBlock || maxBlock,
+            minInputAmount: minInputAmount || undefined,
+            maxInputAmount: maxInputAmount || undefined,
+            minOutputAmount: minOutputAmount || undefined,
+            maxOutputAmount: maxOutputAmount || undefined,
+            minFee: minFee || undefined,
+            maxFee: maxFee || undefined,
+            fromAddressGroup: fromAddressGroup || undefined,
+            fromAddress: fromAddress || undefined,
+            toAddressGroup: toAddressGroup || undefined,
+            toAddress: toAddress || undefined
         }
         if (fromTokenSymbol && fromTokenSymbol != 'Any') {
             newSearch.fromTokenSymbol = fromTokenSymbol
