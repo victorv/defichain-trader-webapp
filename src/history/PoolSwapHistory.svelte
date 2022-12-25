@@ -301,28 +301,33 @@
                                {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
             {#if account && !mempool}
                 <p class="from-to">
-                    From
-                    <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
-                        <option value="">Any</option>
-                        {#each account.addressGroups as group}
-                            <option value={group.name}>{group.name}</option>
-                        {/each}
-                    </select>
-                    To
-                    <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
-                        <option value="">Any</option>
-                        {#each account.addressGroups as group}
-                            <option value={group.name}>{group.name}</option>
-                        {/each}
-                    </select>
+                    {#if !filterForm}
+                        From
+                        <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
+                            <option value="">Any</option>
+                            {#each account.addressGroups as group}
+                                <option value={group.name}>{group.name}</option>
+                            {/each}
+                        </select>
+                        To
+                        <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
+                            <option value="">Any</option>
+                            {#each account.addressGroups as group}
+                                <option value={group.name}>{group.name}</option>
+                            {/each}
+                        </select>
+                    {/if}
 
-                    <button on:click={() => {filterForm = !filterForm; filterState(filterForm)}}
+                    <button disabled={filterForm} on:click={() => {filterForm = true; filterState(filterForm)}}
                             class="pure-button icon">
                         <Icon icon="filter"/>
                     </button>
-                    <button disabled={!hasItems(poolSwaps) || txID} on:click={createTelegramNotification} class="pure-button" type="button">Create
-                        notification
-                    </button>
+                    {#if !filterForm}
+                        <button disabled={!hasItems(poolSwaps) || txID} on:click={createTelegramNotification}
+                                class="pure-button icon" type="button">
+                            <Icon icon="telegram"/>
+                        </button>
+                    {/if}
                 </p>
             {/if}
 
