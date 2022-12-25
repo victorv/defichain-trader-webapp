@@ -297,11 +297,11 @@
 {#if filter !== false}
     <form class="pure-form" on:submit|preventDefault>
         <fieldset>
-            <FromToTokenFilter supportAnyToken={true}
-                               {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-            {#if account && !mempool}
-                <p class="from-to">
-                    {#if !filterForm}
+            {#if !filterForm}
+                <FromToTokenFilter supportAnyToken={true}
+                                   {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+                {#if account && !mempool}
+                    <p class="from-to">
                         From
                         <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
                             <option value="">Any</option>
@@ -316,21 +316,19 @@
                                 <option value={group.name}>{group.name}</option>
                             {/each}
                         </select>
-                    {/if}
 
-                    <button disabled={filterForm} on:click={() => {filterForm = true; filterState(filterForm)}}
-                            class="pure-button icon">
-                        <Icon icon="filter"/>
-                    </button>
-                    {#if !filterForm}
+                        <button disabled={filterForm} on:click={() => {filterForm = true; filterState(filterForm)}}
+                                class="pure-button icon">
+                            <Icon icon="filter"/>
+                        </button>
+
                         <button disabled={!hasItems(poolSwaps) || txID} on:click={createTelegramNotification}
                                 class="pure-button icon" type="button">
                             <Icon icon="telegram"/>
                         </button>
-                    {/if}
-                </p>
+                    </p>
+                {/if}
             {/if}
-
         </fieldset>
     </form>
 {/if}
