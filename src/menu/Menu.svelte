@@ -7,6 +7,8 @@
     import Icon from "../common/Icon.svelte";
     import Guide from "../info/Guide.svelte";
     import Account from "../account/Account.svelte";
+    import Help from "../common/Help.svelte";
+    import StatusPage from "./StatusPage.svelte";
 
     export let componentType
     export let onChange
@@ -68,6 +70,13 @@
                 <a href="#contact"
                    class="pure-menu-link">
                     Guide
+                </a>
+            </li>
+            <li class="pure-menu-item"
+                on:click={() => change(StatusPage)}>
+                <a style="color: red; font-weight: bold;"  href="#contact"
+                   class="pure-menu-link">
+                    Status !
                 </a>
             </li>
         </ul>
