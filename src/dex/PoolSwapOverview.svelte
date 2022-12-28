@@ -4,17 +4,26 @@
     console.log(`max data points: ${maxDataPoints}`)
 </script>
 <script>
-    import {removePoolswap, swaps} from "../store";
+    import {removePoolswap, swaps, webSocketStore} from "../store";
     import ProfitLoss from "./ProfitLoss.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "./PoolSwapBreakdown.svelte";
     import {hasItems} from "../common/common";
     import QuickGraph from "../history/QuickGraph.svelte";
+    import WebSocketStatus from "../WebSocketStatus.svelte";
+    import {onDestroy, onMount} from "svelte";
 
     let poolSwaps = []
     let swap
+    let subscriptions = []
+    let webSocketStatus
 
-    swaps.subscribe(swaps => poolSwaps = swaps)
+    onMount(() => {
+        subscriptions.push(swaps.subscribe(swaps => poolSwaps = swaps))
+        subscriptions.push(webSocketStore.subscribe(status => webSocketStatus = status))
+    })
+
+    onDestroy(() => subscriptions.forEach(s => s()))
 
     const toggleGraph = forIndex => {
         swap = poolSwaps[forIndex]
@@ -43,7 +52,9 @@
     }
 </script>
 
-{#if hasItems(poolSwaps)}
+{#if webSocketStatus && (webSocketStatus.connecting || !webSocketStatus.connected)}
+    <WebSocketStatus status={webSocketStatus}/>
+{:else if hasItems(poolSwaps)}
     <table class="pure-table pure-table-striped">
         <thead>
         <tr>

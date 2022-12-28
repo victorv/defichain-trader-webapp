@@ -1,28 +1,38 @@
 <script>
-    import {onDestroy} from "svelte";
+    import {onDestroy, onMount} from "svelte";
     import PoolSwapHistory from "../history/PoolSwapHistory.svelte";
-    import {mempool} from "../store";
+    import {mempool, webSocketStore} from "../store";
+    import WebSocketStatus from "../WebSocketStatus.svelte";
 
     export let allTokens
 
     let items = []
+    let subscriptions = []
+    let webSocketStatus
 
-    const unsubscribe = mempool.subscribe(mempoolItems => items = mempoolItems)
+    onMount(() => {
+        subscriptions.push(mempool.subscribe(mempoolItems => items = mempoolItems))
+        subscriptions.push(webSocketStore.subscribe(status => webSocketStatus = status))
+    })
 
-    onDestroy(unsubscribe)
+    onDestroy(() => subscriptions.forEach(s => s()))
 
     const refresh = () => {
         // disabled
     }
 </script>
 
-<PoolSwapHistory filterState={() => {}} {allTokens} {items} {refresh} filter={false} mempool={true}/>
-{#if !items || !items.length}
-    <div class="container">
-        <div>
-            <span class="info">Keep open to receive transactions. Mempool resets when a block is minted and can be empty.</span>
+{#if webSocketStatus && (webSocketStatus.connecting || !webSocketStatus.connected)}
+    <WebSocketStatus status={webSocketStatus}/>
+{:else}
+    <PoolSwapHistory filterState={() => {}} {allTokens} {items} {refresh} filter={false} mempool={true}/>
+    {#if !items || !items.length}
+        <div class="container">
+            <div>
+                <span class="info">Keep open to receive transactions. Mempool resets when a block is minted and can be empty.</span>
+            </div>
         </div>
-    </div>
+    {/if}
 {/if}
 
 <style>
@@ -31,6 +41,7 @@
     }
 
     .container {
+        padding-top: 1rem;
         display: flex;
         flex-direction: row;
         justify-content: center;
