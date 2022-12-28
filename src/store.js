@@ -30,6 +30,10 @@ accountStore.subscribe(account => {
     }
 })
 
+export const webSocketStore = writable({
+    connected: false,
+    connecting: true,
+})
 export const uuidStore = writable(null)
 export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)
