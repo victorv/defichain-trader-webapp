@@ -454,17 +454,17 @@
             {/if}
             {#if txID}
                 <button on:click={clearTXID} class="pure-button" type="button">
-                    <strong class="red">X</strong> TX ID: <strong>{txID}</strong>
+                    <strong class="red">X</strong> TX ID: <strong class="limited">{txID}</strong>
                 </button>
             {/if}
             {#if fromAddress}
                 <button on:click={clearFromAddress} class="pure-button" type="button">
-                    <strong class="red">X</strong> From: <strong>{fromAddress}</strong>
+                    <strong class="red">X</strong> From: <strong class="limited">{fromAddress}</strong>
                 </button>
             {/if}
             {#if toAddress}
                 <button on:click={clearToAddress} class="pure-button" type="button">
-                    <strong class="red">X</strong> To: <strong>{toAddress}</strong>
+                    <strong class="red">X</strong> To: <strong class="limited">{toAddress}</strong>
                 </button>
             {/if}
         </form>
