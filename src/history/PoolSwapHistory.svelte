@@ -305,7 +305,7 @@
 
 {#if createNotification}
     <Popup onClose={() => createNotification = false}>
-        <form class="pure-form notification-form" slot="header" on:submit={createTelegramNotification}>
+        <form class="pure-form notification-form" slot="header" on:submit|preventDefault={createTelegramNotification}>
             {#if notificationError}
                 <p class="error">
                     {notificationError}
@@ -323,7 +323,7 @@
             <p>
                 {#if notificationURL}
                     You can now approve your notification <a href={notificationURL} target="_blank">in
-                    Telegram</a>. While you do so you need to keep this tab open or it won't work.
+                    Telegram</a>. While you do so you need to keep this tab open or it won't work. Click the link to get started.
                 {:else}
                     <em>Submit your notification with a title of your choice.</em>
                 {/if}
