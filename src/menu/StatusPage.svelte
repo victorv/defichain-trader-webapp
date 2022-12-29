@@ -1,7 +1,3 @@
-<script>
-    import Icon from "../common/Icon.svelte";
-</script>
-
 <p>
     The issues you have all experienced in the 4th week of December have been resolved. Both the website and Telegram
     notifications are fully functional again.
