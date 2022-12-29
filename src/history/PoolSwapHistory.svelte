@@ -312,7 +312,7 @@
                 </p>
             {:else}
                 <input on:keydown={() => notificationURL = null} type="text" bind:value={notificationTitle} placeholder="Title"/>
-                <button disabled={!notificationTitle || notificationTitle.length > 75}
+                <button disabled={!notificationTitle || notificationTitle.length > 75 || notificationURL}
                         class="pure-button pure-button-primary" type="submit">
                     Submit notification
                 </button>
