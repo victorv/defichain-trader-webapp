@@ -7,7 +7,6 @@
     import Icon from "../common/Icon.svelte";
     import Guide from "../info/Guide.svelte";
     import Account from "../account/Account.svelte";
-    import Help from "../common/Help.svelte";
     import StatusPage from "./StatusPage.svelte";
 
     export let componentType
