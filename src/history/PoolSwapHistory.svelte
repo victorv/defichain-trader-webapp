@@ -9,10 +9,15 @@
     import Limit from "../common/Limit.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import {onDestroy, onMount} from "svelte";
+    import Popup from "../Popup.svelte";
+    import ActiveFilters from "./ActiveFilters.svelte";
 
     let account
     let search
     let filterForm
+    let createNotification
+    let notificationError
+    let notificationURL
 
     export let allTokens
     export let refresh
@@ -21,6 +26,7 @@
     export let mempool
     export let filterState
 
+    let notificationTitle
     let txID
     let minBlock
     let maxBlock
@@ -271,28 +277,76 @@
     }
 
     const createTelegramNotification = async () => {
-        const description = prompt("Describe your notification in short")
-        if (description && description.length < 100) {
-            const newSearch = createSearch()
-            newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
-            newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
-            const response = await fetch(`/notification?uuid=${uuid}&description=${encodeURIComponent(description)}`, {
-                method: 'POST',
-                body: JSON.stringify(newSearch),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
-            if (response.ok) {
-                const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
-                window.open(`https://telegram.me/${bot}?start=${uuid}`)
-            } else {
-                alert('Sorry we are unable to create this notification: ' + response.statusText)
+        const newSearch = createSearch()
+        newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
+        newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
+        const response = await fetch(`/notification?uuid=${uuid}&description=${encodeURIComponent(notificationTitle)}`, {
+            method: 'POST',
+            body: JSON.stringify(newSearch),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
+        })
+        if (response.ok) {
+            const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
+            notificationURL = `https://telegram.me/${bot}?start=${uuid}`
+        } else {
+            notificationError = 'Sorry we are unable to create this notification: ' + response.statusText
         }
     }
+
+    const newTelegramNotification = () => {
+        createNotification = true
+        notificationError = null
+        notificationURL = null
+    }
 </script>
+
+{#if createNotification}
+    <Popup onClose={() => createNotification = false}>
+        <form class="pure-form notification-form" slot="header" on:submit={createTelegramNotification}>
+            {#if notificationError}
+                <p class="error">
+                    {notificationError}
+                </p>
+            {:else}
+                <input on:keydown={() => notificationURL = null} type="text" bind:value={notificationTitle} placeholder="Title"/>
+                <button disabled={!notificationTitle || notificationTitle.length > 75}
+                        class="pure-button pure-button-primary" type="submit">
+                    Submit notification
+                </button>
+            {/if}
+        </form>
+        <div slot="content">
+            <br/>
+            <p>
+                {#if notificationURL}
+                    You can now approve your notification <a href={notificationURL} target="_blank">in
+                    Telegram</a>. While you do so you need to keep this tab open or it won't work.
+                {:else}
+                    <em>Submit your notification with a title of your choice.</em>
+                {/if}
+            </p>
+            <ActiveFilters
+                    {txID}
+                    {minBlock}
+                    {maxBlock}
+                    {fromTokenSymbol}
+                    {toTokenSymbol}
+                    {minInputAmount}
+                    {maxInputAmount}
+                    {minOutputAmount}
+                    {maxOutputAmount}
+                    {minFee}
+                    {maxFee}
+                    {fromAddressGroup}
+                    {fromAddress}
+                    {toAddressGroup}
+                    {toAddress}/>
+        </div>
+    </Popup>
+{/if}
 
 {#if filter !== false}
     <form class="pure-form" on:submit|preventDefault>
@@ -322,7 +376,7 @@
                             <Icon icon="filter"/>
                         </button>
 
-                        <button disabled={!hasItems(poolSwaps) || txID} on:click={createTelegramNotification}
+                        <button disabled={!hasItems(poolSwaps) || txID} on:click={newTelegramNotification}
                                 class="pure-button icon" type="button">
                             <Icon icon="telegram"/>
                         </button>
@@ -678,5 +732,11 @@
         display: flex;
         flex-direction: row;
         gap: 0.5rem;
+    }
+
+    .notification-form {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
     }
 </style>
