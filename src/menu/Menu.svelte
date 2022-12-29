@@ -5,9 +5,7 @@
     import QuickGraph from "../history/QuickGraph.svelte";
     import {screenStore} from "../store";
     import Icon from "../common/Icon.svelte";
-    import Guide from "../info/Guide.svelte";
     import Account from "../account/Account.svelte";
-    import Help from "../common/Help.svelte";
     import StatusPage from "./StatusPage.svelte";
 
     export let componentType
@@ -63,13 +61,6 @@
                    href="#account"
                    class="pure-menu-link">
                     Account
-                </a>
-            </li>
-            <li class="pure-menu-item"
-                on:click={() => change(Guide)}>
-                <a href="#contact"
-                   class="pure-menu-link">
-                    Guide
                 </a>
             </li>
             <li class="pure-menu-item"

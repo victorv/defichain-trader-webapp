@@ -2,6 +2,7 @@
     import {onMount} from "svelte";
     import {screenStore} from "../store";
     import TXHistory from "../history/TXHistory.svelte";
+    import Popup from "../Popup.svelte";
 
     export let allTokens
     export let estimates
@@ -135,40 +136,22 @@
 </script>
 
 {#if filterOverrides && popup}
-    <div class="popup">
-        <header>
-            <button on:click={() => filterOverrides = null} class="pure-button" type="button">Close</button>
-            <strong>unfinished feature, updates next year :)</strong>, <strong>o:</strong> {popup.open} <strong>c:</strong> {popup.close}
-            <strong>l:</strong> {popup.low} <strong>h:</strong> {popup.high}
-        </header>
-        <div class="content">
+    <Popup onClose={() => filterOverrides = null}>
+        <div slot="header">
+            <strong>unfinished feature, updates next year :)</strong>,
+            <strong>o:</strong> {popup.open}
+            <strong>c:</strong> {popup.close}
+            <strong>l:</strong> {popup.low}
+            <strong>h:</strong> {popup.high}
+        </div>
+        <div slot="content">
             <TXHistory {filterOverrides} {allTokens}/>
         </div>
-    </div>
+    </Popup>
 {/if}
 <div bind:this={canvasElement} class="container"></div>
 
 <style>
-    header {
-        max-height: 50px;
-    }
-
-    .content {
-        overflow-y: auto;
-        max-height: calc(95vh - 50px);
-    }
-
-    .popup {
-        position: fixed;
-        z-index: 10000;
-        background: white;
-        border: 1px solid black;
-        left: 2.5vw;
-        top: 2.5vh;
-        width: 95vw;
-        height: 95vh;
-    }
-
     .container {
         display: flex;
         flex-direction: row;
