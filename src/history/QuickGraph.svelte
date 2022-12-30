@@ -13,11 +13,15 @@
     const oneDay = oneHour * 24
     const fiveDays = oneDay * 5
     const oneMonth = oneDay * 31
+    const twoMonths = oneMonth * 2
+    const threeMonths = oneMonth * 3
     const timelines = [
         {id: oneHour, label: '1 hour'},
         {id: oneDay, label: '1 day'},
         {id: fiveDays, label: '5 days'},
         {id: oneMonth, label: '1 month'},
+        {id: twoMonths, label: '2 months'},
+        {id: threeMonths, label: '3 months'},
     ]
     const timeline = {
         blocks: timelines[3].id
