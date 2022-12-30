@@ -372,7 +372,7 @@
                         </select>
 
                         <button disabled={filterForm} on:click={() => {filterForm = true; filterState(filterForm)}}
-                                class="pure-button icon">
+                                class="pure-button icon" type="button">
                             <Icon icon="filter"/>
                         </button>
 
