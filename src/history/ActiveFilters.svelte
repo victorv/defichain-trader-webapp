@@ -82,22 +82,22 @@
         {/if}
         {#if minInputAmount}
             <li class="pure-menu-item  pure-menu-link">
-                <em>AND</em> min input amount: <strong>${minInputAmount}</strong>
+                <em>AND</em> min input amount: <strong>{minInputAmount} USDT</strong>
             </li>
         {/if}
         {#if maxInputAmount}
             <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> max input amount: <strong>${maxInputAmount}</strong>
+                <em>AND</em> max input amount: <strong>{maxInputAmount} USDT</strong>
             </li>
         {/if}
         {#if minOutputAmount}
             <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> min output amount: <strong>${minOutputAmount}</strong>
+                <em>AND</em> min output amount: <strong>{minOutputAmount} USDT</strong>
             </li>
         {/if}
         {#if maxOutputAmount}
             <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> max output amount: <strong>${maxOutputAmount}</strong>
+                <em>AND</em> max output amount: <strong>{maxOutputAmount} USDT</strong>
             </li>
         {/if}
         {#if fromAddress}
