@@ -3,7 +3,7 @@
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
-    import {asDollars, hasItems} from "../common/common";
+    import {asDollars, asUSDT, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {accountStore, screenStore, updateAccount, uuidStore} from "../store";
     import Limit from "../common/Limit.svelte";
@@ -376,7 +376,7 @@
                             <Icon icon="filter"/>
                         </button>
 
-                        <button disabled={!hasItems(poolSwaps) || txID} on:click={newTelegramNotification}
+                        <button disabled={!hasItems(poolSwaps)} on:click={newTelegramNotification}
                                 class="pure-button icon" type="button">
                             <Icon icon="telegram"/>
                         </button>
@@ -423,24 +423,24 @@
 
             <div class="row">
                 <label>
-                    Min input amount (USD)
+                    Min input amount (USDT)
                     <input min="0" step="0.00000001" type="number" bind:value={minInputAmount}/>
                 </label>
 
                 <label>
-                    Max input amount (USD)
+                    Max input amount (USDT)
                     <input min="0" step="0.00000001" type="number" bind:value={maxInputAmount}/>
                 </label>
             </div>
 
             <div class="row">
                 <label>
-                    Min output amount (USD)
+                    Min output amount (USDT)
                     <input min="0" step="0.00000001" type="number" bind:value={minOutputAmount}/>
                 </label>
 
                 <label>
-                    Max output amount (USD)
+                    Max output amount (USDT)
                     <input min="0" step="0.00000001" type="number" bind:value={maxOutputAmount}/>
                 </label>
             </div>
@@ -488,22 +488,22 @@
             {/if}
             {#if minInputAmount}
                 <button on:click={clearMinInputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> min input amount: <strong>${minInputAmount}</strong>
+                    <strong class="red">X</strong> min input amount: <strong>{minInputAmount} USDT</strong>
                 </button>
             {/if}
             {#if maxInputAmount}
                 <button on:click={clearMaxInputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> max input amount: <strong>${maxInputAmount}</strong>
+                    <strong class="red">X</strong> max input amount: <strong>{maxInputAmount} USDT</strong>
                 </button>
             {/if}
             {#if minOutputAmount}
                 <button on:click={clearMinOutputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> min output amount: <strong>${minOutputAmount}</strong>
+                    <strong class="red">X</strong> min output amount: <strong>{minOutputAmount} USDT</strong>
                 </button>
             {/if}
             {#if maxOutputAmount}
                 <button on:click={clearMaxOutputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> max output amount: <strong>${maxOutputAmount}</strong>
+                    <strong class="red">X</strong> max output amount: <strong>{maxOutputAmount} USDT</strong>
                 </button>
             {/if}
             {#if txID}
@@ -609,7 +609,7 @@
                         <span>{tx.tokenFrom}</span>
                         <br/>
                         <span>
-                            <strong>{asDollars(tx.fromAmountUSD)}</strong>
+                            <strong>{asUSDT(tx.fromAmountUSD)}</strong>
                         </span>
                     </td>
                     <td>
@@ -632,7 +632,7 @@
                         {/if}
                         <br/>
                         <span>
-                            <strong>{asDollars(tx.toAmountUSD)}</strong>
+                            <strong>{asUSDT(tx.toAmountUSD)}</strong>
                         </span>
                     </td>
                     {#if screen.large}

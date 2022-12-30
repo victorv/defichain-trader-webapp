@@ -11,6 +11,14 @@ export const roundTo = (number, decimals) => {
     return Math.round(number * m) / m
 }
 
+export const asUSDT = num => {
+    return new Intl.NumberFormat(`en-US`, {
+        currency: `USD`,
+        style: 'currency',
+        maximumFractionDigits: 2,
+    }).format(num).substring(1) + ' USDT'
+}
+
 export const asDollars = num => {
     return new Intl.NumberFormat(`en-US`, {
         currency: `USD`,
