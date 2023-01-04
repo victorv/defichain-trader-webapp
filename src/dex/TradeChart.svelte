@@ -135,7 +135,7 @@
     })
 </script>
 
-{#if filterOverrides && popup}
+{#if filterOverrides && popup && false}
     <Popup onClose={() => filterOverrides = null}>
         <div slot="header">
             <strong>unfinished feature, updates next year :)</strong>,
