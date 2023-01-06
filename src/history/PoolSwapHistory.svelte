@@ -352,7 +352,7 @@
     <form class="pure-form" on:submit|preventDefault>
         <fieldset>
             {#if !filterForm}
-                <FromToTokenFilter supportAnyToken={true}
+                <FromToTokenFilter supportAnyToken={true} supportPseudo={true}
                                    {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
                 {#if account && !mempool}
                     <p class="from-to">
