@@ -29,7 +29,7 @@ export let onClose
         border: 1px solid black;
         left: 2.5vw;
         top: 2.5vh;
-        width: 95vw;
+        width: 90vw;
         height: 95vh;
     }
 </style>
