@@ -3,6 +3,7 @@
     import PoolSwapHistory from "../history/PoolSwapHistory.svelte";
     import {mempool, webSocketStore} from "../store";
     import WebSocketStatus from "../WebSocketStatus.svelte";
+    import TimePastSince from "../common/TimePastSince.svelte";
 
     export let allTokens
 
@@ -11,7 +12,9 @@
     let webSocketStatus
 
     onMount(() => {
-        subscriptions.push(mempool.subscribe(mempoolItems => items = mempoolItems))
+        subscriptions.push(mempool.subscribe(mempoolItems => {
+            items = mempoolItems.filter(item => item.details).map(item => item.details)
+        }))
         subscriptions.push(webSocketStore.subscribe(status => webSocketStatus = status))
     })
 
@@ -25,7 +28,9 @@
 {#if webSocketStatus && (webSocketStatus.connecting || !webSocketStatus.connected)}
     <WebSocketStatus status={webSocketStatus}/>
 {:else}
-    <PoolSwapHistory filterState={() => {}} {allTokens} {items} {refresh} filter={false} mempool={true}/>
+    <PoolSwapHistory filterState={() => {}} {allTokens} {items} {refresh} filter={false}
+                     mempool={true}/>
+
     {#if !items || !items.length}
         <div class="container">
             <div>
