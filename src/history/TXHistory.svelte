@@ -1,7 +1,6 @@
 <script>
     import PoolSwapHistory from "./PoolSwapHistory.svelte";
     import {onDestroy, onMount} from "svelte";
-    import Help from "../common/Help.svelte";
     import Icon from "../common/Icon.svelte";
     import {accountStore} from "../store";
     import Mempool from "../mempool/Mempool.svelte";
@@ -9,6 +8,7 @@
     export let allTokens
     export let filterOverrides
 
+    let viewType = 'PoolSwap'
     let abortController = new AbortController()
     let items
     let error
@@ -105,8 +105,8 @@
 {#if !filterOverrides && !filtersActive}
     <form class="pure-form" on:submit|preventDefault={() => refresh(currentFilter || {})}>
         <fieldset>
-            <select>
-                <option>Pool Swaps</option>
+            <select bind:value={viewType}>
+                <option value="PoolSwap">Pool Swaps</option>
             </select>
             <button disabled={mempool} class="pure-button icon" type="submit">
                 <Icon icon="search"/>

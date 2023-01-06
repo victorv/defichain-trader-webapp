@@ -30,6 +30,21 @@ accountStore.subscribe(account => {
     }
 })
 
+const getMempoolBlacklist = () => {
+    if (localStorage) {
+        const v = localStorage.getItem("mempoolBlacklist")
+        try {
+            const items = JSON.parse(v)
+            if (Array.isArray(items)) {
+                return items
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    return []
+}
+
 export const webSocketStore = writable({
     connected: false,
     connecting: true,
@@ -39,10 +54,18 @@ export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)
 export const mempool = writable([])
 export const swaps = writable([])
+export const mempoolBlacklistStore = writable(getMempoolBlacklist())
 export const screenStore = writable({
     large: false,
     small: true,
 })
+
+export const updateMempoolBlacklist = items => {
+    mempoolBlacklistStore.set(items)
+    if (localStorage) {
+        localStorage.setItem("mempoolBlacklist", JSON.stringify(items))
+    }
+}
 
 const mediaQuery = matchMedia('(max-width: 1200px)')
 const updateBody = () => {
@@ -75,7 +98,7 @@ const storePoolSwaps = swaps => {
 }
 
 incomingMessages.subscribe(message => {
-    if(message.id === 'uuid') {
+    if (message.id === 'uuid') {
         uuidStore.set(message.data)
     } else if (message.id === 'mempool-swap') {
         mempool.update(state => state.concat(message.data))

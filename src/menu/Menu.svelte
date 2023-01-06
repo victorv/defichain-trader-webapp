@@ -1,12 +1,12 @@
 <svelte:options immutable/>
 <script>
-    import Stats from "../stats/Stats.svelte";
     import TXHistory from "../history/TXHistory.svelte";
     import QuickGraph from "../history/QuickGraph.svelte";
     import {screenStore} from "../store";
     import Icon from "../common/Icon.svelte";
     import Account from "../account/Account.svelte";
     import StatusPage from "./StatusPage.svelte";
+    import MixedMempool from "../mempool/MixedMempool.svelte";
 
     export let componentType
     export let onChange
@@ -51,10 +51,10 @@
                 <a href="#quick-graph" class="pure-menu-link">Quick Graph</a>
             </li>
 
-            <li class:pure-menu-selected={componentType === Stats}
-                on:click={() => change(Stats)}
+            <li class:pure-menu-selected={componentType === MixedMempool}
+                on:click={() => change(MixedMempool)}
                 class="pure-menu-item">
-                <a href="#bought_sold" class="pure-menu-link">Stats</a>
+                <a href="#mempool" class="pure-menu-link">Mempool</a>
             </li>
             <li class="pure-menu-item">
                 <a on:click={() => change(Account)}
