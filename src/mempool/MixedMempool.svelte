@@ -60,14 +60,14 @@
                 Type
             </th>
             <th>
+                Details
+            </th>
+            <th>
                 Time
             </th>
 
             <th>
                 Fee
-            </th>
-            <th>
-                Description
             </th>
         </tr>
         </thead>
@@ -81,14 +81,13 @@
                         </button>
                         {tx.type}
                     </td>
-
+                    <td>{tx.description}</td>
                     <td>
                         <TimePastSince start={tx.time} end={now}/>
                     </td>
                     <td>
                         {tx.fee}
                     </td>
-                    <td>{tx.description}</td>
                 </tr>
             {/each}
             </tbody>
