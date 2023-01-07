@@ -1,12 +1,13 @@
 <script>
     import {onDestroy, onMount} from "svelte";
-    import PoolSwapHistory from "../history/PoolSwapHistory.svelte";
     import {mempool, mempoolBlacklistStore, updateMempoolBlacklist, webSocketStore} from "../store";
     import WebSocketStatus from "../WebSocketStatus.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
+    import Help from "../common/Help.svelte";
 
     export let allTokens
 
+    let minUSDT = 0.0
     let items = []
     let activeItems = []
     let blacklist = []
@@ -19,7 +20,10 @@
         now = new Date().getTime()
     }
 
-    const filterItems = items => items.filter(item => blacklist.indexOf(item.type) === -1)
+    const filterItems = items =>
+        items.filter(item => item.usdtAmount >= (minUSDT || 0.0) && blacklist.indexOf(item.type) === -1)
+
+    const updateActiveItems = () => activeItems = filterItems(items)
 
     onMount(() => {
         subscriptions.push(mempool.subscribe(mempoolItems => {
@@ -60,7 +64,9 @@
                 Type
             </th>
             <th>
-                Details
+                Details |
+                <input on:keyup={updateActiveItems} bind:value={minUSDT} type="number"/>
+                <Help help="Hide TXs where the total USDT value of all amounts is less than the specified number. TXs that don't involve quantifiable amounts are always valued at 0 USDT."/>
             </th>
             <th>
                 Time
@@ -81,7 +87,15 @@
                         </button>
                         {tx.type}
                     </td>
-                    <td>{tx.description}</td>
+                    <td>
+                        {tx.description}
+                        {#if tx.usdtAmount > 0.0}
+                            <br/>
+                            <strong>
+                                total: {tx.usdtAmount} USDT
+                            </strong>
+                        {/if}
+                    </td>
                     <td>
                         <TimePastSince start={tx.time} end={now}/>
                     </td>
