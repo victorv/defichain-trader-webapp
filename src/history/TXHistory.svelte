@@ -4,6 +4,7 @@
     import Icon from "../common/Icon.svelte";
     import {accountStore} from "../store";
     import Mempool from "../mempool/Mempool.svelte";
+    import {asDollars} from "../common/common";
 
     export let allTokens
     export let filterOverrides
@@ -11,6 +12,7 @@
     let viewType = 'PoolSwap'
     let abortController = new AbortController()
     let items
+    let searchResult
     let error
     let mempool = false
     let filtersActive
@@ -45,6 +47,7 @@
     async function fetchItems(filter, getMore) {
         hasMore = false
         error = null
+        searchResult = getMore ? searchResult : null
         items = getMore ? items : null
 
         const requestBody = {...filter, ...(currentFilter || {}), ...(filterOverrides || {})}
@@ -68,7 +71,8 @@
             }
         })
 
-        let newItems = await response.json()
+        searchResult = await response.json()
+        let newItems = searchResult.rows
         loading = false
         hasMore = newItems.length > 25
         newItems = newItems.slice(0, 25)
@@ -119,6 +123,9 @@
     </form>
 {/if}
 
+{#if searchResult && items && items.length}
+    <strong>{asDollars(searchResult.sold)}</strong> was sold for <strong>{asDollars(searchResult.bought)}</strong> in the last {searchResult.txCount} results
+{/if}
 {#if mempool}
     <Mempool {allTokens}/>
 {:else}
