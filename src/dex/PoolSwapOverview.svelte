@@ -99,7 +99,7 @@
                     {poolSwap.estimate} = <ProfitLoss {poolSwap} estimate={poolSwap.estimate}/>
                 </td>
             </tr>
-            {#if poolSwap.graph}
+            {#if poolSwap.graph && swap}
                 <tr>
                     <td colspan="2">
                         <QuickGraph amount={swap.fromAmount} fromTokenSymbol={swap.tokenFrom} toTokenSymbol={swap.tokenTo}/>
