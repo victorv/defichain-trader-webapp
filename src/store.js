@@ -1,17 +1,31 @@
 import {writable} from "svelte/store";
 
+const burnBot = {
+    name: 'Buy and burn DUSD [BOT]*',
+    addresses: ['df1qlwvtdrh4a4zln3k56rqnx8chu8t0sqx36syaea'],
+    builtin: true,
+}
+
+const builtinAddressGroups = [burnBot]
+
 const getAccount = () => {
     if (localStorage) {
         const item = localStorage.getItem('account')
         if (item) {
             const account = JSON.parse(item)
+            console.log(account)
             if (account && typeof account === 'object') {
+                if (account.addressGroups) {
+                    account.addressGroups = account.addressGroups
+                        .filter(g => !g.builtin)
+                        .concat(...builtinAddressGroups)
+                }
                 return account
             }
         }
     }
     return {
-        addressGroups: []
+        addressGroups: builtinAddressGroups
     }
 }
 

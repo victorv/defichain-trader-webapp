@@ -357,14 +357,14 @@
                 {#if account && !mempool}
                     <p class="from-to">
                         From
-                        <select class="pure-select" bind:value={fromAddressGroup} on:change={updateSearch}>
+                        <select class="pure-select address-group" bind:value={fromAddressGroup} on:change={updateSearch}>
                             <option value="">Any</option>
                             {#each account.addressGroups as group}
                                 <option value={group.name}>{group.name}</option>
                             {/each}
                         </select>
                         To
-                        <select class="pure-select" bind:value={toAddressGroup} on:change={updateSearch}>
+                        <select class="pure-select address-group" bind:value={toAddressGroup} on:change={updateSearch}>
                             <option value="">Any</option>
                             {#each account.addressGroups as group}
                                 <option value={group.name}>{group.name}</option>
@@ -738,5 +738,9 @@
         display: flex;
         flex-direction: row;
         gap: 1rem;
+    }
+
+    .address-group {
+        max-width: 6rem;
     }
 </style>
