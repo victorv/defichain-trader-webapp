@@ -7,6 +7,7 @@
     import Account from "../account/Account.svelte";
     import StatusPage from "./StatusPage.svelte";
     import MixedMempool from "../mempool/MixedMempool.svelte";
+    import Stats from "../stats/Stats.svelte";
 
     export let componentType
     export let onChange
@@ -61,6 +62,13 @@
                    href="#account"
                    class="pure-menu-link">
                     Account
+                </a>
+            </li>
+            <li class="pure-menu-item">
+                <a on:click={() => change(Stats)}
+                   href="#stats"
+                   class="pure-menu-link">
+                    Stats
                 </a>
             </li>
             <li class="pure-menu-item"
