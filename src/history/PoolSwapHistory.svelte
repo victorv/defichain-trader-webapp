@@ -311,7 +311,8 @@
                     {notificationError}
                 </p>
             {:else}
-                <input on:keydown={() => notificationURL = null} type="text" bind:value={notificationTitle} placeholder="Title"/>
+                <input on:keydown={() => notificationURL = null} type="text" bind:value={notificationTitle}
+                       placeholder="Title"/>
                 <button disabled={!notificationTitle || notificationTitle.length > 75 || notificationURL}
                         class="pure-button pure-button-primary" type="submit">
                     Submit notification
@@ -323,7 +324,8 @@
             <p>
                 {#if notificationURL}
                     You can now approve your notification <a href={notificationURL} target="_blank">in
-                    Telegram</a>. While you do so you need to keep this tab open or it won't work. Click the link to get started.
+                    Telegram</a>. While you do so you need to keep this tab open or it won't work. Click the link to get
+                    started.
                 {:else}
                     <em>Submit your notification with a title of your choice.</em>
                 {/if}
@@ -357,7 +359,8 @@
                 {#if account && !mempool}
                     <p class="from-to">
                         From
-                        <select class="pure-select address-group" bind:value={fromAddressGroup} on:change={updateSearch}>
+                        <select class="pure-select address-group" bind:value={fromAddressGroup}
+                                on:change={updateSearch}>
                             <option value="">Any</option>
                             {#each account.addressGroups as group}
                                 <option value={group.name}>{group.name}</option>
@@ -643,6 +646,9 @@
                             <Limit text={tx.from}/>
                         </td>
                         <td>
+                            {#if tx.to == '8defichainBurnAddressXXXXXXXdRQkSm'}
+                                <img class="elmo" src="/images/elmo-burns.gif" alt="Elmo burns the output token"/>
+                            {/if}
                             {#if tx.from != tx.to}
                                 <Limit text={tx.to}/>
                             {:else}
@@ -742,5 +748,9 @@
 
     .address-group {
         max-width: 6rem;
+    }
+
+    .elmo {
+        max-height: 3rem;
     }
 </style>
