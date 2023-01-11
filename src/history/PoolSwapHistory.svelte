@@ -643,6 +643,9 @@
                             {tx.fee}
                         </td>
                         <td>
+                            {#if tx.to == 'dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'}
+                                <Icon icon="cake"/>
+                            {/if}
                             <Limit text={tx.from}/>
                         </td>
                         <td>

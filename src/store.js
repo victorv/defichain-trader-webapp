@@ -1,5 +1,11 @@
 import {writable} from "svelte/store";
 
+const cakeDeFi = {
+    name: 'Cake DeFi',
+    addresses: ['dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'],
+    builtin: true,
+}
+
 const dusdBurnBot = {
     name: 'DFIP-2211-B: burns DUSD',
     addresses: ['df1qlwvtdrh4a4zln3k56rqnx8chu8t0sqx36syaea'],
@@ -12,7 +18,7 @@ const btcBurnBot = {
     builtin: true,
 }
 
-const builtinAddressGroups = [btcBurnBot, dusdBurnBot]
+const builtinAddressGroups = [cakeDeFi, btcBurnBot, dusdBurnBot]
 
 const getAccount = () => {
     if (localStorage) {
