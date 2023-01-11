@@ -647,7 +647,7 @@
                         </td>
                         <td>
                             {#if tx.to == '8defichainBurnAddressXXXXXXXdRQkSm'}
-                                <img class="elmo" src="/images/elmo-burns.gif" alt="Elmo burns the output token"/>
+                                <Icon icon="burn"/>
                             {/if}
                             {#if tx.from != tx.to}
                                 <Limit text={tx.to}/>
@@ -748,9 +748,5 @@
 
     .address-group {
         max-width: 6rem;
-    }
-
-    .elmo {
-        max-height: 3rem;
     }
 </style>

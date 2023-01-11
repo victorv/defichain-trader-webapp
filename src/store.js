@@ -1,12 +1,18 @@
 import {writable} from "svelte/store";
 
-const burnBot = {
-    name: 'Buy and burn DUSD [BOT]*',
+const dusdBurnBot = {
+    name: 'DFIP-2211-B: burns DUSD',
     addresses: ['df1qlwvtdrh4a4zln3k56rqnx8chu8t0sqx36syaea'],
     builtin: true,
 }
 
-const builtinAddressGroups = [burnBot]
+const btcBurnBot = {
+    name: 'DFIP 2201-A: burns BTC',
+    addresses: ['df1qc8ptw6vc9588w6f53fvcjsjx0fntv3men407a9'],
+    builtin: true,
+}
+
+const builtinAddressGroups = [btcBurnBot, dusdBurnBot]
 
 const getAccount = () => {
     if (localStorage) {
