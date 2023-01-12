@@ -1,24 +1,42 @@
 import {writable} from "svelte/store";
 
 const cakeDeFi = {
-    name: 'Cake DeFi',
+    name: 'Provider: Cake DeFi',
     addresses: ['dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'],
     builtin: true,
 }
 
-const dusdBurnBot = {
-    name: 'DFIP-2211-B: burns DUSD',
+const DFIP2211B = {
+    name: 'DFIP-2211-B: buys and burns DUSD periodically',
     addresses: ['df1qlwvtdrh4a4zln3k56rqnx8chu8t0sqx36syaea'],
     builtin: true,
 }
 
-const btcBurnBot = {
-    name: 'DFIP 2201-A: burns BTC',
+const DFIP2206D = {
+    name: 'DFIP-2206-D: accumulates fees and burns DUSD periodically',
+    addresses: ['df1qa6qjmtuh8fyzqyjjsrg567surxu43rx3na7yah'],
+    builtin: true,
+}
+
+const DFIP2201A = {
+    name: 'DFIP 2201-A: accumulates fees and burns BTC periodically',
     addresses: ['df1qc8ptw6vc9588w6f53fvcjsjx0fntv3men407a9'],
     builtin: true,
 }
 
-const builtinAddressGroups = [cakeDeFi, btcBurnBot, dusdBurnBot]
+const burnBots = {
+    name: 'All burn bots: DFIP 2201-A, DFIP-2211-B, DFIP-2206-D',
+    addresses: [...DFIP2201A.addresses, ...DFIP2211B.addresses, ...DFIP2206D.addresses],
+    builtin: true,
+}
+
+const burnAddress = {
+    name: 'DeFiChain: burn address',
+    addresses: ['8defichainBurnAddressXXXXXXXdRQkSm'],
+    builtin: true,
+}
+
+const builtinAddressGroups = [cakeDeFi, DFIP2201A, DFIP2206D, DFIP2211B, burnBots, burnAddress]
 
 const getAccount = () => {
     if (localStorage) {
