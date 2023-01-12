@@ -25,7 +25,7 @@ const DFIP2201A = {
 }
 
 const burnBots = {
-    name: 'All burn bots: DFIP 2201-A, DFIP-2211-B, DFIP-2206-D',
+    name: 'All burn bots: DFIP 2201-A, DFIP-?, DFIP-2211-B',
     addresses: [...DFIP2201A.addresses, ...DFIP2211B.addresses, ...DFIP2206D.addresses],
     builtin: true,
 }
