@@ -14,6 +14,7 @@
             '#Stock',
             '#DUSD or stock',
             '#USDT or USDC',
+            '#or same',
         ] : []).concat(allTokens)
         return supportAnyToken ? ['#Any'].concat(tokens) : tokens;
     }
