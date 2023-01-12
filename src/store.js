@@ -7,19 +7,19 @@ const cakeDeFi = {
 }
 
 const DFIP2211B = {
-    name: 'DFIP-2211-B: buys and burns DUSD periodically',
+    name: 'DFIP-2211-B: burns DUSD periodically',
     addresses: ['df1qlwvtdrh4a4zln3k56rqnx8chu8t0sqx36syaea'],
     builtin: true,
 }
 
 const DFIP2206D = {
-    name: 'DFIP-2206-D: accumulates fees and burns DUSD periodically',
+    name: 'DFIP-?: burns DUSD periodically',
     addresses: ['df1qa6qjmtuh8fyzqyjjsrg567surxu43rx3na7yah'],
     builtin: true,
 }
 
 const DFIP2201A = {
-    name: 'DFIP 2201-A: accumulates fees and burns BTC periodically',
+    name: 'DFIP 2201-A: burns BTC periodically',
     addresses: ['df1qc8ptw6vc9588w6f53fvcjsjx0fntv3men407a9'],
     builtin: true,
 }
