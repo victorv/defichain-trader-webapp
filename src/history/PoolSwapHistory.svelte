@@ -562,7 +562,7 @@
                         <span>{tx.tokenFrom}</span>
                         <br/>
 
-                        {#if tx.swap}
+                        {#if tx.swap && tx.amountFrom > 0.0001}
                             <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
                             <a href="#" on:click|preventDefault={() => toggleEstimateFromTo(tx, tx.swap)}>
                                 proof
@@ -581,7 +581,7 @@
                                 <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                             {/if}
 
-                            {#if tx.inverseSwap}
+                            {#if tx.inverseSwap && tx.amountTo > 0.0001}
                                 <br/>
                                 <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
                                 <a href="#" on:click|preventDefault={() => toggleEstimateToFrom(tx, tx.inverseSwap)}>
