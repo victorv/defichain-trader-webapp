@@ -117,11 +117,7 @@
     </form>
 {/if}
 
-{#if searchResult && items && items.length}
-    <strong>{asDollars(searchResult.sold)}</strong> was sold for <strong>{asDollars(searchResult.bought)}</strong> in the last {searchResult.txCount} results
-{/if}
-
-    <PoolSwapHistory {filterState} {allTokens} {items} {refresh} filter={!filterOverrides}/>
+<PoolSwapHistory {filterState} {allTokens} {items} {refresh} filter={!filterOverrides}/>
 
 {#if hasMore && !error && !filtersActive}
     <section class="pager">
