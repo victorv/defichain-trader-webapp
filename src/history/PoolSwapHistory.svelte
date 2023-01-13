@@ -334,22 +334,6 @@
                                    {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
                 {#if account}
                     <p class="from-to">
-                        From
-                        <select class="pure-select address-group" bind:value={fromAddressGroup}
-                                on:change={updateSearch}>
-                            <option value="">Any</option>
-                            {#each account.addressGroups as group}
-                                <option value={group.name}>{group.name}</option>
-                            {/each}
-                        </select>
-                        To
-                        <select class="pure-select address-group" bind:value={toAddressGroup} on:change={updateSearch}>
-                            <option value="">Any</option>
-                            {#each account.addressGroups as group}
-                                <option value={group.name}>{group.name}</option>
-                            {/each}
-                        </select>
-
                         <button disabled={filterForm} on:click={() => {filterForm = true; filterState(filterForm)}}
                                 class="pure-button icon" type="button">
                             <Icon icon="filter"/>
@@ -373,6 +357,29 @@
                 TX ID
                 <input type="text" bind:value={txID}/>
             </label>
+
+            <div class="row">
+                <label>
+                    From address in
+                    <select class="pure-select address-group" bind:value={fromAddressGroup}
+                            on:change={updateSearch}>
+                        <option value="">Any</option>
+                        {#each account.addressGroups as group}
+                            <option value={group.name}>{group.name}</option>
+                        {/each}
+                    </select>
+                </label>
+
+                <label>
+                    To address in
+                    <select class="pure-select address-group" bind:value={toAddressGroup} on:change={updateSearch}>
+                        <option value="">Any</option>
+                        {#each account.addressGroups as group}
+                            <option value={group.name}>{group.name}</option>
+                        {/each}
+                    </select>
+                </label>
+            </div>
 
             <div class="row">
                 <label>
@@ -496,9 +503,22 @@
                 {#if screen.large}
                     <th>
                         From
+                        <select class="pure-select address-group" bind:value={fromAddressGroup}
+                                on:change={updateSearch}>
+                            <option value="">Any</option>
+                            {#each account.addressGroups as group}
+                                <option value={group.name}>{group.name}</option>
+                            {/each}
+                        </select>
                     </th>
                     <th>
                         To
+                        <select class="pure-select address-group" bind:value={toAddressGroup} on:change={updateSearch}>
+                            <option value="">Any</option>
+                            {#each account.addressGroups as group}
+                                <option value={group.name}>{group.name}</option>
+                            {/each}
+                        </select>
                     </th>
                 {/if}
             </tr>
