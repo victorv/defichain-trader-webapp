@@ -33,8 +33,6 @@
     let maxInputAmount
     let minOutputAmount
     let maxOutputAmount
-    let minFee
-    let maxFee
     let fromAddressGroup
     let fromAddress
     let toAddressGroup
@@ -70,8 +68,6 @@
             maxInputAmount = search.maxInputAmount
             minOutputAmount = search.minOutputAmount
             maxOutputAmount = search.maxOutputAmount
-            minFee = search.minFee
-            maxFee = search.maxFee
             fromAddressGroup = search.fromAddressGroup || ''
             fromAddress = search.fromAddress
             toAddressGroup = search.toAddressGroup || ''
@@ -122,8 +118,6 @@
         maxInputAmount = undefined
         minOutputAmount = undefined
         maxOutputAmount = undefined
-        minFee = undefined
-        maxFee = undefined
         fromAddress = undefined
         toAddress = undefined
 
@@ -167,16 +161,6 @@
         await updateSearch()
     }
 
-    const clearMinFee = async () => {
-        minFee = undefined
-        await updateSearch()
-    }
-
-    const clearMaxFee = async () => {
-        maxFee = undefined
-        await updateSearch()
-    }
-
     const clearFromAddress = async () => {
         fromAddress = undefined
         await updateSearch()
@@ -196,8 +180,6 @@
             maxInputAmount: maxInputAmount || undefined,
             minOutputAmount: minOutputAmount || undefined,
             maxOutputAmount: maxOutputAmount || undefined,
-            minFee: minFee || undefined,
-            maxFee: maxFee || undefined,
             fromAddressGroup: fromAddressGroup || undefined,
             fromAddress: fromAddress || undefined,
             toAddressGroup: toAddressGroup || undefined,
@@ -336,8 +318,6 @@
                     {maxInputAmount}
                     {minOutputAmount}
                     {maxOutputAmount}
-                    {minFee}
-                    {maxFee}
                     {fromAddressGroup}
                     {fromAddress}
                     {toAddressGroup}
@@ -441,37 +421,16 @@
                     <input min="0" step="0.00000001" type="number" bind:value={maxOutputAmount}/>
                 </label>
             </div>
-
-            <div class="row">
-                <label>
-                    Min fee
-                    <input min="0" step="0.00000001" type="number" bind:value={minFee}/>
-                </label>
-                <label>
-                    Max fee
-                    <input min="0" step="0.00000001" type="number" bind:value={maxFee}/>
-                </label>
-            </div>
             <button class="pure-button" type="submit">Apply filters</button>
         </fieldset>
     </form>
 {:else}
     {#if account}
         <form class="pure-form active-filters" on:submit|preventDefault>
-            {#if minFee || maxFee || minBlock || maxBlock ||
+            {#if minBlock || maxBlock ||
             minInputAmount || maxInputAmount || minOutputAmount || maxOutputAmount ||
             txID || fromAddress || toAddress}
                 <button on:click={clearAllFilters} class="pure-button" type="button">Remove filters</button>
-            {/if}
-            {#if minFee}
-                <button on:click={clearMinFee} class="pure-button" type="button">
-                    <strong class="red">X</strong> min fee: <strong>{minFee}</strong>
-                </button>
-            {/if}
-            {#if maxFee}
-                <button on:click={clearMaxFee} class="pure-button" type="button">
-                    <strong class="red">X</strong> max fee: <strong>{maxFee}</strong>
-                </button>
             {/if}
             {#if minBlock}
                 <button on:click={clearMinBlock} class="pure-button" type="button">
@@ -540,9 +499,6 @@
                     Output Amount
                 </th>
                 {#if screen.large}
-                    <th>
-                        Fee
-                    </th>
                     <th>
                         From
                     </th>
@@ -627,9 +583,6 @@
                         </span>
                     </td>
                     {#if screen.large}
-                        <td>
-                            {tx.fee}
-                        </td>
                         <td>
                             {#if tx.from == 'dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'}
                                 <Icon icon="cake"/>
