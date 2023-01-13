@@ -484,11 +484,6 @@
         {#if account && search}
             <thead>
             <tr>
-                {#if screen.large}
-                    <th>
-                        TX ID
-                    </th>
-                {/if}
                 <th>
                     Block
                 </th>
@@ -513,27 +508,15 @@
             <tbody>
             {#each poolSwaps as tx}
                 <tr class:selected-row={tx === selectedTX || (swapFromTo && swapFromTo.tx === tx) || (swapToFrom && swapToFrom.tx === tx)}>
-                    {#if screen.large}
-                        <td>
-                            <button on:click={() => toggleTXDetails(tx)}
-                                    class:info={tx === selectedTX}
-                                    type="button"
-                                    class="pure-button info-button icon">
-                                <Icon icon="info"/>
-                            </button>
-
-                            <Limit text={tx.txID}/>
-                        </td>
-                    {/if}
                     <td>
-                        {#if screen.small}
-                            <button on:click={() => toggleTXDetails(tx)}
-                                    class:info={tx === selectedTX}
-                                    type="button"
-                                    class="pure-button info-button icon">
-                                <Icon icon="info"/>
-                            </button>
-                        {/if}
+
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+
                         {#if tx.block}
                             <TimePastSince start={tx.block.medianTime * 1000} end={now}/>
                             <br/>
