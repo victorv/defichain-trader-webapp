@@ -580,12 +580,14 @@
                                 or {tx.tokenToAlt}
                                 <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                             {/if}
-                            <br/>
 
-                            <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
-                            <a href="#" on:click|preventDefault={() => toggleEstimateToFrom(tx, tx.inverseSwap)}>
-                                proof
-                            </a>
+                            {#if tx.inverseSwap}
+                                <br/>
+                                <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
+                                <a href="#" on:click|preventDefault={() => toggleEstimateToFrom(tx, tx.inverseSwap)}>
+                                    proof
+                                </a>
+                            {/if}
                         {:else}
                             N/A {tx.tokenTo}
                         {/if}
