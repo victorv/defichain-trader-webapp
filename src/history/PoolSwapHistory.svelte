@@ -558,7 +558,7 @@
                         {/if}
                     </td>
                     <td>
-                        <span>{tx.amountFrom}</span>
+                        <span><strong>{tx.amountFrom}</strong></span>
                         <span>{tx.tokenFrom}</span>
                         <br/>
 
@@ -570,11 +570,11 @@
                             <br/>
                         {/if}
 
-                        ~= {asUSDT(tx.fromAmountUSD)}
+                        ~= <em>{asUSDT(tx.fromAmountUSD)}</em>
                     </td>
                     <td>
                         {#if tx.amountTo}
-                            <span>{tx.amountTo}</span>
+                            <span><strong>{tx.amountTo}</strong></span>
                             <span>{tx.tokenTo}</span>
                             {#if tx.tokenTo !== tx.tokenToAlt}
                                 or {tx.tokenToAlt}
@@ -590,7 +590,7 @@
                             N/A {tx.tokenTo}
                         {/if}
                         <br/>
-                        ~= {asUSDT(tx.toAmountUSD)}
+                        ~= <em>{asUSDT(tx.toAmountUSD)}</em>
                     </td>
                     {#if screen.large}
                         <td>
