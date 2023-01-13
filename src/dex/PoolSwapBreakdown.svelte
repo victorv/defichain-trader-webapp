@@ -80,7 +80,7 @@
             <th role="rowheader">
                 Estimate
                 <Help warning={true}
-                      help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimated result. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
+                      help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
             </th>
             <td>
                 {breakdown.estimate} {poolSwap.tokenTo}
@@ -89,7 +89,7 @@
         <tr>
             <th role="rowheader">
                 Desired Result
-                <Help help="The desired result you have targeted. It is used to calculate your profit or loss."/>
+                <Help help="Used to calculate your profit/loss% and the maximum price."/>
             </th>
             <td>
                 {poolSwap.desiredResult.toFixed(8)} {poolSwap.tokenTo}
@@ -99,7 +99,7 @@
             <tr>
                 <th role="rowheader">
                     Max Price
-                    <Help help="This is the maximum price you can pay while still reaching your desired result. This number can be used for on-chain-swaps to prevent unexpected slippage."/>
+                    <Help help="Maximum price you can pay while still reaching your desired result. This number can be used for on-chain-swaps to prevent unexpected slippage."/>
                 </th>
                 <td>
                     {poolSwap.maxPrice.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
@@ -110,7 +110,7 @@
             <tr>
                 <th role="rowheader">
                     Average Price Payed
-                    <Help help="Because of how pools work you end up paying more if you buy more. Therefore it is useful to know the average price you have payed. "/>
+                    <Help help="Average price you have payed."/>
                 </th>
                 <td>
                     {breakdown.price.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
@@ -137,7 +137,7 @@
             </th>
             <td>
                 {#if breakdown.premium}
-                    <Percentage number={breakdown.premium}/>
+                    <Percentage inverse={true} number={breakdown.premium}/>
                 {:else}
                     Unknown
                 {/if}
@@ -147,8 +147,6 @@
             <tr>
                 <th role="rowheader" class="banner">
                     Swap {index + 1}
-                    <Help whiteText={true}
-                          help="Some swaps consist of multiple swaps. This is called a composite swap and will go through multiple pools. You pay fees and commissions each time for every pool you swap through. The height of those fees can be different for each pool and they can add up quickly."/>
                 </th>
                 <td>
                     {swap.amountFrom} {swap.tokenFrom} to

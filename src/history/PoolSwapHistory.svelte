@@ -11,6 +11,7 @@
     import {onDestroy, onMount} from "svelte";
     import Popup from "../Popup.svelte";
     import ActiveFilters from "./ActiveFilters.svelte";
+    import ProfitLoss from "../dex/ProfitLoss.svelte";
 
     let account
     let search
@@ -218,7 +219,7 @@
         selectedTX === tx ? selectedTX = null : selectedTX = tx
     }
 
-    const toggleEstimateFromTo = async (swap) => {
+    const toggleEstimateFromTo = async (swap, swapResult) => {
         selectedTX = null
         swapToFrom = null
 
@@ -227,13 +228,16 @@
             return
         }
 
-        const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo || 1.0}`
-        const response = await fetch(`/estimate?poolswap=${request}`)
-        swapFromTo = await response.json()
+        // const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo || 1.0}`
+        // const response = await fetch(`/estimate?poolswap=${request}`)
+        // swapFromTo = await response.json()
+        // swapFromTo.tx = swap
+
+        swapFromTo = swapResult
         swapFromTo.tx = swap
     }
 
-    const toggleEstimateToFrom = async (swap) => {
+    const toggleEstimateToFrom = async (swap, swapResult) => {
         selectedTX = null
         swapFromTo = null
 
@@ -242,9 +246,14 @@
             return
         }
 
-        const request = `${swap.amountTo}+${swap.tokenTo}+to+${swap.tokenFrom}+desiredResult+${swap.amountFrom}`
-        const response = await fetch(`/estimate?poolswap=${request}`)
-        swapToFrom = await response.json()
+        // TODO implement live update
+        // const request = `${swap.amountTo}+${swap.tokenTo}+to+${swap.tokenFrom}+desiredResult+${swap.amountFrom}`
+        // const response = await fetch(`/estimate?poolswap=${request}`)
+        //
+        // swapToFrom = await response.json()
+        // swapToFrom.tx = swap
+
+        swapToFrom = swapResult
         swapToFrom.tx = swap
     }
 
@@ -549,27 +558,21 @@
                         {/if}
                     </td>
                     <td>
-                        <button on:click={() => toggleEstimateFromTo(tx)}
-                                class:info={swapFromTo && swapFromTo.tx === tx}
-                                type="button"
-                                class="pure-button info-button icon">
-                            <Icon icon="exchange"/>
-                        </button>
                         <span>{tx.amountFrom}</span>
                         <span>{tx.tokenFrom}</span>
                         <br/>
-                        <span>
-                            <strong>{asUSDT(tx.fromAmountUSD)}</strong>
-                        </span>
+
+                        {#if tx.swap}
+                            <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
+                            <a href="#" on:click|preventDefault={() => toggleEstimateFromTo(tx, tx.swap)}>
+                                proof
+                            </a>
+                            <br/>
+                        {/if}
+
+                        ~= {asUSDT(tx.fromAmountUSD)}
                     </td>
                     <td>
-                        <button on:click={() => toggleEstimateToFrom(tx)}
-                                disabled={!tx.amountTo}
-                                class:info={swapToFrom && swapToFrom.tx === tx}
-                                type="button"
-                                class="pure-button info-button icon">
-                            <Icon icon="exchange"/>
-                        </button>
                         {#if tx.amountTo}
                             <span>{tx.amountTo}</span>
                             <span>{tx.tokenTo}</span>
@@ -577,13 +580,17 @@
                                 or {tx.tokenToAlt}
                                 <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                             {/if}
+                            <br/>
+
+                            <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
+                            <a href="#" on:click|preventDefault={() => toggleEstimateToFrom(tx, tx.inverseSwap)}>
+                                proof
+                            </a>
                         {:else}
                             N/A {tx.tokenTo}
                         {/if}
                         <br/>
-                        <span>
-                            <strong>{asUSDT(tx.toAmountUSD)}</strong>
-                        </span>
+                        ~= {asUSDT(tx.toAmountUSD)}
                     </td>
                     {#if screen.large}
                         <td>
