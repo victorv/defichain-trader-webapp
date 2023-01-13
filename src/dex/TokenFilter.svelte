@@ -5,6 +5,8 @@
     export let onTokenSelectionCancelled
     export let supportAnyToken
     export let supportPseudo
+    export let isFrom = false
+    export let isTo = false
 
     let tokens
 
@@ -14,7 +16,7 @@
             '#Stock',
             '#DUSD or stock',
             '#USDT or USDC',
-            '#or same',
+            '#is sold or bought',
         ] : []).concat(allTokens)
         return supportAnyToken ? ['#Any'].concat(tokens) : tokens;
     }
@@ -77,10 +79,21 @@
 <div class="pure-menu">
     <ul class="pure-menu-list">
         {#each tokens as token}
-            <li on:click={() => selectToken(token)}
-                class="pure-menu-item">
-                <a href="#" class="pure-menu-link">{token}</a>
-            </li>
+            {#if !(isFrom && token == '#is sold or bought')}
+                <li on:click={() => selectToken(token)}
+                    class="pure-menu-item">
+                    <a href="#" class="pure-menu-link">
+                        {#if token == '#is sold or bought'}
+                            is <strong>#sold or bought</strong>
+                        {:else}
+                            {#if isTo}
+                                is sold for
+                            {/if}
+                            <strong>{token}</strong>
+                        {/if}
+                    </a>
+                </li>
+            {/if}
         {/each}
     </ul>
 </div>

@@ -86,7 +86,15 @@
 </div>
 
 {#if onTokenSelected}
-    <TokenFilter {allTokens} {supportAnyToken} {supportPseudo} {onTokenSelected} {onTokenSelectionCancelled}/>
+    <TokenFilter
+            {allTokens}
+            {supportAnyToken}
+            {supportPseudo}
+            {onTokenSelected}
+            {onTokenSelectionCancelled}
+            isFrom={onTokenSelected == onFromTokenSelected}
+            isTo={onTokenSelected == onToTokenSelected}
+    />
 {/if}
 
 <style>
