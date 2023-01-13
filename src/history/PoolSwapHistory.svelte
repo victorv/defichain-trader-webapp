@@ -23,7 +23,6 @@
     export let refresh
     export let items
     export let filter
-    export let mempool
     export let filterState
 
     let notificationTitle
@@ -63,7 +62,7 @@
     onMount(async () => {
         const sub1 = accountStore.subscribe(newAccount => {
             account = newAccount
-            search = (mempool ? account.mempoolSearch : account.swapSearch) || {}
+            search = account.swapSearch || {}
             txID = search.txID
             minBlock = search.minBlock
             maxBlock = search.maxBlock
@@ -218,11 +217,8 @@
         const newSearch = createSearch()
 
         const searchUpdate = {}
-        if (mempool) {
-            searchUpdate.mempoolSearch = newSearch
-        } else {
-            searchUpdate.swapSearch = newSearch
-        }
+        searchUpdate.swapSearch = newSearch
+
         updateAccount(searchUpdate)
         await update()
     }
@@ -356,7 +352,7 @@
             {#if !filterForm}
                 <FromToTokenFilter supportAnyToken={true} supportPseudo={true}
                                    {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-                {#if account && !mempool}
+                {#if account}
                     <p class="from-to">
                         From
                         <select class="pure-select address-group" bind:value={fromAddressGroup}
@@ -393,12 +389,10 @@
 {#if filterForm}
     <form class="pure-form pure-form-stacked" on:submit|preventDefault={submitFilterForm}>
         <fieldset>
-            {#if !mempool}
-                <label>
-                    TX ID
-                    <input type="text" bind:value={txID}/>
-                </label>
-            {/if}
+            <label>
+                TX ID
+                <input type="text" bind:value={txID}/>
+            </label>
 
             <div class="row">
                 <label>
@@ -462,7 +456,7 @@
         </fieldset>
     </form>
 {:else}
-    {#if account && !mempool}
+    {#if account}
         <form class="pure-form active-filters" on:submit|preventDefault>
             {#if minFee || maxFee || minBlock || maxBlock ||
             minInputAmount || maxInputAmount || minOutputAmount || maxOutputAmount ||
@@ -537,11 +531,7 @@
                     </th>
                 {/if}
                 <th>
-                    {#if mempool}
-                        Time
-                    {:else}
-                        Block
-                    {/if}
+                    Block
                 </th>
                 <th>
                     Input Amount
@@ -594,11 +584,9 @@
                             <strong>{tx.block.blockHeight}</strong>
                         {:else}
                             <TimePastSince start={tx.mempool.time} end={now}/>
-                            {#if !mempool}
-                                <br/>
-                                <strong>{tx.mempool.blockHeight}</strong>
-                                <Help warning={true} help="This TX has not been confirmed so far"/>
-                            {/if}
+                            <br/>
+                            <strong>{tx.mempool.blockHeight}</strong>
+                            <Help warning={true} help="This TX has not been confirmed so far"/>
                         {/if}
                     </td>
                     <td>

@@ -3,7 +3,6 @@
     import {onDestroy, onMount} from "svelte";
     import Icon from "../common/Icon.svelte";
     import {accountStore} from "../store";
-    import Mempool from "../mempool/Mempool.svelte";
     import {asDollars} from "../common/common";
 
     export let allTokens
@@ -14,7 +13,6 @@
     let items
     let searchResult
     let error
-    let mempool = false
     let filtersActive
 
     let loading
@@ -112,13 +110,9 @@
             <select bind:value={viewType}>
                 <option value="PoolSwap">Pool Swaps</option>
             </select>
-            <button disabled={mempool} class="pure-button icon" type="submit">
+            <button class="pure-button icon" type="submit">
                 <Icon icon="search"/>
             </button>
-            <label>
-                Mempool
-                <input bind:checked={mempool} type="checkbox"/>
-            </label>
         </fieldset>
     </form>
 {/if}
@@ -126,36 +120,33 @@
 {#if searchResult && items && items.length}
     <strong>{asDollars(searchResult.sold)}</strong> was sold for <strong>{asDollars(searchResult.bought)}</strong> in the last {searchResult.txCount} results
 {/if}
-{#if mempool}
-    <Mempool {allTokens}/>
-{:else}
-    <PoolSwapHistory {filterState} {allTokens} {items} {refresh} filter={!filterOverrides} mempool={false}/>
 
-    {#if hasMore && !error && !filtersActive}
-        <section class="pager">
-            <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button"
-                    type="button">
-                Show more
-            </button>
-        </section>
-    {/if}
+    <PoolSwapHistory {filterState} {allTokens} {items} {refresh} filter={!filterOverrides}/>
 
-    {#if !filtersActive}
-        {#if items && !items.length}
-            <div class="message">
-                <p class="info">
-                    0 results found
-                </p>
-            </div>
-        {:else if error}
-            <div class="message">
-                <p class="error">{error}</p>
-            </div>
-        {:else if loading}
-            <div class="message">
-                <p class="info">Loading results...</p>
-            </div>
-        {/if}
+{#if hasMore && !error && !filtersActive}
+    <section class="pager">
+        <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button"
+                type="button">
+            Show more
+        </button>
+    </section>
+{/if}
+
+{#if !filtersActive}
+    {#if items && !items.length}
+        <div class="message">
+            <p class="info">
+                0 results found
+            </p>
+        </div>
+    {:else if error}
+        <div class="message">
+            <p class="error">{error}</p>
+        </div>
+    {:else if loading}
+        <div class="message">
+            <p class="info">Loading results...</p>
+        </div>
     {/if}
 {/if}
 
