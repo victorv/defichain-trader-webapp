@@ -18,7 +18,9 @@
             '#USDT or USDC',
             '#is sold or bought',
         ] : []).concat(allTokens)
-        return supportAnyToken ? ['#Any'].concat(tokens) : tokens;
+        tokens = supportAnyToken ? ['#Any'].concat(tokens) : tokens
+
+        return ['DUSD'].concat(tokens)
     }
 
     $: {
