@@ -1,4 +1,3 @@
-<svelte:options immutable/>
 <script>
     import Fee from "./Fee.svelte";
     import Req from "./Req.svelte";
@@ -19,7 +18,7 @@
         }
     }
 
-    $: {
+    $: if(poolSwap) {
         setBreakdown(breakdownIndex)
     }
 
@@ -53,7 +52,8 @@
                     {/if}
                 </button>
                 {#if index !== 0 && option.swaps.length === 1}
-                    <Help warning={true} help="Careful! If you perform a composite swap this is the path that will be selected for you. You can take the Best Path by breaking your composite swap into multiple swaps that you perform manually in sequence. Check if the difference is worth it to you and note that swaps from <= 0.00001 are currently inaccurate."/>
+                    <Help warning={true}
+                          help="Careful! If you perform a composite swap this is the path that will be selected for you. You can take the Best Path by breaking your composite swap into multiple swaps that you perform manually in sequence. Check if the difference is worth it to you and note that swaps from <= 0.00001 are currently inaccurate."/>
                 {/if}
             </li>
         {/each}
@@ -70,14 +70,6 @@
         </tr>
         <tr>
             <th role="rowheader">
-                Profit/loss
-            </th>
-            <td>
-                <ProfitLoss {poolSwap} estimate={breakdown.estimate}/>
-            </td>
-        </tr>
-        <tr>
-            <th role="rowheader">
                 Estimate
                 <Help warning={true}
                       help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
@@ -86,25 +78,35 @@
                 {breakdown.estimate} {poolSwap.tokenTo}
             </td>
         </tr>
-        <tr>
-            <th role="rowheader">
-                Desired Result
-                <Help help="Used to calculate your profit/loss% and the maximum price."/>
-            </th>
-            <td>
-                {poolSwap.desiredResult.toFixed(8)} {poolSwap.tokenTo}
-            </td>
-        </tr>
-        {#if poolSwap.maxPrice}
+        {#if poolSwap.desiredResult}
             <tr>
                 <th role="rowheader">
-                    Max Price
-                    <Help help="Maximum price you can pay while still reaching your desired result. This number can be used for on-chain-swaps to prevent unexpected slippage."/>
+                    Profit/loss
                 </th>
                 <td>
-                    {poolSwap.maxPrice.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
+                    <ProfitLoss {poolSwap} estimate={breakdown.estimate}/>
                 </td>
             </tr>
+            <tr>
+                <th role="rowheader">
+                    Desired Result
+                    <Help help="Used to calculate your profit/loss% and the maximum price."/>
+                </th>
+                <td>
+                    {poolSwap.desiredResult.toFixed(8)} {poolSwap.tokenTo}
+                </td>
+            </tr>
+            {#if poolSwap.maxPrice}
+                <tr>
+                    <th role="rowheader">
+                        Max Price
+                        <Help help="Maximum price you can pay while still reaching your desired result. This number can be used for on-chain-swaps to prevent unexpected slippage."/>
+                    </th>
+                    <td>
+                        {poolSwap.maxPrice.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
+                    </td>
+                </tr>
+            {/if}
         {/if}
         {#if breakdown.price}
             <tr>

@@ -3,7 +3,7 @@
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
-    import {asDollars, asUSDT, hasItems} from "../common/common";
+    import {asUSDT, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {accountStore, screenStore, updateAccount, uuidStore} from "../store";
     import Limit from "../common/Limit.svelte";
@@ -48,8 +48,7 @@
         now = new Date().getTime()
     }
 
-    let swapFromTo
-    let swapToFrom
+    let swapBreakdown
     let fromTokenSymbol
     let toTokenSymbol
 
@@ -213,18 +212,19 @@
     }
 
     const toggleTXDetails = async tx => {
-        swapFromTo = null
-        swapToFrom = null
+        swapBreakdown = null
 
         selectedTX === tx ? selectedTX = null : selectedTX = tx
     }
 
-    const toggleEstimateFromTo = async (swap, swapResult) => {
-        selectedTX = null
-        swapToFrom = null
+    const toggleSwapBreakdown = async (swap, swapResult, desiredResult) => {
+        if (!desiredResult) {
+            swapResult.desiredResult = null
+        }
 
-        if (swapFromTo && swapFromTo.tx === swap) {
-            swapFromTo = null
+        if (selectedTX === swap && swapResult == swapBreakdown) {
+            selectedTX = null
+            swapBreakdown = null
             return
         }
 
@@ -233,28 +233,8 @@
         // swapFromTo = await response.json()
         // swapFromTo.tx = swap
 
-        swapFromTo = swapResult
-        swapFromTo.tx = swap
-    }
-
-    const toggleEstimateToFrom = async (swap, swapResult) => {
-        selectedTX = null
-        swapFromTo = null
-
-        if (swapToFrom && swapToFrom.tx === swap) {
-            swapToFrom = null
-            return
-        }
-
-        // TODO implement live update
-        // const request = `${swap.amountTo}+${swap.tokenTo}+to+${swap.tokenFrom}+desiredResult+${swap.amountFrom}`
-        // const response = await fetch(`/estimate?poolswap=${request}`)
-        //
-        // swapToFrom = await response.json()
-        // swapToFrom.tx = swap
-
-        swapToFrom = swapResult
-        swapToFrom.tx = swap
+        swapBreakdown = swapResult
+        selectedTX = swap
     }
 
     const submitFilterForm = async () => {
@@ -533,7 +513,7 @@
         {#if items && items.length}
             <tbody>
             {#each poolSwaps as tx}
-                <tr class:selected-row={tx === selectedTX || (swapFromTo && swapFromTo.tx === tx) || (swapToFrom && swapToFrom.tx === tx)}>
+                <tr class:selected-row={tx === selectedTX}>
                     <td>
 
                         <button on:click={() => toggleTXDetails(tx)}
@@ -561,13 +541,22 @@
 
                         {#if tx.swap && tx.amountFrom > 0.0001}
                             <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
-                            <a href="#" on:click|preventDefault={() => toggleEstimateFromTo(tx, tx.swap)}>
+                            <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap, true)}>
                                 proof
                             </a>
                             <br/>
                         {/if}
 
-                        ~= <em>{asUSDT(tx.fromAmountUSD)}</em>
+                        {#if tx.tokenFrom == 'USDT'}
+                            <em>{asUSDT(tx.amountFrom)}</em>
+                        {:else if tx.usdtSwap}
+                            <em>{asUSDT(tx.usdtSwap.estimate)}</em>
+                            {#if tx.usdtSwap.estimate > 0.09}
+                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap)}>
+                                    proof
+                                </a>
+                            {/if}
+                        {/if}
                     </td>
                     <td>
                         {#if tx.amountTo}
@@ -581,7 +570,7 @@
                             {#if tx.inverseSwap && tx.amountTo > 0.0001}
                                 <br/>
                                 <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
-                                <a href="#" on:click|preventDefault={() => toggleEstimateToFrom(tx, tx.inverseSwap)}>
+                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
                                     proof
                                 </a>
                             {/if}
@@ -589,7 +578,17 @@
                             N/A {tx.tokenTo}
                         {/if}
                         <br/>
-                        ~= <em>{asUSDT(tx.toAmountUSD)}</em>
+
+                        {#if tx.swap && tx.tokenTo == 'USDT'}
+                            <em>{asUSDT(tx.amountTo)}</em>
+                        {:else if tx.usdtInverseSwap}
+                            <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
+                            {#if tx.usdtInverseSwap.estimate > 0.09}
+                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap)}>
+                                    proof
+                                </a>
+                            {/if}
+                        {/if}
                     </td>
                     {#if screen.large}
                         <td>
@@ -610,7 +609,7 @@
                         </td>
                     {/if}
                 </tr>
-                {#if tx === selectedTX}
+                {#if swapBreakdown == null && tx === selectedTX}
                     <tr>
                         <td colspan="7">
                             {#if selectedTX}
@@ -618,23 +617,11 @@
                             {/if}
                         </td>
                     </tr>
-                {:else if swapFromTo && swapFromTo.tx === tx}
+                {:else if swapBreakdown && selectedTX === tx}
                     <tr>
                         <td colspan="7">
-                            {#if hasItems(swapFromTo.breakdown)}
-                                <PoolSwapBreakdown poolSwap={swapFromTo}/>
-                            {:else}
-                                <div class="warning">
-                                    Something went wrong
-                                </div>
-                            {/if}
-                        </td>
-                    </tr>
-                {:else if swapToFrom && swapToFrom.tx === tx}
-                    <tr>
-                        <td colspan="7">
-                            {#if hasItems(swapToFrom.breakdown)}
-                                <PoolSwapBreakdown poolSwap={swapToFrom}/>
+                            {#if hasItems(swapBreakdown.breakdown)}
+                                <PoolSwapBreakdown poolSwap={swapBreakdown}/>
                             {:else}
                                 <div class="warning">
                                     Something went wrong
