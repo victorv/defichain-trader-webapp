@@ -20,7 +20,7 @@
         ] : []).concat(allTokens)
         tokens = supportAnyToken ? ['#Any'].concat(tokens) : tokens
 
-        return ['DUSD'].concat(tokens)
+        return ['DUSD', 'DFI'].concat(tokens)
     }
 
     $: {
