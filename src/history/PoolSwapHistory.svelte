@@ -42,9 +42,37 @@
     let subs = []
     let now = new Date().getTime()
     let interval
+    let balances = []
+    let showIntermediaryBalance = false
 
     $: poolSwaps = items
     $: if (items) {
+        const balancesByToken = {}
+        for (const swap of items) {
+            if (!balancesByToken[swap.tokenFrom]) {
+                balancesByToken[swap.tokenFrom] = 0.0
+            }
+            if (!balancesByToken[swap.tokenTo]) {
+                balancesByToken[swap.tokenTo] = 0.0
+            }
+
+            balancesByToken[swap.tokenFrom] -= +swap.amountFrom
+            balancesByToken[swap.tokenTo] += +swap.amountTo
+        }
+
+        let newBalances = []
+        for (const [key, value] of Object.entries(balancesByToken)) {
+            newBalances.push({
+                token: key,
+                amount: value,
+            })
+        }
+        newBalances.sort((a, b) => a.amount > b.amount ? -1 : 1)
+        balances = newBalances.map(balance => ({
+            ...balance,
+            amount: balance.amount.toFixed(8)
+        }))
+
         now = new Date().getTime()
     }
 
@@ -473,6 +501,28 @@
         </form>
         <br/>
     {/if}
+
+    {#if showIntermediaryBalance}
+        <Popup onClose={() => showIntermediaryBalance = false}>
+            <div slot="header">
+                Calculated from the {poolSwaps.length} results that are currently displayed
+            </div>
+            <div slot="content">
+                <ul>
+                    {#each balances as balance}
+                        <li>
+                            {balance.amount}
+                            {balance.token}
+                        </li>
+                    {/each}
+                </ul>
+            </div>
+        </Popup>
+    {/if}
+    {#if hasItems(balances)}
+        <a href="#" on:click|preventDefault={() => showIntermediaryBalance = true}>intermediary balance</a>
+    {/if}
+
     <table class:small={screen.small} class="pure-table pure-table-striped">
         {#if account && search}
             <thead>
