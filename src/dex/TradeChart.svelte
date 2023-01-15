@@ -1,8 +1,11 @@
 <script>
     import {onMount} from "svelte";
     import {screenStore} from "../store";
+    import Percentage from "./Percentage.svelte";
+    import BigNumber from "bignumber.js";
 
     export let allTokens
+    export let graph
     export let series
     export let fromTokenSymbol
     export let toTokenSymbol
@@ -16,14 +19,27 @@
     let chart
     let lineSeries
     let path
+    let fees
 
-    $: if(series) {
+    $: if (series) {
+        let newFees = new BigNumber(0.0)
         const tokens = [fromTokenSymbol]
         for (const swap of series.swap.swaps) {
             tokens.push(swap.poolSymbol)
+            if (swap.commission) {
+                newFees = newFees.plus(new BigNumber(swap.commission))
+            }
+            if (swap.inFeePct) {
+                newFees = newFees.plus(new BigNumber(swap.inFeePct))
+            }
+            if (swap.outFeePct) {
+                newFees = newFees.plus(new BigNumber(swap.outFeePct))
+            }
         }
         tokens.push(toTokenSymbol)
+
         path = tokens.join(' → ')
+        fees = newFees.times(new BigNumber(100.0)).toPrecision(3)
     }
 
     const calcPriceFormat = n => {
@@ -63,7 +79,7 @@
                 mouseWheel: false,
             },
         })
-console.log(series)
+        console.log(series)
         lineSeries = chart.addLineSeries(createSeriesOptions(series.points))
         lineSeries.setData(series.points)
 
@@ -76,7 +92,16 @@ console.log(series)
 </script>
 
 <div bind:this={canvasElement} class="container">
-    <div>{path}</div>
+    <div>
+        {path}
+        <br/>
+        fees
+        <Percentage number={fees} inverse={true}/>
+        {#if graph}
+            <br/>
+            plots differences of <Percentage number={graph.density * 100}/>
+        {/if}
+    </div>
 </div>
 
 <style>

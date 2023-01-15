@@ -147,7 +147,7 @@
 
 {#if series && hasItems(series.points)}
     {#key series}
-        <TradeChart {allTokens} {series} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+        <TradeChart {graph} {allTokens} {series} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
     {/key}
 {/if}
 
