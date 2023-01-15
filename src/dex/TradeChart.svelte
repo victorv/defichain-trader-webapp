@@ -15,6 +15,16 @@
     let canvasElement
     let chart
     let lineSeries
+    let path
+
+    $: if(series) {
+        const tokens = [fromTokenSymbol]
+        for (const swap of series.swap.swaps) {
+            tokens.push(swap.poolSymbol)
+        }
+        tokens.push(toTokenSymbol)
+        path = tokens.join(' → ')
+    }
 
     const calcPriceFormat = n => {
         if (n < 0.00000001) return [0.00000001, 8]
@@ -53,7 +63,7 @@
                 mouseWheel: false,
             },
         })
-
+console.log(series)
         lineSeries = chart.addLineSeries(createSeriesOptions(series.points))
         lineSeries.setData(series.points)
 
@@ -65,13 +75,27 @@
     })
 </script>
 
-<div bind:this={canvasElement} class="container"></div>
+<div bind:this={canvasElement} class="container">
+    <div>{path}</div>
+</div>
 
 <style>
     .container {
+        position: relative;
         display: flex;
         flex-direction: row;
         height: 80vh;
         overflow: hidden;
+    }
+
+    div > div {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        z-index: 10000;
+        font-size: 14px;
+        font-family: sans-serif;
+        line-height: 18px;
+        font-weight: 300;
     }
 </style>
