@@ -7,8 +7,8 @@
     import {hasItems} from "../common/common";
 
     export let allTokens
-    export let fromTokenSymbol = 'DFI'
-    export let toTokenSymbol = 'BTC'
+    export let fromTokenSymbol = 'DUSD'
+    export let toTokenSymbol = 'USDT'
     export let amount = 1.0
 
     const oneHour = 120
