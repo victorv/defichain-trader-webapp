@@ -5,6 +5,7 @@
     import Percentage from "./Percentage.svelte";
     import Help from "../common/Help.svelte";
     import ProfitLoss from "./ProfitLoss.svelte";
+    import Icon from "../common/Icon.svelte";
 
     export let poolSwap
 
@@ -18,7 +19,7 @@
         }
     }
 
-    $: if(poolSwap) {
+    $: if (poolSwap) {
         setBreakdown(breakdownIndex)
     }
 
@@ -43,17 +44,20 @@
                 <button class="pure-button"
                         on:click={() => setBreakdown(index)}
                         class:info={index === breakdownIndex}>
+                    {index + 1}.
                     {#if index === 0}
-                        Best Path
-                    {:else if index === poolSwap.breakdown.length - 1}
-                        Worst Path
+                        <Icon icon="best"/>
+                    {:else if index !== 0 && option.swaps.length === 1}
+                        <Icon icon="danger"/>
                     {:else}
-                        Alternative Path ({index})
+                        <Icon icon="warning"/>
                     {/if}
+                    <ProfitLoss {poolSwap} estimate={option.estimate}/>
                 </button>
                 {#if index !== 0 && option.swaps.length === 1}
+                    &larr;
                     <Help warning={true}
-                          help="Careful! If you perform a composite swap this is the path that will be selected for you. You can take the Best Path by breaking your composite swap into multiple swaps that you perform manually in sequence. Check if the difference is worth it to you and note that swaps from <= 0.00001 are currently inaccurate."/>
+                          help="Careful! A swap from {poolSwap.tokenFrom} to {poolSwap.tokenTo} will always go through this pool!"/>
                 {/if}
             </li>
         {/each}
