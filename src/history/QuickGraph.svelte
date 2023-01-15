@@ -1,8 +1,10 @@
 <script>
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import {onDestroy, onMount} from "svelte";
-    import {hasItems} from "../common/common";
     import TradeChart from "../dex/TradeChart.svelte";
+    import Icon from "../common/Icon.svelte";
+    import Help from "../common/Help.svelte";
+    import {hasItems} from "../common/common";
 
     export let allTokens
     export let fromTokenSymbol = 'DFI'
@@ -10,14 +12,21 @@
     export let amount = 1.0
 
     const oneHour = 120
+    const twelveHours = 120 * 12
     const oneDay = oneHour * 24
+    const twoDays = oneDay * 2
+    const threeDays = oneDay * 3
+    const fourDays = oneDay * 4
     const fiveDays = oneDay * 5
     const oneMonth = oneDay * 31
     const twoMonths = oneMonth * 2
     const threeMonths = oneMonth * 3
     const timelines = [
-        {id: oneHour, label: '1 hour'},
+        {id: twelveHours, label: '12 hours'},
         {id: oneDay, label: '1 day'},
+        {id: twoDays, label: '2 days'},
+        {id: threeDays, label: '3 days'},
+        {id: fourDays, label: '4 days'},
         {id: fiveDays, label: '5 days'},
         {id: oneMonth, label: '1 month'},
         {id: twoMonths, label: '2 months'},
@@ -29,15 +38,21 @@
 
     let abortController = new AbortController()
     let poolSwap
-    let estimates
+    let graph
+    let series
+    let seriesIndex = 0
     let maxEstimates
     let pendingUpdate
     let resizeSeed
 
     const subscriptions = []
 
-    const updateEstimates = newEstimates => {
-        estimates = newEstimates
+    const setGraph = newEstimates => {
+        graph = newEstimates
+        if (graph) {
+            seriesIndex = 0
+            series = graph.series[0]
+        }
     }
 
     const resize = () => {
@@ -53,7 +68,7 @@
     })
 
     async function update() {
-        updateEstimates(null)
+        setGraph(null)
         poolSwap = null
 
         if (fromTokenSymbol && toTokenSymbol && fromTokenSymbol !== 'Any' && toTokenSymbol !== 'Any') {
@@ -68,8 +83,8 @@
             const response = await fetch(`/graph?poolswap=${amount} ${fromTokenSymbol} to ${toTokenSymbol}&blocks=${timeline.blocks}`, {
                 signal: abortController.signal,
             })
-            let newEstimates = await response.json()
-            updateEstimates(newEstimates)
+            let newGraph = await response.json()
+            setGraph(newGraph)
         }
     }
 
@@ -101,14 +116,51 @@
                 <option value={timeline.id}>{timeline.label}</option>
             {/each}
         </select>
+
+        {#if graph && graph.swap.breakdown.length > 1}
+            <ul>
+                {#each graph.swap.breakdown as option, index}
+                    <li>
+                        <button class="pure-button"
+                                on:click={() => {seriesIndex = index; series = graph.series[seriesIndex]}}
+                                class:info={index === seriesIndex}>
+                            {index + 1}.
+                            {#if index === 0}
+                                <Icon icon="best"/>
+                            {:else if index !== 0 && option.swaps.length === 1}
+                                <Icon icon="danger"/>
+                            {:else}
+                                <Icon icon="warning"/>
+                            {/if}
+                        </button>
+                        {#if index !== 0 && option.swaps.length === 1}
+                            &larr;
+                            <Help warning={true}
+                                  help="Careful! A swap from {poolSwap.tokenFrom} to {poolSwap.tokenTo} will always go through this pool!"/>
+                        {/if}
+                    </li>
+                {/each}
+            </ul>
+        {/if}
     </fieldset>
 </form>
-{#if hasItems(estimates)}
-    <TradeChart {allTokens} {estimates} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+
+{#if series && hasItems(series.points)}
+    {#key series}
+        <TradeChart {allTokens} {series} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+    {/key}
 {/if}
 
 <style>
     form {
         padding: 0.2rem 0 0 0.2rem;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+        display: inline-flex;
+        gap: 0.5rem;
     }
 </style>
