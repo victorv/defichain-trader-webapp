@@ -82,6 +82,14 @@
             handleScale: {
                 mouseWheel: false,
             },
+            grid: {
+                vertLines: {
+                    visible: false
+                },
+                horzLines: {
+                    visible: false
+                }
+            },
             watermark: {
                 visible: true,
                 fontSize: 18,
