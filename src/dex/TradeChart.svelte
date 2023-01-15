@@ -66,9 +66,14 @@
         return options
     }
 
-    $: if (resizeSeed && chart) {
-        //chart.resize(window.innerWidth, window.innerHeight * 0.8)
+    function resize() {
+        const bounds = canvasElement.getBoundingClientRect()
+        chart.resize(bounds.width, window.innerHeight - bounds.y - 10)
         chart.timeScale().fitContent()
+    }
+
+    $: if (resizeSeed && chart) {
+        resize()
     }
 
     onMount(async () => {
@@ -86,7 +91,6 @@
                 text: 'defichain-trader.com',
             }
         })
-        console.log(series)
         lineSeries = chart.addLineSeries(createSeriesOptions(series.points))
         lineSeries.setData(series.points)
 
@@ -94,11 +98,11 @@
             mouseWheel: false,
             timeVisible: true,
         })
-        chart.timeScale().fitContent()
+        resize()
     })
 </script>
 
-<div bind:this={canvasElement} class="container">
+<div bind:this={canvasElement} class="canvas">
     <div>
         {path}
         <br/>
@@ -106,21 +110,20 @@
         <Percentage number={fees} inverse={true}/>
         {#if graph}
             <br/>
-            plots differences of <Percentage number={graph.density * 100}/>
+            plots prices changes of
+            <Percentage number={graph.density * 100}/>
         {/if}
     </div>
 </div>
 
 <style>
-    .container {
+    .canvas {
         position: relative;
-        display: flex;
-        flex-direction: row;
-        height: 80vh;
+        width: 100%;
         overflow: hidden;
     }
 
-    div > div {
+    .canvas > div {
         position: absolute;
         left: 12px;
         top: 12px;
