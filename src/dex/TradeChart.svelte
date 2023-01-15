@@ -23,7 +23,7 @@
 
     $: if (series) {
         let newFees = new BigNumber(0.0)
-        const tokens = [fromTokenSymbol]
+        const tokens = []
         for (const swap of series.swap.swaps) {
             tokens.push(swap.poolSymbol)
             if (swap.commission) {
@@ -36,7 +36,6 @@
                 newFees = newFees.plus(new BigNumber(swap.outFeePct))
             }
         }
-        tokens.push(toTokenSymbol)
 
         path = tokens.join(' → ')
         fees = newFees.times(new BigNumber(100.0)).toPrecision(3)
@@ -68,7 +67,7 @@
     }
 
     $: if (resizeSeed && chart) {
-        chart.resize(window.innerWidth, window.innerHeight * 0.8)
+        //chart.resize(window.innerWidth, window.innerHeight * 0.8)
         chart.timeScale().fitContent()
     }
 
@@ -78,6 +77,14 @@
             handleScale: {
                 mouseWheel: false,
             },
+            watermark: {
+                visible: true,
+                fontSize: 18,
+                horzAlign: 'center',
+                vertAlign: 'center',
+                color: 'rgba(171, 71, 188, 0.5)',
+                text: 'defichain-trader.com',
+            }
         })
         console.log(series)
         lineSeries = chart.addLineSeries(createSeriesOptions(series.points))
@@ -118,7 +125,7 @@
         left: 12px;
         top: 12px;
         z-index: 10000;
-        font-size: 14px;
+        font-size: 10px;
         font-family: sans-serif;
         line-height: 18px;
         font-weight: 300;
