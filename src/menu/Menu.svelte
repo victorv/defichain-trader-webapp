@@ -73,9 +73,9 @@
             </li>
             <li class="pure-menu-item"
                 on:click={() => change(StatusPage)}>
-                <a style="color: blue; font-weight: bold;"  href="#status"
+                <a href="#about"
                    class="pure-menu-link">
-                    Status
+                    About
                 </a>
             </li>
         </ul>
