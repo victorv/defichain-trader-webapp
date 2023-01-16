@@ -6,7 +6,7 @@
 
     export let allTokens
     export let graph
-    export let series
+    export let breakdown
     export let fromTokenSymbol
     export let toTokenSymbol
     export let resizeSeed
@@ -21,10 +21,10 @@
     let path
     let fees
 
-    $: if (series) {
+    $: if (breakdown) {
         let newFees = new BigNumber(0.0)
         const tokens = []
-        for (const swap of series.swap.swaps) {
+        for (const swap of breakdown.swaps) {
             tokens.push(swap.poolSymbol)
             if (swap.commission) {
                 newFees = newFees.plus(new BigNumber(swap.commission))
@@ -52,8 +52,22 @@
         return [1, 0]
     }
 
+    const createCandles = () => {
+        const candles = []
+        for (const candleEntry of graph) {
+            candles.push({
+                open: candleEntry[0],
+                close: candleEntry[1],
+                low: candleEntry[2],
+                high: candleEntry[3],
+                time: candleEntry[4],
+            })
+        }
+        return candles
+    }
+
     const createSeriesOptions = data => {
-        let n = Math.min(...data.map(e => e.value)) * 0.0001
+        let n = Math.min(...data.map(e => e.low)) * 0.0001
         let [minMove, precision] = calcPriceFormat(n)
 
         const options = {
@@ -99,8 +113,10 @@
                 text: 'defichain-trader.com',
             }
         })
-        lineSeries = chart.addLineSeries(createSeriesOptions(series.points))
-        lineSeries.setData(series.points)
+
+        const candles = createCandles(graph)
+        lineSeries = chart.addCandlestickSeries(createSeriesOptions(candles))
+        lineSeries.setData(candles)
 
         chart.timeScale().applyOptions({
             mouseWheel: false,
@@ -116,11 +132,6 @@
         <br/>
         fees
         <Percentage number={fees} inverse={true}/>
-        {#if graph}
-            <br/>
-            plots prices changes of
-            <Percentage number={graph.density * 100}/>
-        {/if}
     </div>
 </div>
 

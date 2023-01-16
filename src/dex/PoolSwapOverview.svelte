@@ -1,8 +1,5 @@
 <svelte:options immutable/>
-<script context="module">
-    const maxDataPoints = Math.round(window.innerWidth / 8)
-    console.log(`max data points: ${maxDataPoints}`)
-</script>
+
 <script>
     import {removePoolswap, swaps, webSocketStore} from "../store";
     import ProfitLoss from "./ProfitLoss.svelte";
@@ -118,7 +115,13 @@
     </table>
 {/if}
 
+<div class="filler"></div>
+
 <style>
+    .filler {
+        min-height: 100vh;
+    }
+
     td[colspan="2"] {
         padding: 1rem;
     }

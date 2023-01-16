@@ -3,7 +3,6 @@
     import {onDestroy, onMount} from "svelte";
     import TradeChart from "../dex/TradeChart.svelte";
     import Icon from "../common/Icon.svelte";
-    import Help from "../common/Help.svelte";
     import {hasItems} from "../common/common";
 
     export let allTokens
@@ -11,48 +10,52 @@
     export let toTokenSymbol = 'USDT'
     export let amount = 1.0
 
-    const oneHour = 120
-    const twelveHours = 120 * 12
+    const oneMinute = 1000 * 60
+    const fiveMinute = oneMinute * 5
+    const fifteenMinutes = oneMinute * 15
+    const oneHour = oneMinute * 60
+    const twelveHours = oneHour * 12
     const oneDay = oneHour * 24
-    const twoDays = oneDay * 2
-    const threeDays = oneDay * 3
-    const fourDays = oneDay * 4
-    const fiveDays = oneDay * 5
-    const oneMonth = oneDay * 31
-    const twoMonths = oneMonth * 2
-    const threeMonths = oneMonth * 3
+    const oneWeek = oneDay * 7
+
     const timelines = [
+        {id: fiveMinute, label: '5 minutes'},
+        {id: fifteenMinutes, label: '15 minutes'},
+        {id: oneHour, label: '1 hour'},
         {id: twelveHours, label: '12 hours'},
         {id: oneDay, label: '1 day'},
-        {id: twoDays, label: '2 days'},
-        {id: threeDays, label: '3 days'},
-        {id: fourDays, label: '4 days'},
-        {id: fiveDays, label: '5 days'},
-        {id: oneMonth, label: '1 month'},
-        {id: twoMonths, label: '2 months'},
-        {id: threeMonths, label: '3 months'},
+        {id: oneWeek, label: '1 week'},
     ]
     const timeline = {
-        blocks: timelines[3].id
+        time: timelines[2].id
     }
 
     let abortController = new AbortController()
     let poolSwap
     let graph
     let series
-    let seriesIndex = 0
     let maxEstimates
     let pendingUpdate
     let resizeSeed
 
+    let breakdowns
+    let breakdownIndex = 0
+
     const subscriptions = []
 
-    const setGraph = newEstimates => {
-        graph = newEstimates
-        if (graph) {
-            seriesIndex = 0
-            series = graph.series[0]
+    const setGraph = newGraph => {
+        if (newGraph) {
+            const tail = newGraph[newGraph.length - 1]
+            const estimate = breakdowns[breakdownIndex].estimate
+            newGraph.push([
+                tail[1],
+                estimate,
+                tail[1],
+                estimate,
+                new Date().getTime() / 1000,
+            ])
         }
+        graph = newGraph
     }
 
     const resize = () => {
@@ -67,20 +70,42 @@
         subscriptions.forEach(sub => sub())
     })
 
+    const setBreakdown = async index => {
+        breakdownIndex = index
+        await update()
+    }
+
+    async function updateBreakdowns() {
+        if (!fromTokenSymbol || !toTokenSymbol) {
+            return
+        }
+
+        const amount = 1.0
+        const request = `${amount}+${fromTokenSymbol}+to+${toTokenSymbol}`
+        const estimateResponse = await fetch(`/estimate?poolswap=${request}`)
+        const estimate = await estimateResponse.json()
+        breakdownIndex = 0
+        breakdowns = estimate.breakdown.sort((a, b) => a.estimate > b.estimate ? -1 : 1)
+    }
+
     async function update() {
         setGraph(null)
         poolSwap = null
 
         if (fromTokenSymbol && toTokenSymbol && fromTokenSymbol !== 'Any' && toTokenSymbol !== 'Any') {
-            abortController.abort()
-            abortController = new AbortController()
-
             poolSwap = {
                 tokenFrom: fromTokenSymbol,
                 tokenTo: toTokenSymbol,
                 amountFrom: amount || 1.0,
             }
-            const response = await fetch(`/graph?poolswap=${amount} ${fromTokenSymbol} to ${toTokenSymbol}&blocks=${timeline.blocks}`, {
+
+            const path = breakdowns[breakdownIndex].path
+
+            abortController.abort()
+            abortController = new AbortController()
+
+
+            const response = await fetch(`/graph?poolswap=${amount} ${fromTokenSymbol} to ${toTokenSymbol}&time=${timeline.time}&path=${path}`, {
                 signal: abortController.signal,
             })
             let newGraph = await response.json()
@@ -91,11 +116,13 @@
     const onTokenSelectionChanged = async selection => {
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
+
+        await updateBreakdowns()
         await update()
     }
 
     const changeTimeline = async e => {
-        timeline.blocks = +e.target.value
+        timeline.time = +e.target.value
         await update()
     }
 
@@ -103,6 +130,7 @@
         screen.orientation.addEventListener('change', resize)
         window.addEventListener('resize', resize)
 
+        await updateBreakdowns()
         await update()
     })
 </script>
@@ -111,33 +139,29 @@
     <fieldset>
         <FromToTokenFilter supportAnyToken={false}
                            {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-        <select class="pure-select" on:change={changeTimeline} bind:value={timeline.blocks}>
+        <select disabled={!fromTokenSymbol || !toTokenSymbol}
+                class="pure-select" on:change={changeTimeline} bind:value={timeline.time}>
             {#each timelines as timeline}
                 <option value={timeline.id}>{timeline.label}</option>
             {/each}
         </select>
 
-        {#if graph && graph.swap.breakdown.length > 1}
+        {#if hasItems(breakdowns)}
             <ul>
-                {#each graph.swap.breakdown as option, index}
+                {#each breakdowns as breakdown, index}
                     <li>
                         <button class="pure-button"
-                                on:click={() => {seriesIndex = index; series = graph.series[seriesIndex]}}
-                                class:info={index === seriesIndex}>
+                                on:click={() => setBreakdown(index)}
+                                class:info={index === breakdownIndex}>
                             {index + 1}.
                             {#if index === 0}
                                 <Icon icon="best"/>
-                            {:else if index !== 0 && option.swaps.length === 1}
+                            {:else if index !== 0 && breakdown.swaps.length === 1}
                                 <Icon icon="danger"/>
                             {:else}
                                 <Icon icon="warning"/>
                             {/if}
                         </button>
-                        {#if index !== 0 && option.swaps.length === 1}
-                            &larr;
-                            <Help warning={true}
-                                  help="Careful! A swap from {poolSwap.tokenFrom} to {poolSwap.tokenTo} will always go through this pool!"/>
-                        {/if}
                     </li>
                 {/each}
             </ul>
@@ -145,9 +169,10 @@
     </fieldset>
 </form>
 
-{#if series && hasItems(series.points)}
-    {#key series}
-        <TradeChart {graph} {allTokens} {series} {fromTokenSymbol} {toTokenSymbol} {resizeSeed}/>
+{#if graph}
+    {#key graph}
+        <TradeChart breakdown={breakdowns[breakdownIndex]} {allTokens} {graph} {fromTokenSymbol} {toTokenSymbol}
+                    {resizeSeed}/>
     {/key}
 {/if}
 
