@@ -62,6 +62,7 @@
     }
 
     async function fetchItems(filter, getMore) {
+        csvReady = false
         hasMore = false
         error = null
         searchResult = getMore ? searchResult : null
