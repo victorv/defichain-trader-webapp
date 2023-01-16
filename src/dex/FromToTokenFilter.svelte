@@ -8,6 +8,7 @@
     export let toTokenSymbol
     export let supportAnyToken
     export let supportPseudo
+    export let freezeTokens
 
     let onTokenSelected
 
@@ -51,7 +52,7 @@
     <div>
         <button on:click={() => onTokenSelected = onFromTokenSelected}
                 class:pure-button-primary={onTokenSelected === onFromTokenSelected}
-                disabled={onTokenSelected}
+                disabled={onTokenSelected || freezeTokens}
                 id="from-token-button"
                 class="pure-button"
                 type="button">
@@ -70,7 +71,7 @@
     <div>
         <button on:click={() => onTokenSelected = onToTokenSelected}
                 class:pure-button-primary={onTokenSelected === onToTokenSelected}
-                disabled={onTokenSelected}
+                disabled={onTokenSelected || freezeTokens}
                 id="to-token-button"
                 class="pure-button"
                 type="button">

@@ -11,7 +11,7 @@
     <PoolSwapForm {allTokens}/>
 </div>
 <div>
-    <PoolSwapOverview {Chart}/>
+    <PoolSwapOverview {allTokens} {Chart}/>
 </div>
 
 <style>

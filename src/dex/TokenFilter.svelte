@@ -54,7 +54,7 @@
 
         const test = filterString.toLowerCase()
         tokens = getTokens().filter(token => {
-            return token.toLowerCase().indexOf(test) === 0
+            return token && token.toLowerCase().indexOf(test) === 0
         })
     }
 

@@ -6,6 +6,7 @@
     import {hasItems} from "../common/common";
 
     export let allTokens
+    export let freezeTokens
     export let fromTokenSymbol = 'DUSD'
     export let toTokenSymbol = 'USDT'
     export let amount = 1.0
@@ -138,6 +139,7 @@
 <form class="pure-form" on:submit|preventDefault>
     <fieldset>
         <FromToTokenFilter supportAnyToken={false}
+                           {freezeTokens}
                            {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
         <select disabled={!fromTokenSymbol || !toTokenSymbol}
                 class="pure-select" on:change={changeTimeline} bind:value={timeline.time}>

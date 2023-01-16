@@ -10,6 +10,8 @@
     import WebSocketStatus from "../WebSocketStatus.svelte";
     import {onDestroy, onMount} from "svelte";
 
+    export let allTokens
+
     let poolSwaps = []
     let swap
     let subscriptions = []
@@ -99,7 +101,7 @@
             {#if poolSwap.graph && swap}
                 <tr>
                     <td colspan="2">
-                        <QuickGraph amount={swap.fromAmount} fromTokenSymbol={swap.tokenFrom} toTokenSymbol={swap.tokenTo}/>
+                        <QuickGraph freezeTokens={true} {allTokens} amount={swap.fromAmount} fromTokenSymbol={swap.tokenFrom} toTokenSymbol={swap.tokenTo}/>
                     </td>
                 </tr>
             {/if}
