@@ -2,8 +2,7 @@
     import PoolSwapHistory from "./PoolSwapHistory.svelte";
     import {onDestroy, onMount} from "svelte";
     import Icon from "../common/Icon.svelte";
-    import {accountStore} from "../store";
-    import {asDollars} from "../common/common";
+    import {accountStore, uuidStore} from "../store";
 
     export let allTokens
     export let filterOverrides
@@ -18,8 +17,10 @@
     let loading
     let currentFilter
 
+    let subs = []
+    let uuid
+    let csvReady
     let account
-    let sub
     let hasMore
     let pager = {offset: 0}
 
@@ -42,6 +43,24 @@
         return {offset: 0}
     }
 
+    const setRemoteFilter = async filter => {
+        csvReady = false
+        const requestBody = {...filter, ...(currentFilter || {}), ...(filterOverrides || {})}
+
+        const response = await fetch(`/update?uuid=${uuid}`, {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            signal: abortController.signal,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        if (response.ok) {
+            csvReady = true
+        }
+    }
+
     async function fetchItems(filter, getMore) {
         hasMore = false
         error = null
@@ -59,7 +78,7 @@
 
         loading = true
 
-        const response = await fetch(`/poolswaps`, {
+        const response = await fetch(`/poolswaps?uuid=${uuid}`, {
             method: 'POST',
             body: JSON.stringify(requestBody),
             signal: abortController.signal,
@@ -86,7 +105,7 @@
         await refresh(currentFilter || {}, true)
     }
 
-    const refresh = async (filter, getMore) => {
+    const refresh = async (filter, prepCSV, getMore) => {
         currentFilter = filter
         await fetchItems(filter, getMore).catch(e => {
             if (e.name !== 'AbortError') {
@@ -98,10 +117,14 @@
     }
 
     onMount(() => {
-        sub = accountStore.subscribe(newAccount => account = newAccount)
+        const sub1 = accountStore.subscribe(newAccount => account = newAccount)
+        const sub2 = uuidStore.subscribe(newUUID => {
+            uuid = newUUID
+        })
+        subs.push(sub1, sub2)
     })
 
-    onDestroy(() => sub())
+    onDestroy(() => subs.forEach(sub => sub()))
 </script>
 
 {#if !filterOverrides && !filtersActive}
@@ -117,7 +140,7 @@
     </form>
 {/if}
 
-<PoolSwapHistory {filterState} {allTokens} {items} {refresh} filter={!filterOverrides}/>
+<PoolSwapHistory {csvReady} {setRemoteFilter} {uuid} {filterState} {allTokens} {items} {refresh} filter={!filterOverrides}/>
 
 {#if hasMore && !error && !filtersActive}
     <section class="pager">

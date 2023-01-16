@@ -5,7 +5,7 @@
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {asUSDT, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
-    import {accountStore, screenStore, updateAccount, uuidStore} from "../store";
+    import {accountStore, screenStore, updateAccount} from "../store";
     import Limit from "../common/Limit.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import {onDestroy, onMount} from "svelte";
@@ -25,6 +25,9 @@
     export let items
     export let filter
     export let filterState
+    export let uuid
+    export let setRemoteFilter
+    export let csvReady
 
     let notificationTitle
     let txID
@@ -83,8 +86,6 @@
     let selectedTX
     let screen
 
-    let uuid
-
     onMount(async () => {
         const sub1 = accountStore.subscribe(newAccount => {
             account = newAccount
@@ -102,12 +103,7 @@
             toAddress = search.toAddress
         })
 
-        const sub2 = uuidStore.subscribe(newUUID => {
-            uuid = newUUID
-        })
-
         subs.push(sub1)
-        subs.push(sub2)
 
         interval = setInterval(() => {
             now = new Date().getTime()
@@ -380,6 +376,16 @@
                                 class="pure-button icon" type="button">
                             <Icon icon="telegram"/>
                         </button>
+                        <button disabled={!hasItems(poolSwaps) || !uuid}
+                                on:click={() => setRemoteFilter(filter)}
+                                class="pure-button icon" type="button">
+                            <Icon icon="download"/>
+                        </button>
+                        {#if csvReady}
+                            <a on:click={() => csvReady = false} href="/download?uuid={uuid}" target="_blank">
+                                download CSV
+                            </a>
+                        {/if}
                     </p>
                 {/if}
             {/if}
