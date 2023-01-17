@@ -106,7 +106,7 @@
         await refresh(currentFilter || {}, true)
     }
 
-    const refresh = async (filter, prepCSV, getMore) => {
+    const refresh = async (filter, getMore) => {
         currentFilter = filter
         await fetchItems(filter, getMore).catch(e => {
             if (e.name !== 'AbortError') {
