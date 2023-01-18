@@ -4,6 +4,7 @@
     import TradeChart from "../dex/TradeChart.svelte";
     import Icon from "../common/Icon.svelte";
     import {hasItems} from "../common/common";
+    import Request from "../Request.svelte";
 
     export let allTokens
     export let freezeTokens
@@ -34,10 +35,12 @@
     let abortController = new AbortController()
     let poolSwap
     let graph
-    let series
     let maxEstimates
     let pendingUpdate
     let resizeSeed
+    let request = {
+        loading: false,
+    }
 
     let breakdowns
     let breakdownIndex = 0
@@ -73,7 +76,7 @@
 
     const setBreakdown = async index => {
         breakdownIndex = index
-        await update()
+        await updateGraph()
     }
 
     async function updateBreakdowns() {
@@ -82,14 +85,19 @@
         }
 
         const amount = 1.0
-        const request = `${amount}+${fromTokenSymbol}+to+${toTokenSymbol}`
-        const estimateResponse = await fetch(`/estimate?poolswap=${request}`)
+        const params = `${amount}+${fromTokenSymbol}+to+${toTokenSymbol}`
+        const estimateResponse = await fetch(`/estimate?poolswap=${params}`)
         const estimate = await estimateResponse.json()
         breakdownIndex = 0
         breakdowns = estimate.breakdown.sort((a, b) => a.estimate > b.estimate ? -1 : 1)
     }
 
     async function update() {
+        request = {
+            loading: true,
+            error: null,
+        }
+
         setGraph(null)
         poolSwap = null
 
@@ -108,10 +116,29 @@
 
             const response = await fetch(`/graph?poolswap=${amount} ${fromTokenSymbol} to ${toTokenSymbol}&time=${timeline.time}&path=${path}`, {
                 signal: abortController.signal,
+            }).catch(e => {
+                request = {
+                    loading: false,
+                    error: `Unable to fetch results: ${e.message}`,
+                }
             })
             let newGraph = await response.json()
             setGraph(newGraph)
+
+            request = {
+                loading: false,
+                error: null,
+            }
         }
+    }
+
+    const updateGraph = async () => {
+        await update().catch(e => {
+            request = {
+                loading: false,
+                error: `Unable to load graph: ${e.message}`,
+            }
+        })
     }
 
     const onTokenSelectionChanged = async selection => {
@@ -119,12 +146,12 @@
         toTokenSymbol = selection.toTokenSymbol
 
         await updateBreakdowns()
-        await update()
+        await updateGraph()
     }
 
     const changeTimeline = async e => {
         timeline.time = +e.target.value
-        await update()
+        await updateGraph()
     }
 
     onMount(async () => {
@@ -132,7 +159,7 @@
         window.addEventListener('resize', resize)
 
         await updateBreakdowns()
-        await update()
+        await updateGraph()
     })
 </script>
 
@@ -153,6 +180,7 @@
                 {#each breakdowns as breakdown, index}
                     <li>
                         <button class="pure-button"
+                                disabled={request.loading}
                                 on:click={() => setBreakdown(index)}
                                 class:info={index === breakdownIndex}>
                             {index + 1}.
@@ -172,11 +200,10 @@
 </form>
 
 {#if graph && breakdowns}
-    {#key graph}
-        <TradeChart breakdown={breakdowns[breakdownIndex]} {allTokens} {graph} {fromTokenSymbol} {toTokenSymbol}
-                    {resizeSeed}/>
-    {/key}
+    <TradeChart breakdown={breakdowns[breakdownIndex]} {allTokens} {graph} {fromTokenSymbol} {toTokenSymbol}
+                {resizeSeed}/>
 {/if}
+<Request {request}/>
 
 <style>
     form {

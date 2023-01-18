@@ -3,6 +3,7 @@
     import {onDestroy, onMount} from "svelte";
     import Icon from "../common/Icon.svelte";
     import {accountStore, uuidStore} from "../store";
+    import Request from "../Request.svelte";
 
     export let allTokens
     export let filterOverrides
@@ -11,10 +12,9 @@
     let abortController = new AbortController()
     let items
     let searchResult
-    let error
+    let request
     let filtersActive
 
-    let loading
     let currentFilter
 
     let subs = []
@@ -64,7 +64,7 @@
     async function fetchItems(filter, getMore) {
         csvReady = false
         hasMore = false
-        error = null
+
         searchResult = getMore ? searchResult : null
         items = getMore ? items : null
 
@@ -77,7 +77,10 @@
         abortController.abort()
         abortController = new AbortController()
 
-        loading = true
+        request = {
+            loading: true,
+            error: null,
+        }
 
         const response = await fetch(`/poolswaps?uuid=${uuid}`, {
             method: 'POST',
@@ -91,7 +94,10 @@
 
         searchResult = await response.json()
         let newItems = searchResult.rows
-        loading = false
+        request = {
+            loading: false,
+            error: null,
+        }
         hasMore = newItems.length > 25
         newItems = newItems.slice(0, 25)
 
@@ -110,8 +116,10 @@
         currentFilter = filter
         await fetchItems(filter, getMore).catch(e => {
             if (e.name !== 'AbortError') {
-                loading = false
-                error = `Unable to fetch results: ${e.message}`
+                request = {
+                    loading: false,
+                    error: `Unable to fetch results: ${e.message}`,
+                }
                 throw e
             }
         })
@@ -141,9 +149,10 @@
     </form>
 {/if}
 
-<PoolSwapHistory {csvReady} {setRemoteFilter} {uuid} {filterState} {allTokens} {items} {refresh} filter={!filterOverrides}/>
+<PoolSwapHistory {csvReady} {setRemoteFilter} {uuid} {filterState} {allTokens} {items} {refresh}
+                 filter={!filterOverrides}/>
 
-{#if hasMore && !error && !filtersActive}
+{#if hasMore && !request.error && !filtersActive}
     <section class="pager">
         <button on:click={showMore} disabled={currentFilter && currentFilter.sort} class="pure-button"
                 type="button">
@@ -159,16 +168,9 @@
                 0 results found
             </p>
         </div>
-    {:else if error}
-        <div class="message">
-            <p class="error">{error}</p>
-        </div>
-    {:else if loading}
-        <div class="message">
-            <p class="info">Loading results...</p>
-        </div>
     {/if}
 {/if}
+<Request {request}/>
 
 <style>
     .pager {
