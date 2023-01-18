@@ -57,21 +57,24 @@
                 class="pure-menu-item">
                 <a href="#mempool" class="pure-menu-link">Mempool</a>
             </li>
-            <li class="pure-menu-item">
+            <li class:pure-menu-selected={componentType === Account}
+                class="pure-menu-item">
                 <a on:click={() => change(Account)}
                    href="#account"
                    class="pure-menu-link">
                     Account
                 </a>
             </li>
-            <li class="pure-menu-item">
+            <li class:pure-menu-selected={componentType === Stats}
+                class="pure-menu-item">
                 <a on:click={() => change(Stats)}
                    href="#stats"
                    class="pure-menu-link">
                     Stats
                 </a>
             </li>
-            <li class="pure-menu-item"
+            <li class:pure-menu-selected={componentType === StatusPage}
+                class="pure-menu-item"
                 on:click={() => change(StatusPage)}>
                 <a href="#about"
                    class="pure-menu-link">
