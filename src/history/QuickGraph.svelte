@@ -171,7 +171,7 @@
     </fieldset>
 </form>
 
-{#if graph}
+{#if graph && breakdowns}
     {#key graph}
         <TradeChart breakdown={breakdowns[breakdownIndex]} {allTokens} {graph} {fromTokenSymbol} {toTokenSymbol}
                     {resizeSeed}/>
