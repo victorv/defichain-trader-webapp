@@ -57,7 +57,7 @@
         <br/>
     {/if}
 
-    <table class:small={screen.small} class="pure-table pure-table-striped">
+    <table class:small={screen.small} class="pure-table">
         <thead>
         <tr>
             <th>

@@ -529,7 +529,7 @@
         <a href="#" on:click|preventDefault={() => showIntermediaryBalance = true}>intermediary balance</a>
     {/if}
 
-    <table class:small={screen.small} class="pure-table pure-table-striped">
+    <table class:small={screen.small} class="pure-table">
         {#if account && search}
             <thead>
             <tr>

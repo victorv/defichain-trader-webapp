@@ -54,7 +54,7 @@
 {#if webSocketStatus && (webSocketStatus.connecting || !webSocketStatus.connected)}
     <WebSocketStatus status={webSocketStatus}/>
 {:else if hasItems(poolSwaps)}
-    <table class="pure-table pure-table-striped">
+    <table class="pure-table">
         <thead>
         <tr>
             <th>Goal</th>

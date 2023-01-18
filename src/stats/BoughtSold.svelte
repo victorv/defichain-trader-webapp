@@ -13,7 +13,7 @@
     screenStore.subscribe(newScreen => screen = newScreen)
 </script>
 
-<table class="pure-table pure-table-striped">
+<table class="pure-table">
     <thead>
     <tr>
         <th>Token</th>

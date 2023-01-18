@@ -64,7 +64,7 @@
     </ul>
 </header>
 {#if breakdown}
-    <table class="pure-table pure-table-striped">
+    <table class="pure-table">
         <tbody>
         <tr>
             <th role="rowheader" class="banner">Summary</th>

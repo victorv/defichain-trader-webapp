@@ -21,7 +21,7 @@
                        {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
 </form>
 
-<table class="pure-table pure-table-striped">
+<table class="pure-table">
     <thead>
     <tr>
         <th>Address</th>
