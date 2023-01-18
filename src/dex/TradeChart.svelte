@@ -54,20 +54,13 @@
 
     const createCandles = () => {
         const candles = []
-        let prevTime = 0
         for (const candleEntry of graph) {
-            let time = candleEntry[4]
-            if (time === prevTime) {
-                time += 1
-            }
-            prevTime = time
-
             candles.push({
                 open: candleEntry[0],
                 close: candleEntry[1],
                 low: candleEntry[2],
                 high: candleEntry[3],
-                time,
+                time: candleEntry[4],
             })
         }
         return candles
