@@ -146,7 +146,7 @@
         position: absolute;
         left: 12px;
         top: 12px;
-        z-index: 10000;
+        z-index: 2;
         font-size: 10px;
         font-family: sans-serif;
         line-height: 18px;

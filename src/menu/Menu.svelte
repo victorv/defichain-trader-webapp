@@ -86,7 +86,7 @@
     .pure-menu-vertical {
         display: none;
         position: absolute;
-        z-index: 1;
+        z-index: 10;
         background: white;
         width: 100%;
         border-bottom: 1px solid black;
