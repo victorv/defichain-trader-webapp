@@ -1,5 +1,7 @@
 <script>
     export let txID
+    export let minDate
+    export let maxDate
     export let minBlock
     export let maxBlock
     export let fromTokenSymbol
@@ -21,6 +23,16 @@
         {#if txID}
             <li class="pure-menu-item pure-menu-link">
                 TX ID: <strong>ignored for Telegram notifications</strong>
+            </li>
+        {/if}
+        {#if minDate}
+            <li class="pure-menu-item pure-menu-link">
+                min date: <strong>ignored for Telegram notifications</strong>
+            </li>
+        {/if}
+        {#if maxDate}
+            <li class="pure-menu-item pure-menu-link">
+                max date: <strong>ignored for Telegram notifications</strong>
             </li>
         {/if}
         {#if minBlock}

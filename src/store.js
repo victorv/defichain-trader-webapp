@@ -44,6 +44,10 @@ const getAccount = () => {
         if (item) {
             const account = JSON.parse(item)
             console.log(account)
+            delete account.minFee
+            delete account.maxFee
+            delete account.minDate
+            delete account.maxDate
             if (account && typeof account === 'object') {
                 if (account.addressGroups) {
                     account.addressGroups = account.addressGroups

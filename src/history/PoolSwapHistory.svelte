@@ -33,6 +33,8 @@
     let txID
     let minBlock
     let maxBlock
+    let minDate
+    let maxDate
     let minInputAmount
     let maxInputAmount
     let minOutputAmount
@@ -91,6 +93,8 @@
             account = newAccount
             search = account.swapSearch || {}
             txID = search.txID
+            minDate = search.minDate
+            maxDate = search.maxDate
             minBlock = search.minBlock
             maxBlock = search.maxBlock
             minInputAmount = search.minInputAmount
@@ -119,8 +123,22 @@
 
     screenStore.subscribe(newScreen => screen = newScreen)
 
+    const dateToMillis = (dateString, time) => {
+        if (!dateString) {
+            return undefined
+        }
+        try {
+            return new Date(`${dateString}T${time}`).getTime()
+        } catch (e) {
+            console.log(e)
+            return undefined
+        }
+    }
+
     async function update() {
         const newSearch = createSearch()
+        newSearch.minDate = dateToMillis(newSearch.minDate, '00:00:00.000')
+        newSearch.maxDate = dateToMillis(newSearch.maxDate, '23:59:59.999')
         newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
         newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
         await refresh(newSearch)
@@ -136,6 +154,8 @@
 
     const clearAllFilters = async () => {
         txID = undefined
+        minDate = undefined
+        maxDate = undefined
         minBlock = undefined
         maxBlock = undefined
         minInputAmount = undefined
@@ -152,6 +172,23 @@
 
     const clearTXID = async () => {
         txID = undefined
+        await updateSearch()
+    }
+
+    const clearDates = async () => {
+        minDate = undefined
+        maxDate = undefined
+        await updateSearch()
+    }
+
+    const clearMinDate = async () => {
+        minDate = undefined
+        maxDate = undefined
+        await updateSearch()
+    }
+
+    const clearMaxDate = async () => {
+        maxDate = undefined
         await updateSearch()
     }
 
@@ -198,8 +235,10 @@
     const createSearch = () => {
         const newSearch = {
             txID: txID || undefined,
+            minDate: minDate || undefined,
+            maxDate: maxDate || undefined,
             minBlock: minBlock || undefined,
-            maxBlock: maxBlock || maxBlock,
+            maxBlock: maxBlock || undefined,
             minInputAmount: minInputAmount || undefined,
             maxInputAmount: maxInputAmount || undefined,
             minOutputAmount: minOutputAmount || undefined,
@@ -269,6 +308,8 @@
 
     const createTelegramNotification = async () => {
         const newSearch = createSearch()
+        newSearch.minDate = undefined
+        newSearch.maxDate = undefined
         newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
         newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
         const response = await fetch(`/notification?uuid=${uuid}&description=${encodeURIComponent(notificationTitle)}`, {
@@ -323,6 +364,8 @@
             </p>
             <ActiveFilters
                     {txID}
+                    {minDate}
+                    {maxDate}
                     {minBlock}
                     {maxBlock}
                     {fromTokenSymbol}
@@ -459,6 +502,19 @@
             txID || fromAddress || toAddress}
                 <button on:click={clearAllFilters} class="pure-button" type="button">Remove filters</button>
             {/if}
+            {#if minDate && maxDate}
+                <button on:click={clearDates} class="pure-button" type="button">
+                    <strong class="red">X</strong> start of {minDate} - end of {maxDate}
+                </button>
+            {:else if minDate}
+                <button on:click={clearMinDate} class="pure-button" type="button">
+                    <strong class="red">X</strong> start of {minDate} - now
+                </button>
+            {:else if maxDate}
+                <button on:click={clearMaxDate} class="pure-button" type="button">
+                    <strong class="red">X</strong> until end of {maxDate}
+                </button>
+            {/if}
             {#if minBlock}
                 <button on:click={clearMinBlock} class="pure-button" type="button">
                     <strong class="red">X</strong> min block height: <strong>{minBlock}</strong>
@@ -534,7 +590,17 @@
             <thead>
             <tr>
                 <th>
-                    Block
+                    <div>
+                        <input type="date"
+                               placeholder="dd-mm-yyyy"
+                               bind:value={minDate}
+                               on:change={updateSearch}/>
+                        -
+                        <input bind:value={maxDate}
+                               placeholder="dd-mm-yyyy"
+                               on:change={updateSearch}
+                               type="date"/>
+                    </div>
                 </th>
                 <th>
                     Input Amount
@@ -743,6 +809,10 @@
     }
 
     .address-group {
-        max-width: 6rem;
+        max-width: 8rem;
+    }
+
+    input[type="date"] {
+        max-width: none;
     }
 </style>
