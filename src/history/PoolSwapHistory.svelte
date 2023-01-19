@@ -415,21 +415,6 @@
                                 class="pure-button icon" type="button">
                             <Icon icon="filter"/>
                         </button>
-
-                        <button disabled={!hasItems(poolSwaps)} on:click={newTelegramNotification}
-                                class="pure-button icon" type="button">
-                            <Icon icon="telegram"/>
-                        </button>
-                        <button disabled={!hasItems(poolSwaps) || !uuid}
-                                on:click={() => setRemoteFilter(filter)}
-                                class="pure-button icon" type="button">
-                            <Icon icon="download"/>
-                        </button>
-                        {#if csvReady}
-                            <a on:click={() => csvReady = false} href="/download?uuid={uuid}" target="_blank">
-                                download CSV
-                            </a>
-                        {/if}
                     </p>
                 {/if}
             {/if}
@@ -582,8 +567,25 @@
             </div>
         </Popup>
     {/if}
-    {#if hasItems(balances)}
-        <a href="#" on:click|preventDefault={() => showIntermediaryBalance = true}>intermediary balance</a>
+
+    <button disabled={!hasItems(balances)} on:click={() => showIntermediaryBalance = true}
+            class="pure-button icon" type="button">
+        <Icon icon="info"/>
+    </button>
+
+    <button disabled={!hasItems(poolSwaps)} on:click={newTelegramNotification}
+            class="pure-button icon" type="button">
+        <Icon icon="telegram"/>
+    </button>
+    <button disabled={!hasItems(poolSwaps) || !uuid}
+            on:click={() => setRemoteFilter(filter)}
+            class="pure-button icon" type="button">
+        <Icon icon="download"/>
+    </button>
+    {#if csvReady}
+        <a on:click={() => csvReady = false} href="/download?uuid={uuid}" target="_blank">
+            download CSV
+        </a>
     {/if}
 
     <table class:small={screen.small} class="pure-table">
