@@ -26,8 +26,8 @@
         const tokens = []
         for (const swap of breakdown.swaps) {
             tokens.push(swap.poolSymbol)
-            if (swap.commission) {
-                newFees = newFees.plus(new BigNumber(swap.commission))
+            if (swap.commissionPct) {
+                newFees = newFees.plus(new BigNumber(swap.commissionPct))
             }
             if (swap.inFeePct) {
                 newFees = newFees.plus(new BigNumber(swap.inFeePct))
