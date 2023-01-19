@@ -638,21 +638,25 @@
             {#each poolSwaps as tx}
                 <tr class:selected-row={tx === selectedTX}>
                     <td>
-
-                        <button on:click={() => toggleTXDetails(tx)}
-                                class:info={tx === selectedTX}
-                                type="button"
-                                class="pure-button info-button icon">
-                            <Icon icon="info"/>
-                        </button>
-
                         {#if tx.block}
                             <TimePastSince start={tx.block.medianTime * 1000} end={now}/>
                             <br/>
+                            <button on:click={() => toggleTXDetails(tx)}
+                                    class:info={tx === selectedTX}
+                                    type="button"
+                                    class="pure-button info-button icon">
+                                <Icon icon="info"/>
+                            </button>
                             <strong>{tx.block.blockHeight}</strong>
                         {:else}
                             <TimePastSince start={tx.mempool.time} end={now}/>
                             <br/>
+                            <button on:click={() => toggleTXDetails(tx)}
+                                    class:info={tx === selectedTX}
+                                    type="button"
+                                    class="pure-button info-button icon">
+                                <Icon icon="info"/>
+                            </button>
                             <strong>{tx.mempool.blockHeight}</strong>
                             <Help warning={true} help="This TX has not been confirmed so far"/>
                         {/if}
