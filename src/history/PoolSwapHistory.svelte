@@ -281,8 +281,9 @@
     }
 
     const toggleSwapBreakdown = async (swap, swapResult, desiredResult) => {
-        if (!desiredResult) {
-            swapResult.desiredResult = null
+        if (desiredResult) {
+            swap.desiredResult = desiredResult
+            swapResult.desiredResult = desiredResult
         }
 
         if (selectedTX === swap && swapResult == swapBreakdown) {
@@ -663,7 +664,7 @@
 
                         {#if tx.swap && tx.amountFrom > 0.0001}
                             <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
-                            <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap, true)}>
+                            <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}>
                                 proof
                             </a>
                             <br/>
@@ -672,11 +673,12 @@
                         {#if tx.tokenFrom == 'USDT'}
                             <em>{asUSDT(tx.amountFrom)}</em>
                         {:else if tx.usdtSwap}
-                            <em>{asUSDT(tx.usdtSwap.estimate)}</em>
                             {#if tx.usdtSwap.estimate > 0.09}
-                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap)}>
-                                    proof
+                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}>
+                                    <em>{asUSDT(tx.usdtSwap.estimate)}</em>
                                 </a>
+                            {:else}
+                                <em>{asUSDT(tx.usdtSwap.estimate)}</em>
                             {/if}
                         {/if}
                     </td>
@@ -704,11 +706,13 @@
                         {#if tx.swap && tx.tokenTo == 'USDT'}
                             <em>{asUSDT(tx.amountTo)}</em>
                         {:else if tx.usdtInverseSwap}
-                            <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
+
                             {#if tx.usdtInverseSwap.estimate > 0.09}
-                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap)}>
-                                    proof
+                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}>
+                                    <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
                                 </a>
+                            {:else}
+                                <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
                             {/if}
                         {/if}
                     </td>
