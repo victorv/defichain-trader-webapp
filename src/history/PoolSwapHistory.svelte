@@ -666,21 +666,26 @@
                     <td>
                         <span><strong>{tx.amountFrom}</strong></span>
                         <span>{tx.tokenFrom}</span>
-                        <br/>
 
-                        {#if tx.swap && tx.amountFrom > 0.0001}
+                        <br/>
+                        {#if tx.swap && tx.amountFrom >= 0.0001}
                             <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
                             <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}>
                                 proof
                             </a>
-                            <br/>
+                        {:else}
+                            profit/loss
+                            <Help warning={true}
+                                  help="{tx.amountFrom} {tx.tokenFrom} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
                         {/if}
 
+                        <br/>
                         {#if tx.tokenFrom == 'USDT'}
-                            <em>{asUSDT(tx.amountFrom)}</em>
+                            &lt;already USDT&gt;
                         {:else if tx.usdtSwap}
                             {#if tx.usdtSwap.estimate > 0.09}
-                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}>
+                                <a href="#"
+                                   on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}>
                                     <em>{asUSDT(tx.usdtSwap.estimate)}</em>
                                 </a>
                             {:else}
@@ -697,12 +702,17 @@
                                 <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                             {/if}
 
-                            {#if tx.inverseSwap && tx.amountTo > 0.0001}
+                            {#if tx.inverseSwap && tx.amountTo >= 0.0001}
                                 <br/>
                                 <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
                                 <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
                                     proof
                                 </a>
+                            {:else}
+                                <br/>
+                                profit/loss
+                                <Help warning={true}
+                                      help="{tx.amountTo} {tx.tokenTo} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
                             {/if}
                         {:else}
                             N/A {tx.tokenTo}
@@ -710,11 +720,12 @@
                         <br/>
 
                         {#if tx.swap && tx.tokenTo == 'USDT'}
-                            <em>{asUSDT(tx.amountTo)}</em>
+                            &lt;already USDT&gt;
                         {:else if tx.usdtInverseSwap}
 
                             {#if tx.usdtInverseSwap.estimate > 0.09}
-                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}>
+                                <a href="#"
+                                   on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}>
                                     <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
                                 </a>
                             {:else}
