@@ -44,6 +44,7 @@
     <table class="pure-table">
         <thead>
         <tr>
+            <th>Token</th>
             {#if screen.large}
                 <th>Volume</th>
             {/if}
@@ -54,6 +55,9 @@
         </thead>
         {#each stats as item}
             <tr>
+                <td>
+                    {item.token}
+                </td>
                 {#if screen.large}
                     <td>
                         {asDollars(item.volumeUSD)}
@@ -66,7 +70,7 @@
                         {asDollars(item.amountNetUSD)}
                     </span>
                     <br/>
-                    <strong>{asTokenAmount(item.amountNet)} {item.token}</strong>
+                    <strong>{asTokenAmount(item.amountNet)}</strong>
                     <br/>
                     <a href="#" on:click={() => {swaps = item.net; selectedItem = item; mode = 'net'}}>details</a>
                 </td>
