@@ -277,8 +277,8 @@
 
     const newStatsRequest = () => {
         const request = createSearch()
-        request.minDate = undefined
-        request.maxDate = undefined
+        request.minDate = dateToMillis(request.minDate, '00:00:00.000')
+        request.maxDate = dateToMillis(request.maxDate, '23:59:59.999')
         request.fromAddressGroup = findAddresses(request.fromAddressGroup)
         request.toAddressGroup = findAddresses(request.toAddressGroup)
         statsRequest = request
