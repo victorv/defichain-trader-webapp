@@ -12,6 +12,7 @@
     import Popup from "../Popup.svelte";
     import ActiveFilters from "./ActiveFilters.svelte";
     import ProfitLoss from "../dex/ProfitLoss.svelte";
+    import Stats from "../stats/Stats.svelte";
 
     let account
     let search
@@ -47,37 +48,10 @@
     let subs = []
     let now = new Date().getTime()
     let interval
-    let balances = []
-    let showIntermediaryBalance = false
+    let statsRequest
 
     $: poolSwaps = items
     $: if (items) {
-        const balancesByToken = {}
-        for (const swap of items) {
-            if (!balancesByToken[swap.tokenFrom]) {
-                balancesByToken[swap.tokenFrom] = 0.0
-            }
-            if (!balancesByToken[swap.tokenTo]) {
-                balancesByToken[swap.tokenTo] = 0.0
-            }
-
-            balancesByToken[swap.tokenFrom] -= +swap.amountFrom
-            balancesByToken[swap.tokenTo] += +swap.amountTo
-        }
-
-        let newBalances = []
-        for (const [key, value] of Object.entries(balancesByToken)) {
-            newBalances.push({
-                token: key,
-                amount: value,
-            })
-        }
-        newBalances.sort((a, b) => a.amount > b.amount ? -1 : 1)
-        balances = newBalances.map(balance => ({
-            ...balance,
-            amount: balance.amount.toFixed(8)
-        }))
-
         now = new Date().getTime()
     }
 
@@ -299,6 +273,15 @@
 
         swapBreakdown = swapResult
         selectedTX = swap
+    }
+
+    const newStatsRequest = () => {
+        const request = createSearch()
+        request.minDate = undefined
+        request.maxDate = undefined
+        request.fromAddressGroup = findAddresses(request.fromAddressGroup)
+        request.toAddressGroup = findAddresses(request.toAddressGroup)
+        statsRequest = request
     }
 
     const submitFilterForm = async () => {
@@ -550,25 +533,17 @@
         <br/>
     {/if}
 
-    {#if showIntermediaryBalance}
-        <Popup onClose={() => showIntermediaryBalance = false}>
+    {#if statsRequest}
+        <Popup onClose={() => statsRequest = null}>
             <div slot="header">
-                Calculated from the {poolSwaps.length} results that are currently displayed
             </div>
             <div slot="content">
-                <ul>
-                    {#each balances as balance}
-                        <li>
-                            {balance.amount}
-                            {balance.token}
-                        </li>
-                    {/each}
-                </ul>
+                <Stats request={statsRequest}/>
             </div>
         </Popup>
     {/if}
 
-    <button disabled={!hasItems(balances)} on:click={() => showIntermediaryBalance = true}
+    <button disabled={!hasItems(items)} on:click={newStatsRequest}
             class="pure-button icon" type="button">
         <Icon icon="info"/>
     </button>

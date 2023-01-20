@@ -19,6 +19,17 @@ export const asUSDT = num => {
     }).format(num).substring(1) + ' USDT'
 }
 
+export const asTokenAmount = num => {
+    let absNum = Math.abs(num)
+    let digits = Math.round(Math.min(8, 8000 / (absNum == 0 ? 8000000 : absNum)))
+    const formatted = new Intl.NumberFormat(`en-US`, {
+        currency: `USD`,
+        style: 'currency',
+        maximumFractionDigits: digits,
+    }).format(absNum).substring(1)
+    return num < 0 ? `-${formatted}` : formatted
+}
+
 export const asDollars = num => {
     return new Intl.NumberFormat(`en-US`, {
         currency: `USD`,
