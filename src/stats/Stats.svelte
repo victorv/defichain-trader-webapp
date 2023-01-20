@@ -40,6 +40,7 @@
     onDestroy(() => screenSub && screenSub())
 </script>
 
+{#if txCount}{txCount} transactions{/if}
 {#if stats}
     <table class="pure-table">
         <thead>
