@@ -97,6 +97,7 @@ export const webSocketStore = writable({
     connected: false,
     connecting: true,
 })
+export const auctionStore = writable([])
 export const uuidStore = writable(null)
 export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)
@@ -178,6 +179,8 @@ incomingMessages.subscribe(message => {
             storePoolSwaps(updated)
             return updated
         })
+    } else if (message.id === 'auctions') {
+        auctionStore.set(message.data)
     }
 })
 
