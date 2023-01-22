@@ -37,7 +37,7 @@
 
 <h1>BETA</h1>
 
-{#if auctions}
+{#if hasItems(auctions)}
     <ul>
         {#each auctions as auction}
             <li>
@@ -55,10 +55,10 @@
                                 Amount
                             </td>
                             <td>
-                                Loan to collateral
+                                swap min bid on DEX
                             </td>
                             <td>
-                                Collateral to loan
+                                swap collateral on DEX
                             </td>
                         </tr>
                         </thead>
@@ -129,6 +129,8 @@
             </li>
         {/each}
     </ul>
+{:else}
+    <h2>There are no auctions</h2>
 {/if}
 
 <style>
