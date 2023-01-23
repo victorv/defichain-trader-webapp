@@ -1,9 +1,18 @@
+<script context="module">
+    const prefix = '#explore/swaps/'
+
+    const defaultTokenSymbols = {
+        fromTokenSymbol: 'Any',
+        toTokenSymbol: 'Any'
+    }
+</script>
+
 <script>
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
-    import {asUSDT, hasItems} from "../common/common";
+    import {asUSDT, getTokenSymbols, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {accountStore, screenStore, updateAccount} from "../store";
     import Limit from "../common/Limit.svelte";
@@ -55,9 +64,11 @@
         now = new Date().getTime()
     }
 
+    const tokenSymbols = getTokenSymbols(allTokens, defaultTokenSymbols, prefix)
+
     let swapBreakdown
-    let fromTokenSymbol
-    let toTokenSymbol
+    let fromTokenSymbol = tokenSymbols.fromTokenSymbol
+    let toTokenSymbol = tokenSymbols.toTokenSymbol
 
     let selectedTX
     let screen
@@ -116,6 +127,7 @@
         newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
         newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
         await refresh(newSearch)
+        location.hash = `#explore/swaps/${fromTokenSymbol}+to+${toTokenSymbol}`
     }
 
     const findAddresses = groupName => {

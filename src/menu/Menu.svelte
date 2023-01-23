@@ -43,13 +43,13 @@
             <li class:pure-menu-selected={componentType === TXHistory}
                 on:click={() => change(TXHistory)}
                 class="pure-menu-item">
-                <a href="#poolswaphistory" class="pure-menu-link">Explore</a>
+                <a href="#explore/swaps" class="pure-menu-link">Explore</a>
             </li>
 
             <li class:pure-menu-selected={componentType === QuickGraph}
                 on:click={() => change(QuickGraph)}
                 class="pure-menu-item">
-                <a href="#quick-graph" class="pure-menu-link">Quick Graph</a>
+                <a href="#graph/swap" class="pure-menu-link">Quick Graph</a>
             </li>
 
             <li class:pure-menu-selected={componentType === MixedMempool}

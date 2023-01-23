@@ -1,14 +1,49 @@
 <svelte:options immutable/>
+
+<script context="module">
+    import TXHistory from "./history/TXHistory.svelte";
+    import MixedMempool from "./mempool/MixedMempool.svelte";
+    import Auctions from "./auction/Auctions.svelte";
+    import StatusPage from "./menu/StatusPage.svelte";
+    import QuickGraph from "./history/QuickGraph.svelte";
+    import Account from "./account/Account.svelte";
+
+    const selectComponentType = () => {
+        const hash = location.hash
+        if (!hash) {
+            return TXHistory
+        }
+        if (hash.startsWith('#explore/swaps')) {
+            return TXHistory
+        }
+        if (hash.startsWith('#graph/swap')) {
+            return QuickGraph
+        }
+        if (hash === '#mempool') {
+            return MixedMempool
+        }
+        if (hash === '#auctions') {
+            return Auctions
+        }
+        if (hash === '#account') {
+            return Account
+        }
+        if (hash === '#about') {
+            return StatusPage
+        }
+        return TXHistory
+    }
+</script>
+
 <script>
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
-    import TXHistory from "./history/TXHistory.svelte";
 
     let allTokens
     let error
     let mainElement
-    let componentType = TXHistory
+    let componentType = selectComponentType()
 
     const init = async () => {
         const tokensRequest = fetch(`/tokens`).then(res => res.json())

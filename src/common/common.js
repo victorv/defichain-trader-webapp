@@ -37,3 +37,37 @@ export const asDollars = num => {
         maximumFractionDigits: 0,
     }).format(num)
 }
+
+export const getTokenSymbols = (tokens, defaults, prefix) => {
+    const allTokens = tokens.concat([
+        'Crypto',
+        'Stock',
+        'DUSD_or_stock',
+        'USDT_or_USDC',
+        'is_sold_or_bought',
+        'Any'
+    ])
+
+    const separator = '+to+'
+    const hash = location.hash
+    if (!hash) {
+        return defaults
+    }
+
+    if (hash.startsWith(prefix) && hash.includes(separator) > 0) {
+        const swap = hash.substring(prefix.length).split(separator)
+        if (swap.length === 2) {
+            const fromTokenSymbol = swap[0]
+            const toTokenSymbol = swap[1]
+
+            if(allTokens.includes(fromTokenSymbol) && allTokens.includes(toTokenSymbol)) {
+                return {
+                    fromTokenSymbol,
+                    toTokenSymbol
+                }
+            }
+        }
+    }
+
+    return defaults
+}

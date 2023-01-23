@@ -1,15 +1,27 @@
+<script context="module">
+    const prefix = '#graph/swap/'
+
+    const defaultTokenSymbols = {
+        fromTokenSymbol: 'DUSD',
+        toTokenSymbol: 'USDT'
+    }
+</script>
+
 <script>
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import {onDestroy, onMount} from "svelte";
     import TradeChart from "../dex/TradeChart.svelte";
     import Icon from "../common/Icon.svelte";
-    import {hasItems} from "../common/common";
+    import {getTokenSymbols, hasItems} from "../common/common";
     import Request from "../Request.svelte";
 
     export let allTokens
+
+    const tokenSymbols = getTokenSymbols(allTokens, defaultTokenSymbols, prefix)
+
     export let freezeTokens
-    export let fromTokenSymbol = 'DUSD'
-    export let toTokenSymbol = 'USDT'
+    export let fromTokenSymbol = tokenSymbols.fromTokenSymbol
+    export let toTokenSymbol = tokenSymbols.toTokenSymbol
     export let amount = 1.0
 
     const oneMinute = 1000 * 60
@@ -155,6 +167,7 @@
                 error: `Unable to load graph: ${e.message}`,
             }
         })
+        location.hash = `#graph/swap/${fromTokenSymbol}+to+${toTokenSymbol}`
     }
 
     const updateBreakdownsGracefully = async () => {
