@@ -177,7 +177,11 @@
     }
 
     onMount(async () => {
-        screen.orientation.addEventListener('change', resize)
+        if (screen && screen.orientation && screen.orientation.addEventListener) {
+            screen.orientation.addEventListener('change', resize)
+        } else {
+            addEventListener('orientationchange', resize)
+        }
         window.addEventListener('resize', resize)
 
         await updateBreakdownsGracefully()
