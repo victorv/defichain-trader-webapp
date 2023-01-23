@@ -11,6 +11,7 @@
 
     let breakdownIndex = 0
     let breakdown
+    let prevPoolSwap
 
     const setBreakdown = index => {
         if (hasItems(poolSwap.breakdown)) {
@@ -20,6 +21,10 @@
     }
 
     $: if (poolSwap) {
+        if(prevPoolSwap !== poolSwap) {
+            breakdownIndex = 0
+            prevPoolSwap = poolSwap
+        }
         setBreakdown(breakdownIndex)
     }
 
