@@ -86,6 +86,7 @@
 
     async function updateBreakdowns() {
         if (!fromTokenSymbol || !toTokenSymbol) {
+            alert(`${fromTokenSymbol} ${toTokenSymbol}`)
             return
         }
 
