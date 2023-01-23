@@ -70,7 +70,11 @@
 
     onDestroy(() => {
         clearTimeout(pendingUpdate)
-        screen.orientation.removeEventListener('change', resize)
+        if (screen && screen.orientation && screen.orientation.addEventListener) {
+            screen.orientation.removeEventListener('change', resize)
+        } else {
+            removeEventListener('orientationchange', resize)
+        }
         window.removeEventListener('resize', resize)
         subscriptions.forEach(sub => sub())
     })
