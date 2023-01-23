@@ -51,18 +51,14 @@
         if (newGraph) {
             const tail = newGraph[newGraph.length - 1]
             const breakdown = breakdowns[breakdownIndex]
-            if(breakdown) {
-                const estimate = breakdown.estimate
-                newGraph.push([
-                    tail[1],
-                    estimate,
-                    tail[1],
-                    estimate,
-                    new Date().getTime() / 1000,
-                ])
-            } else {
-                alert(`${breakdownIndex} ${url} ${JSON.stringify(breakdown)}`)
-            }
+            const estimate = breakdown.estimate
+            newGraph.push([
+                tail[1],
+                estimate,
+                tail[1],
+                estimate,
+                new Date().getTime() / 1000,
+            ])
         }
         graph = newGraph
     }
@@ -86,8 +82,12 @@
 
     async function updateBreakdowns() {
         if (!fromTokenSymbol || !toTokenSymbol) {
-            alert(`${fromTokenSymbol} ${toTokenSymbol}`)
             return
+        }
+
+        request = {
+            loading: true,
+            error: null,
         }
 
         const amount = 1.0
@@ -97,6 +97,11 @@
         const estimate = await estimateResponse.json()
         breakdownIndex = 0
         breakdowns = estimate.breakdown.sort((a, b) => a.estimate > b.estimate ? -1 : 1)
+
+        request = {
+            loading: false,
+            error: null,
+        }
     }
 
     async function update() {
@@ -148,11 +153,21 @@
         })
     }
 
+    const updateBreakdownsGracefully = async () => {
+        await updateBreakdowns().catch(e => {
+            request = {
+                loading: false,
+                error: `Unable to load estimate: ${url} ${e.message} ${e.stack}`,
+            }
+            throw e
+        })
+    }
+
     const onTokenSelectionChanged = async selection => {
         fromTokenSymbol = selection.fromTokenSymbol
         toTokenSymbol = selection.toTokenSymbol
 
-        await updateBreakdowns()
+        await updateBreakdownsGracefully()
         await updateGraph()
     }
 
@@ -165,7 +180,7 @@
         screen.orientation.addEventListener('change', resize)
         window.addEventListener('resize', resize)
 
-        await updateBreakdowns()
+        await updateBreakdownsGracefully()
         await updateGraph()
     })
 </script>

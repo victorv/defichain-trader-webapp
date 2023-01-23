@@ -5,7 +5,7 @@
 {#if request}
     {#if request.error}
         <div class="message">
-            <p class="error">{request.error}</p>
+            <pre class="error">{request.error}</pre>
         </div>
     {:else if request.loading}
         <div class="message">
