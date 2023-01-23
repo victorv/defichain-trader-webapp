@@ -35,7 +35,6 @@
     let abortController = new AbortController()
     let poolSwap
     let graph
-    let maxEstimates
     let pendingUpdate
     let resizeSeed
     let request = {
@@ -44,20 +43,26 @@
 
     let breakdowns
     let breakdownIndex = 0
+    let url = ''
 
     const subscriptions = []
 
     const setGraph = newGraph => {
         if (newGraph) {
             const tail = newGraph[newGraph.length - 1]
-            const estimate = breakdowns[breakdownIndex].estimate
-            newGraph.push([
-                tail[1],
-                estimate,
-                tail[1],
-                estimate,
-                new Date().getTime() / 1000,
-            ])
+            const breakdown = breakdowns[breakdownIndex]
+            if(breakdown) {
+                const estimate = breakdown.estimate
+                newGraph.push([
+                    tail[1],
+                    estimate,
+                    tail[1],
+                    estimate,
+                    new Date().getTime() / 1000,
+                ])
+            } else {
+                alert(`${breakdownIndex} ${url} ${JSON.stringify(breakdown)}`)
+            }
         }
         graph = newGraph
     }
@@ -86,7 +91,8 @@
 
         const amount = 1.0
         const params = `${amount}+${fromTokenSymbol}+to+${toTokenSymbol}`
-        const estimateResponse = await fetch(`/estimate?poolswap=${params}`)
+        url = `/estimate?poolswap=${params}`
+        const estimateResponse = await fetch(url)
         const estimate = await estimateResponse.json()
         breakdownIndex = 0
         breakdowns = estimate.breakdown.sort((a, b) => a.estimate > b.estimate ? -1 : 1)
