@@ -70,7 +70,7 @@
 
     onDestroy(() => {
         clearTimeout(pendingUpdate)
-        if (screen && screen.orientation && screen.orientation.addEventListener) {
+        if (screen && screen.orientation && screen.orientation.removeEventListener) {
             screen.orientation.removeEventListener('change', resize)
         } else {
             removeEventListener('orientationchange', resize)
