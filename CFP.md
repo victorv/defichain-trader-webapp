@@ -7,7 +7,7 @@ This CFP is for the continued development of [defichain-trader.com](https://defi
 I would like to integrate the following data:
 - token transfers (whenever tokens are moved to another address)
 - pool liquidity (adding and removing pool liquidity)
-- future swaps (pending future swaps)
+- future swaps (pending future swaps and past future swaps)
 - loans (taking loans and paying back loans)
 - vault collateral (removing collateral and adding collateral)
 - historic auctions (helpful in preparing your strategy when there are no auctions, in addition to the existing live auctions) [[Twitter guide](https://twitter.com/DefichainTrader/status/1617036236861964288)]
