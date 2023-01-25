@@ -44,6 +44,9 @@ I would like to support Telegram notifications for pool swaps on the following 4
 - get notified when there is a low enough discount as per DeFiChain oracle
 - get notified when there is a high enough premium as per DeFiChain oracle
 
+Currently, you can only specify a desired result, and it is not possible to use Telegram notifications.
+![Example image](https://gitlab.com/defichain-trader.com/webapp/-/raw/4c438e8ae10cd3a66d10fe45e72316d5c44bdf1e/track-swap.png?inline=false "Title")
+
 ## Minor
 There is a long list of mostly minor improvements that together will greatly improve the user experience.
 For those I will do what I have always done and sneak a few in every other update.
