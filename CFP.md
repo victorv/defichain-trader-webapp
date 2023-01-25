@@ -37,8 +37,8 @@ This will also make it possible to create Telegram notifications with a single c
 
 # Improvements
 
-## Notifications for swaps
-I would like to support Telegram notifications for pool swaps on the following 4 metrics:
+## Notifications for user defined pool swaps
+I would like to support Telegram notifications for pool swaps that were created by the user in Account->Swaps on the following 4 metrics:
 - get notified when your stop-loss target is reached
 - get notified when your limit-buy target is reached
 - get notified when there is a low enough discount as per DeFiChain oracle
