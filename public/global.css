@@ -73,3 +73,7 @@ th.banner {
 tr {
 	border-bottom: 1px solid black;
 }
+
+table.pure-table th, table.pure-table td {
+	padding: 0.25em 1em;
+}

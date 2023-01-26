@@ -12,7 +12,7 @@
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
-    import {asUSDT, getTokenSymbols, hasItems} from "../common/common";
+    import {asUSDT, avg, getTokenSymbols, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
     import {accountStore, screenStore, updateAccount} from "../store";
     import Limit from "../common/Limit.svelte";
@@ -575,7 +575,7 @@
         </a>
     {/if}
 
-    <table class:small={screen.small} class="pure-table">
+    <table class:small={screen.small} class:large={screen.large} class="pure-table">
         {#if account && search}
             <thead>
             <tr>
@@ -653,32 +653,35 @@
                     <td>
                         <span><strong>{tx.amountFrom}</strong></span>
                         <span>{tx.tokenFrom}</span>
-
                         <br/>
+
+                        ~{avg(tx.amountFrom, tx.amountTo)} {tx.tokenTo}
+                        <br/>
+
                         {#if tx.swap && tx.amountFrom >= 0.0001}
-                            <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
                             <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}>
-                                proof
+                                <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
                             </a>
                         {:else}
-                            profit/loss
+                            p/l
                             <Help warning={true}
                                   help="{tx.amountFrom} {tx.tokenFrom} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
                         {/if}
 
-                        <br/>
-                        {#if tx.tokenFrom == 'USDT'}
-                            &lt;already USDT&gt;
+                        <span class="dollar">
+                        {#if tx.tokenFrom == 'USDT' || tx.tokenFrom == 'USDC'}
+                            {asUSDT(tx.usdtSwap.estimate)}
                         {:else if tx.usdtSwap}
                             {#if tx.usdtSwap.estimate > 0.09}
                                 <a href="#"
                                    on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}>
-                                    <em>{asUSDT(tx.usdtSwap.estimate)}</em>
+                                    {asUSDT(tx.usdtSwap.estimate)}
                                 </a>
                             {:else}
-                                <em>{asUSDT(tx.usdtSwap.estimate)}</em>
+                                {asUSDT(tx.usdtSwap.estimate)}
                             {/if}
                         {/if}
+                        </span>
                     </td>
                     <td>
                         {#if tx.amountTo}
@@ -688,37 +691,39 @@
                                 or {tx.tokenToAlt}
                                 <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                             {/if}
+                            <br/>
+
+                            ~{avg(tx.amountTo, tx.amountFrom)} {tx.tokenFrom}
+                            <br/>
 
                             {#if tx.inverseSwap && tx.amountTo >= 0.0001}
-                                <br/>
-                                <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
                                 <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
-                                    proof
+                                    <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
                                 </a>
                             {:else}
-                                <br/>
-                                profit/loss
+                                p/l
                                 <Help warning={true}
                                       help="{tx.amountTo} {tx.tokenTo} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
                             {/if}
                         {:else}
                             N/A {tx.tokenTo}
                         {/if}
-                        <br/>
 
-                        {#if tx.swap && tx.tokenTo == 'USDT'}
-                            &lt;already USDT&gt;
+                        <span class="dollar">
+                        {#if tx.amountTo && (tx.tokenTo == 'USDT' || tx.tokenTo == 'USDC')}
+                            {asUSDT(tx.amountTo)}
                         {:else if tx.usdtInverseSwap}
 
                             {#if tx.usdtInverseSwap.estimate > 0.09}
                                 <a href="#"
                                    on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}>
-                                    <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
+                                    {asUSDT(tx.usdtInverseSwap.estimate)}
                                 </a>
                             {:else}
-                                <em>{asUSDT(tx.usdtInverseSwap.estimate)}</em>
+                                {asUSDT(tx.usdtInverseSwap.estimate)}
                             {/if}
                         {/if}
+                        </span>
                     </td>
                     {#if screen.large}
                         <td>
@@ -767,6 +772,10 @@
 {/if}
 
 <style>
+    table.large .dollar {
+        float: right;
+    }
+
     form, fieldset {
         padding: 0;
     }
@@ -784,13 +793,10 @@
         color: white;
     }
 
-    td[colspan="7"] {
-        padding: 0.5rem;
-    }
-
     table.small td > * {
         display: block;
     }
+
 
     th input, th select {
         max-width: 4rem;

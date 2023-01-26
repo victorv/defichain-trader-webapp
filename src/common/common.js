@@ -16,7 +16,14 @@ export const asUSDT = num => {
         currency: `USD`,
         style: 'currency',
         maximumFractionDigits: 2,
-    }).format(num).substring(1) + ' USDT'
+    }).format(num)
+}
+
+export const avg = (a, b) => {
+    if (!b) {
+        return 0
+    }
+    return (b / a).toFixed(8)
 }
 
 export const asTokenAmount = num => {
