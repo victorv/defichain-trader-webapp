@@ -167,17 +167,6 @@
         await updateSearch()
     }
 
-    const clearMinDate = async () => {
-        minDate = undefined
-        maxDate = undefined
-        await updateSearch()
-    }
-
-    const clearMaxDate = async () => {
-        maxDate = undefined
-        await updateSearch()
-    }
-
     const clearMinBlock = async () => {
         minBlock = undefined
         await updateSearch()
@@ -188,22 +177,14 @@
         await updateSearch()
     }
 
-    const clearMinInputAmount = async () => {
+    const clearInputAmount = async () => {
         minInputAmount = undefined
-        await updateSearch()
-    }
-
-    const clearMaxInputAmount = async () => {
         maxInputAmount = undefined
         await updateSearch()
     }
 
-    const clearMinOutputAmount = async () => {
+    const clearOutputAmount = async () => {
         minOutputAmount = undefined
-        await updateSearch()
-    }
-
-    const clearMaxOutputAmount = async () => {
         maxOutputAmount = undefined
         await updateSearch()
     }
@@ -449,29 +430,6 @@
                 </label>
             </div>
 
-            <div class="row">
-                <label>
-                    Min input amount (USDT)
-                    <input min="0" step="0.00000001" type="number" bind:value={minInputAmount}/>
-                </label>
-
-                <label>
-                    Max input amount (USDT)
-                    <input min="0" step="0.00000001" type="number" bind:value={maxInputAmount}/>
-                </label>
-            </div>
-
-            <div class="row">
-                <label>
-                    Min output amount (USDT)
-                    <input min="0" step="0.00000001" type="number" bind:value={minOutputAmount}/>
-                </label>
-
-                <label>
-                    Max output amount (USDT)
-                    <input min="0" step="0.00000001" type="number" bind:value={maxOutputAmount}/>
-                </label>
-            </div>
             <button class="pure-button" type="submit">Apply filters</button>
         </fieldset>
     </form>
@@ -483,19 +441,6 @@
             txID || fromAddress || toAddress}
                 <button on:click={clearAllFilters} class="pure-button" type="button">Remove filters</button>
             {/if}
-            {#if minDate && maxDate}
-                <button on:click={clearDates} class="pure-button" type="button">
-                    <strong class="red">X</strong> start of {minDate} - end of {maxDate}
-                </button>
-            {:else if minDate}
-                <button on:click={clearMinDate} class="pure-button" type="button">
-                    <strong class="red">X</strong> start of {minDate} - now
-                </button>
-            {:else if maxDate}
-                <button on:click={clearMaxDate} class="pure-button" type="button">
-                    <strong class="red">X</strong> until end of {maxDate}
-                </button>
-            {/if}
             {#if minBlock}
                 <button on:click={clearMinBlock} class="pure-button" type="button">
                     <strong class="red">X</strong> min block height: <strong>{minBlock}</strong>
@@ -504,26 +449,6 @@
             {#if maxBlock}
                 <button on:click={clearMaxBlock} class="pure-button" type="button">
                     <strong class="red">X</strong> max block height: <strong>{maxBlock}</strong>
-                </button>
-            {/if}
-            {#if minInputAmount}
-                <button on:click={clearMinInputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> min input amount: <strong>{minInputAmount} USDT</strong>
-                </button>
-            {/if}
-            {#if maxInputAmount}
-                <button on:click={clearMaxInputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> max input amount: <strong>{maxInputAmount} USDT</strong>
-                </button>
-            {/if}
-            {#if minOutputAmount}
-                <button on:click={clearMinOutputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> min output amount: <strong>{minOutputAmount} USDT</strong>
-                </button>
-            {/if}
-            {#if maxOutputAmount}
-                <button on:click={clearMaxOutputAmount} class="pure-button" type="button">
-                    <strong class="red">X</strong> max output amount: <strong>{maxOutputAmount} USDT</strong>
                 </button>
             {/if}
             {#if txID}
@@ -581,38 +506,65 @@
             <tr>
                 <th>
                     <div>
+                        <span class:block={screen.small}>
                         <input type="date"
                                placeholder="dd-mm-yyyy"
                                bind:value={minDate}
                                on:change={updateSearch}/>
+                        </span>
                         -
+                        <span class:block={screen.small}>
                         <input bind:value={maxDate}
                                placeholder="dd-mm-yyyy"
                                on:change={updateSearch}
                                type="date"/>
+                        <strong on:click={clearDates} class="red">X</strong>
+                        </span>
                     </div>
                 </th>
                 <th>
-                    Input Amount
+                    In
+                    <span class:block={screen.small}>
+                    $<input min="0" step="0.00000001" type="number"
+                            bind:value={minInputAmount}
+                            on:change={updateSearch}/>
+                    </span>
+                    -
+                    <span class:block={screen.small}>
+                    $<input min="0" step="0.00000001" type="number"
+                            bind:value={maxInputAmount}
+                            on:change={updateSearch}/>
+                    <strong on:click={clearInputAmount} class="red">X</strong>
+                    </span>
                 </th>
                 <th>
-                    Output Amount
+                    Out
+                    <span class:block={screen.small}>
+                    $<input min="0" step="0.00000001" type="number"
+                            bind:value={minOutputAmount}
+                            on:change={updateSearch}/>
+                    </span>
+                    -
+                    <span class:block={screen.small}>
+                    $<input min="0" step="0.00000001" type="number"
+                            bind:value={maxOutputAmount}
+                            on:change={updateSearch}/>
+                    <strong on:click={clearOutputAmount} class="red">X</strong>
+                    </span>
                 </th>
                 {#if screen.large}
                     <th>
-                        From
                         <select class="pure-select address-group" bind:value={fromAddressGroup}
                                 on:change={updateSearch}>
-                            <option value="">Any</option>
+                            <option value="">&lt;from addresses in group&gt;</option>
                             {#each account.addressGroups as group}
                                 <option value={group.name}>{group.name}</option>
                             {/each}
                         </select>
                     </th>
                     <th>
-                        To
                         <select class="pure-select address-group" bind:value={toAddressGroup} on:change={updateSearch}>
-                            <option value="">Any</option>
+                            <option value="">&lt;to addresses in group&gt;</option>
                             {#each account.addressGroups as group}
                                 <option value={group.name}>{group.name}</option>
                             {/each}
@@ -824,6 +776,10 @@
 
     .address-group {
         max-width: 8rem;
+    }
+
+    table .address-group {
+        display: block;
     }
 
     input[type="date"] {
