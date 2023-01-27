@@ -11,9 +11,9 @@
     import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
     import {onDestroy, onMount} from "svelte";
     import TradeChart from "../dex/TradeChart.svelte";
-    import Icon from "../common/Icon.svelte";
-    import {getTokenSymbols, hasItems} from "../common/common";
+    import {getTokenSymbols} from "../common/common";
     import Request from "../Request.svelte";
+    import BreakdownHeader from "../dex/BreakdownHeader.svelte";
 
     export let allTokens
 
@@ -53,8 +53,7 @@
         loading: false,
     }
 
-    let breakdowns
-    let breakdownIndex = 0
+    let breakdown
     let url = ''
 
     const subscriptions = []
@@ -62,7 +61,6 @@
     const setGraph = newGraph => {
         if (newGraph) {
             const tail = newGraph[newGraph.length - 1]
-            const breakdown = breakdowns[breakdownIndex]
             const estimate = breakdown.estimate
             newGraph.push([
                 tail[1],
@@ -92,7 +90,7 @@
     })
 
     const setBreakdown = async index => {
-        breakdownIndex = index
+        breakdown = poolSwap.breakdown[index]
         await updateGraph()
     }
 
@@ -110,9 +108,9 @@
         const params = `${amount}+${fromTokenSymbol}+to+${toTokenSymbol}`
         url = `/estimate?poolswap=${params}`
         const estimateResponse = await fetch(url)
-        const estimate = await estimateResponse.json()
-        breakdownIndex = 0
-        breakdowns = estimate.breakdown.sort((a, b) => a.estimate > b.estimate ? -1 : 1)
+        poolSwap = await estimateResponse.json()
+        breakdown = poolSwap.breakdown[0]
+        poolSwap.desiredResult = breakdown.estimate
 
         request = {
             loading: false,
@@ -127,16 +125,9 @@
         }
 
         setGraph(null)
-        poolSwap = null
 
         if (fromTokenSymbol && toTokenSymbol && fromTokenSymbol !== 'Any' && toTokenSymbol !== 'Any') {
-            poolSwap = {
-                tokenFrom: fromTokenSymbol,
-                tokenTo: toTokenSymbol,
-                amountFrom: amount || 1.0,
-            }
-
-            const path = breakdowns[breakdownIndex].path
+            const path = breakdown.path
 
             abortController.abort()
             abortController = new AbortController()
@@ -218,32 +209,14 @@
             {/each}
         </select>
 
-        {#if hasItems(breakdowns)}
-            <ul>
-                {#each breakdowns as breakdown, index}
-                    <li>
-                        <button class="pure-button"
-                                disabled={request.loading}
-                                on:click={() => setBreakdown(index)}
-                                class:info={index === breakdownIndex}>
-                            {index + 1}.
-                            {#if index === 0}
-                                <Icon icon="best"/>
-                            {:else if index !== 0 && breakdown.swaps.length === 1}
-                                <Icon icon="danger"/>
-                            {:else}
-                                <Icon icon="warning"/>
-                            {/if}
-                        </button>
-                    </li>
-                {/each}
-            </ul>
+        {#if poolSwap}
+            <BreakdownHeader {poolSwap} {setBreakdown} disabled={request.loading}/>
         {/if}
     </fieldset>
 </form>
 
-{#if graph && breakdowns}
-    <TradeChart breakdown={breakdowns[breakdownIndex]} {allTokens} {graph} {fromTokenSymbol} {toTokenSymbol}
+{#if graph && poolSwap}
+    <TradeChart {breakdown} {allTokens} {graph} {fromTokenSymbol} {toTokenSymbol}
                 {resizeSeed}/>
 {/if}
 <Request {request}/>

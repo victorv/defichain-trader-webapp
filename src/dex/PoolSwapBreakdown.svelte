@@ -5,23 +5,26 @@
     import Percentage from "./Percentage.svelte";
     import Help from "../common/Help.svelte";
     import ProfitLoss from "./ProfitLoss.svelte";
-    import Icon from "../common/Icon.svelte";
+    import {getHeader, isWorseDefaultPath} from "./dex";
+    import BreakdownHeader from "./BreakdownHeader.svelte";
 
     export let poolSwap
 
     let breakdownIndex = 0
     let breakdown
     let prevPoolSwap
+    let header
 
     const setBreakdown = index => {
         if (hasItems(poolSwap.breakdown)) {
             breakdownIndex = index
             breakdown = withPath(poolSwap.breakdown[breakdownIndex])
         }
+        header = getHeader(poolSwap, index)
     }
 
     $: if (poolSwap) {
-        if(prevPoolSwap !== poolSwap) {
+        if (prevPoolSwap !== poolSwap) {
             breakdownIndex = 0
             prevPoolSwap = poolSwap
         }
@@ -37,44 +40,30 @@
 
         return {
             ...breakdown,
-            path: tokens.join(' → ')
+            pathText: tokens.join(' → ')
         }
     }
 </script>
 
-<header>
-    <ul>
-        {#each poolSwap.breakdown as option, index}
-            <li>
-                <button class="pure-button"
-                        on:click={() => setBreakdown(index)}
-                        class:info={index === breakdownIndex}>
-                    {index + 1}.
-                    {#if index === 0}
-                        <Icon icon="best"/>
-                    {:else if index !== 0 && option.swaps.length === 1}
-                        <Icon icon="danger"/>
-                    {:else}
-                        <Icon icon="warning"/>
-                    {/if}
-                    <ProfitLoss {poolSwap} estimate={option.estimate}/>
-                </button>
-                {#if index !== 0 && option.swaps.length === 1}
-                    &larr;
-                    <Help warning={true}
-                          help="Careful! A swap from {poolSwap.tokenFrom} to {poolSwap.tokenTo} will always go through this pool!"/>
-                {/if}
-            </li>
-        {/each}
-    </ul>
-</header>
+<BreakdownHeader {poolSwap} {setBreakdown}/>
+
 {#if breakdown}
     <table class="pure-table">
         <tbody>
         <tr>
             <th role="rowheader" class="banner">Summary</th>
             <td>
-                {breakdown.path}
+                <strong>{header}</strong>
+                {#if isWorseDefaultPath(poolSwap, breakdown)}
+                    <Help warning={true}
+                          help="Careful! A swap from {poolSwap.tokenFrom} to {poolSwap.tokenTo} will always go through this pool! Swap to another token first or use a wallet that automatically does this for you."/>
+                {/if}
+            </td>
+        </tr>
+        <tr>
+            <th role="rowheader">Path</th>
+            <td>
+                {breakdown.pathText}
             </td>
         </tr>
         <tr>
@@ -224,18 +213,6 @@
 {/if}
 
 <style>
-    button.info {
-        color: white;
-    }
-
-    ul {
-        list-style-type: none;
-        display: flex;
-        gap: 0.5rem;
-        padding: 0;
-        margin: 0;
-    }
-
     label {
         display: block;
     }
