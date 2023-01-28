@@ -24,6 +24,7 @@
     export let toTokenSymbol = tokenSymbols.toTokenSymbol
     export let amount = 1.0
 
+    const oneMilli = 1
     const oneMinute = 1000 * 60
     const fiveMinute = oneMinute * 5
     const fifteenMinutes = oneMinute * 15
@@ -33,6 +34,7 @@
     const oneWeek = oneDay * 7
 
     const timelines = [
+        {id: oneMilli, label: '1 block'},
         {id: fiveMinute, label: '5 minutes'},
         {id: fifteenMinutes, label: '15 minutes'},
         {id: oneHour, label: '1 hour'},
