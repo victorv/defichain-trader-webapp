@@ -6,8 +6,7 @@
     export let poolSwap
     export let setBreakdown
     export let disabled
-
-    let breakdownIndex = 0
+    export let breakdownIndex = 0
 
     const onSelect = index => {
         setBreakdown(index)

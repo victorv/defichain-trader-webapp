@@ -45,7 +45,7 @@
     }
 </script>
 
-<BreakdownHeader {poolSwap} {setBreakdown}/>
+<BreakdownHeader {breakdownIndex} {poolSwap} {setBreakdown}/>
 
 {#if breakdown}
     <table class="pure-table">

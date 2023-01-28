@@ -49,6 +49,7 @@
     let graph
     let pendingUpdate
     let resizeSeed
+    let breakdownIndex = 0
     let request = {
         loading: false,
     }
@@ -91,6 +92,7 @@
 
     const setBreakdown = async index => {
         breakdown = poolSwap.breakdown[index]
+        breakdownIndex = index
         await updateGraph()
     }
 
@@ -169,6 +171,7 @@
             }
             throw e
         })
+        breakdownIndex = 0
     }
 
     const onTokenSelectionChanged = async selection => {
@@ -210,7 +213,7 @@
         </select>
 
         {#if poolSwap}
-            <BreakdownHeader {poolSwap} {setBreakdown} disabled={request.loading}/>
+            <BreakdownHeader {breakdownIndex} {poolSwap} {setBreakdown} disabled={request.loading}/>
         {/if}
     </fieldset>
 </form>
