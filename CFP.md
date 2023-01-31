@@ -54,3 +54,20 @@ For those I will do what I have always done and sneak a few in every other updat
 ## Technical
 Ongoing technical changes are required to ensure the longevity of this project and keep it maintainable.
 
+# Funding
+I am asking for 110,000 DFI.
+
+10% of that will be set aside to scale up the service so that it can handle more users. Currently, there are around 10 to 40 users connected to the website at any given time. I expect that I won't have to scale up until we see peaks of at least 45 online users.
+
+There is also the matter of Telegram notifications. Currently, over 75 notifications are active. I expect that I won't have to scale up until at least 125 notifications are active.
+
+Both metrics have been increasing on a daily basis. See the image below for recent numbers. ![Uptrend](https://gitlab.com/defichain-trader.com/webapp/-/raw/main/uptrend.png "Uptrend").
+
+The remaining 90% will be used to cover development and maintenance costs including:
+- new features & improvements for users
+- technical changes to keep the service in good condition
+- infrastructure maintenance
+
+You can also find and leave feedback here: [CFP on Reddit](https://www.reddit.com/r/defiblockchain/comments/10l35aj/cfp_defichaintradercom/).
+
+I have picked 3 features from the CFP to work on this February. You can view the announcement post on [Twitter](https://twitter.com/DefichainTrader/status/1619673900618764289). I will make an announcement on Twitter when each of them goes live.
