@@ -55,7 +55,7 @@ For those I will do what I have always done and sneak a few in every other updat
 Ongoing technical changes are required to ensure the longevity of this project and keep it maintainable.
 
 # Funding
-I am asking for 110,000 DFI.
+I am asking for 110,000 DFI or $60,000. This will allow me to work on the project full time for one year. If a rising DFI price results in more than a $60k payout I can either return the excess DFI or spend additional time on the project. I will let the community decide what they think I should do with excess funds. If a drop in the DFI price results in a payout below 60k I may have to make adjustments to either the CFP or the amount of additional feature requests from users I take on.
 
 10% of that will be set aside to scale up the service so that it can handle more users. Currently, there are around 20 to 60 users connected to the website at any given time. I expect that I won't have to scale up until we see peaks of at least 100 online users.
 
