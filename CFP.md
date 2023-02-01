@@ -57,9 +57,9 @@ Ongoing technical changes are required to ensure the longevity of this project a
 # Funding
 I am asking for 110,000 DFI.
 
-10% of that will be set aside to scale up the service so that it can handle more users. Currently, there are around 10 to 40 users connected to the website at any given time. I expect that I won't have to scale up until we see peaks of at least 45 online users.
+10% of that will be set aside to scale up the service so that it can handle more users. Currently, there are around 20 to 60 users connected to the website at any given time. I expect that I won't have to scale up until we see peaks of at least 100 online users.
 
-There is also the matter of Telegram notifications. Currently, over 75 notifications are active. I expect that I won't have to scale up until at least 125 notifications are active.
+There is also the matter of Telegram notifications. Currently, over 90 notifications are active. I expect that I won't have to scale up until at least 150 notifications are active.
 
 Both metrics have been increasing on a daily basis. See the image below for recent numbers. ![Uptrend](https://gitlab.com/defichain-trader.com/webapp/-/raw/main/uptrend.png "Uptrend").
 
