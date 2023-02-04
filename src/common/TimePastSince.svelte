@@ -3,36 +3,29 @@
     export let end
 
     let timePast
-
-    const duration = (quantity, text) => {
-        if (quantity === 0) {
-            return null
-        }
-        if (quantity === 1) {
-            return `${quantity} ${text}`
-        }
-        return `${quantity} ${text}s`
-    }
+    let short
 
     $: {
         const startTime = luxon.DateTime.fromMillis(start)
         const endTime = luxon.DateTime.fromMillis(end)
-        const diff = endTime.diff(startTime, ["days", "hours", "minutes", "seconds"]).toObject()
+        const diff = endTime.diff(startTime, ["years", "months", "days", "hours", "minutes", "seconds"]).toObject()
 
-        timePast = [
-            duration(diff.hours, 'hour'),
-            duration(diff.minutes, 'minute'),
-        ]
-            .filter(duration => duration !== null)
-            .join(' and ') + ' ago'
-
-        if (diff.days > 0) {
-            timePast = startTime.toLocaleString(luxon.DateTime.DATETIME_SHORT)
-        } else if (diff.minutes === 0) {
-            const seconds = Math.round(diff.seconds * 1000) / 1000
-            timePast = duration(seconds, 'second') + ' ago'
+        if (diff.years !== 0) {
+            short = `${diff.years}y`
+        } else if (diff.months !== 0) {
+            short = `${diff.months}m`
+        } else if (diff.days !== 0) {
+            short = `${diff.days}d`
+        } else if (diff.hours !== 0) {
+            short = `${diff.hours}h`
+        } else if (diff.minutes !== 0) {
+            short = `${diff.minutes}min`
+        } else if (diff.seconds !== 0) {
+            short = `${diff.seconds}m`
         }
+
+        timePast = startTime.toLocaleString(luxon.DateTime.DATETIME_SHORT)
     }
 </script>
 
-{timePast}
+{timePast} <sup>{short}</sup>
