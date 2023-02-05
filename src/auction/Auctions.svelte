@@ -113,7 +113,7 @@
                                     {/if}
                                 </td>
                             </tr>
-                            {#if activeSwap && collateral === collateral}
+                            {#if activeSwap && collateral === activeCollateral}
                                 <tr>
                                     <td colspan="3">
                                         {#if hasItems(activeSwap.breakdown)}
