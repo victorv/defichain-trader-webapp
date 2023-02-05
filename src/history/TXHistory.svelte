@@ -11,6 +11,7 @@
     import PoolLiquidity from "./PoolLiquidity.svelte";
     import GlobalFilters from "./GlobalFilters.svelte";
     import Tools from "./Tools.svelte";
+    import Loans from "./Loans.svelte";
 
     export let allTokens
 
@@ -32,7 +33,18 @@
             telegram: false,
             download: true,
         }
-    }]
+    },
+        {
+            id: 'Loan',
+            label: 'Loans',
+            path: 'loans',
+            tools: {
+                stats: false,
+                telegram: false,
+                download: true,
+            }
+        }
+    ]
 
     let currentFilter = storedFilter
     let query = currentFilter.query
@@ -200,9 +212,11 @@
 <Tools tools={viewType.tools} {uuid} {items} {setRemoteFilter} {currentFilter}/>
 {#if screen}
     {#if viewType.id === 'PoolSwap'}
-        <PoolSwapHistory {currentFilter} {screen} {setRemoteFilter} {uuid} {allTokens} {items} {refresh}/>
+        <PoolSwapHistory {currentFilter} {screen} {allTokens} {items} {refresh}/>
     {:else if viewType.id === 'PoolLiquidity'}
-        <PoolLiquidity {screen} {setRemoteFilter} {uuid} {items} {refresh}/>
+        <PoolLiquidity {items} {refresh}/>
+    {:else if viewType.id === 'Loan'}
+        <Loans {items} {refresh}/>
     {/if}
 {/if}
 

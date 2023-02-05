@@ -7,8 +7,6 @@
 
     let now = new Date().getTime()
 
-    const isRemoved = result => result.amountA > 0 || result.amountB > 0
-
     onMount(async () => {
         await refresh({})
     })
@@ -26,14 +24,12 @@
                 <TimePastSince start={result.time * 1000} end={now}/>,
                 <a target="_blank" href="https://defiscan.live/blocks/{result.blockHeight}">{result.blockHeight}</a>
                 <br/>
-                {Math.abs(result.amountA)}
-                <strong>{result.tokenA}</strong>
-                <span class="gray">&amp;</span>
-                {Math.abs(result.amountB)}
-                <strong>{result.tokenB}</strong>
+                {Math.abs(result.amount)}
+                <strong>{result.token}</strong>
                 <br/>
-                {result.shares} <span class="gray">shares</span>
-                for <a target="_blank" class="limited" href="https://defiscan.live/address/{result.owner}">{result.owner}</a>
+                vault <a target="_blank" class="limited" href="https://defiscan.live/vaults/{result.vault}">{result.vault}</a>
+                from
+                <a class="limited" target="_blank" href="https://defiscan.live/address/{result.owner}">{result.owner}</a>
             </li>
         {/each}
     </ul>
