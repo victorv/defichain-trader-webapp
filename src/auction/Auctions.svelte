@@ -71,10 +71,12 @@
                                     ${collateral.tokenAmount.valueUSD}
                                 </td>
                                 <td>
-                                    {collateral.swapFromLoan.amountFrom.toFixed(8)}
-                                    {collateral.swapFromLoan.tokenFrom} to
-                                    {collateral.swapFromLoan.estimate.toFixed(8)}
-                                    {collateral.swapFromLoan.tokenTo}
+                                    {#if collateral.swapFromLoan}
+                                        {collateral.swapFromLoan.amountFrom.toFixed(8)}
+                                        {collateral.swapFromLoan.tokenFrom} to
+                                        {collateral.swapFromLoan.estimate.toFixed(8)}
+                                        {collateral.swapFromLoan.tokenTo}
+                                    {/if}
                                     <br/>
                                     {#if collateral.swapFromLoan && collateral.swapFromLoan.amountFrom >= 0.0001}
                                         <ProfitLoss poolSwap={collateral.swapFromLoan}
@@ -90,10 +92,12 @@
                                     {/if}
                                 </td>
                                 <td>
-                                    {collateral.swapToLoan.amountFrom.toFixed(8)}
-                                    {collateral.swapToLoan.tokenFrom} to
-                                    {collateral.swapToLoan.estimate.toFixed(8)}
-                                    {collateral.swapToLoan.tokenTo}
+                                    {#if collateral.swapToLoan}
+                                        {collateral.swapToLoan.amountFrom.toFixed(8)}
+                                        {collateral.swapToLoan.tokenFrom} to
+                                        {collateral.swapToLoan.estimate.toFixed(8)}
+                                        {collateral.swapToLoan.tokenTo}
+                                    {/if}
                                     <br/>
                                     {#if collateral.swapToLoan && collateral.swapToLoan.amountFrom >= 0.0001}
                                         <ProfitLoss poolSwap={collateral.swapToLoan}
@@ -138,5 +142,10 @@
         list-style-type: none;
         margin: 0;
         padding: 0;
+    }
+
+    li {
+        margin: 1rem;
+        border-top: 1px solid black;
     }
 </style>
