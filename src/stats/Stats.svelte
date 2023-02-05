@@ -18,7 +18,13 @@
     const getStats = async () => {
         const response = await fetch(`/stats`, {
             method: 'POST',
-            body: JSON.stringify(request),
+            body: JSON.stringify({
+                ...request,
+                minDateText: undefined,
+                maxDateText: undefined,
+                fromAddressGroupText: undefined,
+                toAddressGroupText: undefined
+            }),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'

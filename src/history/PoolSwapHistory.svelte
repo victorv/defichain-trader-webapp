@@ -14,45 +14,25 @@
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {asUSDT, avg, getTokenSymbols, hasItems} from "../common/common";
     import Help from "../common/Help.svelte";
-    import {accountStore, screenStore, updateAccount} from "../store";
     import Limit from "../common/Limit.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import {onDestroy, onMount} from "svelte";
-    import Popup from "../Popup.svelte";
-    import ActiveFilters from "./ActiveFilters.svelte";
     import ProfitLoss from "../dex/ProfitLoss.svelte";
-    import Stats from "../stats/Stats.svelte";
-
-    let account
-    let search
-    let filterForm
-    let createNotification
-    let notificationError
-    let notificationURL
 
     export let allTokens
+
     export let refresh
     export let items
     export let filter
-    export let filterState
-    export let uuid
-    export let setRemoteFilter
-    export let csvReady
+    export let currentFilter
+    export let screen
 
     let notificationTitle
-    let txID
-    let minBlock
-    let maxBlock
-    let minDate
-    let maxDate
+
     let minInputAmount
     let maxInputAmount
     let minOutputAmount
     let maxOutputAmount
-    let fromAddressGroup
-    let fromAddress
-    let toAddressGroup
-    let toAddress
 
     let subs = []
     let now = new Date().getTime()
@@ -67,33 +47,12 @@
     const tokenSymbols = getTokenSymbols(allTokens, defaultTokenSymbols, prefix)
 
     let swapBreakdown
-    let fromTokenSymbol = tokenSymbols.fromTokenSymbol
-    let toTokenSymbol = tokenSymbols.toTokenSymbol
+    let fromTokenSymbol = currentFilter.fromTokenSymbol || tokenSymbols.fromTokenSymbol
+    let toTokenSymbol = currentFilter.toTokenSymbol || tokenSymbols.toTokenSymbol
 
     let selectedTX
-    let screen
 
     onMount(async () => {
-        const sub1 = accountStore.subscribe(newAccount => {
-            account = newAccount
-            search = account.swapSearch || {}
-            txID = search.txID
-            minDate = search.minDate
-            maxDate = search.maxDate
-            minBlock = search.minBlock
-            maxBlock = search.maxBlock
-            minInputAmount = search.minInputAmount
-            maxInputAmount = search.maxInputAmount
-            minOutputAmount = search.minOutputAmount
-            maxOutputAmount = search.maxOutputAmount
-            fromAddressGroup = search.fromAddressGroup || ''
-            fromAddress = search.fromAddress
-            toAddressGroup = search.toAddressGroup || ''
-            toAddress = search.toAddress
-        })
-
-        subs.push(sub1)
-
         interval = setInterval(() => {
             now = new Date().getTime()
         }, 30000)
@@ -106,133 +65,33 @@
         subs.forEach(sub => sub())
     })
 
-    screenStore.subscribe(newScreen => screen = newScreen)
-
-    const dateToMillis = (dateString, time) => {
-        if (!dateString) {
-            return undefined
-        }
-        try {
-            return new Date(`${dateString}T${time}`).getTime()
-        } catch (e) {
-            console.log(e)
-            return undefined
-        }
-    }
-
     async function update() {
-        const newSearch = createSearch()
-        newSearch.minDate = dateToMillis(newSearch.minDate, '00:00:00.000')
-        newSearch.maxDate = dateToMillis(newSearch.maxDate, '23:59:59.999')
-        newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
-        newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
-        await refresh(newSearch)
+        await refresh(createSearch())
         location.hash = `#explore/swaps/${fromTokenSymbol}+to+${toTokenSymbol}`
-    }
-
-    const findAddresses = groupName => {
-        const group = account.addressGroups.find(ag => ag.name === groupName)
-        if (group) {
-            return group.addresses
-        }
-        return undefined
-    }
-
-    const clearAllFilters = async () => {
-        txID = undefined
-        minDate = undefined
-        maxDate = undefined
-        minBlock = undefined
-        maxBlock = undefined
-        minInputAmount = undefined
-        maxInputAmount = undefined
-        minOutputAmount = undefined
-        maxOutputAmount = undefined
-        fromAddress = undefined
-        toAddress = undefined
-
-        filterForm = false
-        filterState(filterForm)
-        await updateSearch()
-    }
-
-    const clearTXID = async () => {
-        txID = undefined
-        await updateSearch()
-    }
-
-    const clearDates = async () => {
-        minDate = undefined
-        maxDate = undefined
-        await updateSearch()
-    }
-
-    const clearMinBlock = async () => {
-        minBlock = undefined
-        await updateSearch()
-    }
-
-    const clearMaxBlock = async () => {
-        maxBlock = undefined
-        await updateSearch()
     }
 
     const clearInputAmount = async () => {
         minInputAmount = undefined
         maxInputAmount = undefined
-        await updateSearch()
+        await update()
     }
 
     const clearOutputAmount = async () => {
         minOutputAmount = undefined
         maxOutputAmount = undefined
-        await updateSearch()
-    }
-
-    const clearFromAddress = async () => {
-        fromAddress = undefined
-        await updateSearch()
-    }
-
-    const clearToAddress = async () => {
-        toAddress = undefined
-        await updateSearch()
+        await update()
     }
 
     const createSearch = () => {
         const newSearch = {
-            txID: txID || undefined,
-            minDate: minDate || undefined,
-            maxDate: maxDate || undefined,
-            minBlock: minBlock || undefined,
-            maxBlock: maxBlock || undefined,
             minInputAmount: minInputAmount || undefined,
             maxInputAmount: maxInputAmount || undefined,
             minOutputAmount: minOutputAmount || undefined,
             maxOutputAmount: maxOutputAmount || undefined,
-            fromAddressGroup: fromAddressGroup || undefined,
-            fromAddress: fromAddress || undefined,
-            toAddressGroup: toAddressGroup || undefined,
-            toAddress: toAddress || undefined
+            fromTokenSymbol: fromTokenSymbol === 'Any' ? undefined : fromTokenSymbol,
+            toTokenSymbol: toTokenSymbol === 'Any' ? undefined : toTokenSymbol,
         }
-        if (fromTokenSymbol && fromTokenSymbol != 'Any') {
-            newSearch.fromTokenSymbol = fromTokenSymbol
-        }
-        if (toTokenSymbol && toTokenSymbol != 'Any') {
-            newSearch.toTokenSymbol = toTokenSymbol
-        }
-
         return newSearch
-    }
-
-    const updateSearch = async () => {
-        const newSearch = createSearch()
-
-        const searchUpdate = {}
-        searchUpdate.swapSearch = newSearch
-
-        updateAccount(searchUpdate)
-        await update()
     }
 
     const onTokenSelectionChanged = async selection => {
@@ -259,368 +118,111 @@
             return
         }
 
-        // const request = `${swap.amountFrom}+${swap.tokenFrom}+to+${swap.tokenTo}+desiredResult+${swap.amountTo || 1.0}`
-        // const response = await fetch(`/estimate?poolswap=${request}`)
-        // swapFromTo = await response.json()
-        // swapFromTo.tx = swap
-
         swapBreakdown = swapResult
         selectedTX = swap
     }
-
-    const newStatsRequest = () => {
-        const request = createSearch()
-        request.minDate = dateToMillis(request.minDate, '00:00:00.000')
-        request.maxDate = dateToMillis(request.maxDate, '23:59:59.999')
-        request.fromAddressGroup = findAddresses(request.fromAddressGroup)
-        request.toAddressGroup = findAddresses(request.toAddressGroup)
-        statsRequest = request
-    }
-
-    const submitFilterForm = async () => {
-        filterForm = false
-        filterState(filterForm)
-        await updateSearch()
-    }
-
-    const createTelegramNotification = async () => {
-        const newSearch = createSearch()
-        newSearch.minDate = undefined
-        newSearch.maxDate = undefined
-        newSearch.fromAddressGroup = findAddresses(newSearch.fromAddressGroup)
-        newSearch.toAddressGroup = findAddresses(newSearch.toAddressGroup)
-        const response = await fetch(`/notification?uuid=${uuid}&description=${encodeURIComponent(notificationTitle)}`, {
-            method: 'POST',
-            body: JSON.stringify(newSearch),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-        if (response.ok) {
-            const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
-            notificationURL = `https://telegram.me/${bot}?start=${uuid}`
-        } else {
-            notificationError = 'Sorry we are unable to create this notification: ' + response.statusText
-        }
-    }
-
-    const newTelegramNotification = () => {
-        createNotification = true
-        notificationError = null
-        notificationURL = null
-    }
 </script>
 
-{#if createNotification}
-    <Popup onClose={() => createNotification = false}>
-        <form class="pure-form notification-form" slot="header" on:submit|preventDefault={createTelegramNotification}>
-            {#if notificationError}
-                <p class="error">
-                    {notificationError}
-                </p>
-            {:else}
-                <input on:keydown={() => notificationURL = null} type="text" bind:value={notificationTitle}
-                       placeholder="Title"/>
-                <button disabled={!notificationTitle || notificationTitle.length > 75 || notificationURL}
-                        class="pure-button pure-button-primary" type="submit">
-                    Submit notification
-                </button>
-            {/if}
-        </form>
-        <div slot="content">
-            <br/>
-            <p>
-                {#if notificationURL}
-                    You can now approve your notification <a href={notificationURL} target="_blank">in
-                    Telegram</a>. While you do so you need to keep this tab open or it won't work. Click the link to get
-                    started.
-                {:else}
-                    <em>Submit your notification with a title of your choice.</em>
-                {/if}
-            </p>
-            <ActiveFilters
-                    {txID}
-                    {minDate}
-                    {maxDate}
-                    {minBlock}
-                    {maxBlock}
-                    {fromTokenSymbol}
-                    {toTokenSymbol}
-                    {minInputAmount}
-                    {maxInputAmount}
-                    {minOutputAmount}
-                    {maxOutputAmount}
-                    {fromAddressGroup}
-                    {fromAddress}
-                    {toAddressGroup}
-                    {toAddress}/>
-        </div>
-    </Popup>
-{/if}
+<form class="pure-form" on:submit|preventDefault>
+    <fieldset>
+        <FromToTokenFilter supportAnyToken={true} supportPseudo={true}
+                           {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+    </fieldset>
+</form>
 
-{#if filter !== false}
-    <form class="pure-form" on:submit|preventDefault>
-        <fieldset>
-            {#if !filterForm}
-                <FromToTokenFilter supportAnyToken={true} supportPseudo={true}
-                                   {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
-                {#if account}
-                    <p class="from-to">
-                        {#if screen.small}
-                            From
-                            <select class="pure-select address-group" bind:value={fromAddressGroup}
-                                    on:change={updateSearch}>
-                                <option value="">Any</option>
-                                {#each account.addressGroups as group}
-                                    <option value={group.name}>{group.name}</option>
-                                {/each}
-                            </select>
-
-                            To
-                            <select class="pure-select address-group" bind:value={toAddressGroup}
-                                    on:change={updateSearch}>
-                                <option value="">Any</option>
-                                {#each account.addressGroups as group}
-                                    <option value={group.name}>{group.name}</option>
-                                {/each}
-                            </select>
-                        {/if}
-
-                        <button disabled={filterForm} on:click={() => {filterForm = true; filterState(filterForm)}}
-                                class="pure-button icon" type="button">
-                            <Icon icon="filter"/>
-                        </button>
-                    </p>
-                {/if}
-            {/if}
-        </fieldset>
-    </form>
-{/if}
-
-{#if filterForm}
-    <form class="pure-form pure-form-stacked" on:submit|preventDefault={submitFilterForm}>
-        <fieldset>
-            <label>
-                TX ID
-                <input type="text" bind:value={txID}/>
-            </label>
-
-            <div class="row">
-                <label>
-                    From Address
-                    <input type="text" bind:value={fromAddress}/>
-                </label>
-
-                <label>
-                    To Address
-                    <input type="text" bind:value={toAddress}/>
-                </label>
-            </div>
-
-            <div class="row">
-                <label>
-                    Min block height
-                    <input min="0" step="1" type="number" bind:value={minBlock}/>
-                </label>
-
-                <label>
-                    Max block height
-                    <input min="0" step="1" type="number" bind:value={maxBlock}/>
-                </label>
-            </div>
-
-            <button class="pure-button" type="submit">Apply filters</button>
-        </fieldset>
-    </form>
-{:else}
-    {#if account}
-        <form class="pure-form active-filters" on:submit|preventDefault>
-            {#if minBlock || maxBlock ||
-            minInputAmount || maxInputAmount || minOutputAmount || maxOutputAmount ||
-            txID || fromAddress || toAddress}
-                <button on:click={clearAllFilters} class="pure-button" type="button">Remove filters</button>
-            {/if}
-            {#if minBlock}
-                <button on:click={clearMinBlock} class="pure-button" type="button">
-                    <strong class="red">X</strong> min block height: <strong>{minBlock}</strong>
-                </button>
-            {/if}
-            {#if maxBlock}
-                <button on:click={clearMaxBlock} class="pure-button" type="button">
-                    <strong class="red">X</strong> max block height: <strong>{maxBlock}</strong>
-                </button>
-            {/if}
-            {#if txID}
-                <button on:click={clearTXID} class="pure-button" type="button">
-                    <strong class="red">X</strong> TX ID: <strong class="limited">{txID}</strong>
-                </button>
-            {/if}
-            {#if fromAddress}
-                <button on:click={clearFromAddress} class="pure-button" type="button">
-                    <strong class="red">X</strong> From: <strong class="limited">{fromAddress}</strong>
-                </button>
-            {/if}
-            {#if toAddress}
-                <button on:click={clearToAddress} class="pure-button" type="button">
-                    <strong class="red">X</strong> To: <strong class="limited">{toAddress}</strong>
-                </button>
-            {/if}
-        </form>
-        <br/>
-    {/if}
-
-    {#if statsRequest}
-        <Popup onClose={() => statsRequest = null}>
-            <div slot="header">
-            </div>
-            <div slot="content">
-                <Stats request={statsRequest}/>
-            </div>
-        </Popup>
-    {/if}
-
-    <button disabled={!hasItems(items)} on:click={newStatsRequest}
-            class="pure-button icon" type="button">
-        <Icon icon="info"/>
-    </button>
-
-    <button disabled={!hasItems(poolSwaps)} on:click={newTelegramNotification}
-            class="pure-button icon" type="button">
-        <Icon icon="telegram"/>
-    </button>
-    <button disabled={!hasItems(poolSwaps) || !uuid}
-            on:click={() => setRemoteFilter(filter)}
-            class="pure-button icon" type="button">
-        <Icon icon="download"/>
-    </button>
-    {#if csvReady}
-        <a on:click={() => csvReady = false} href="/download?uuid={uuid}" target="_blank">
-            download CSV
-        </a>
-    {/if}
-
-    <table class:small={screen.small} class:large={screen.large} class="pure-table">
-        {#if account && search}
-            <thead>
-            <tr>
-                <th>
-                    <div>
-                        <span class:block={screen.small}>
-                        <input type="date"
-                               placeholder="dd-mm-yyyy"
-                               bind:value={minDate}
-                               on:change={updateSearch}/>
-                        </span>
-                        -
-                        <span class:block={screen.small}>
-                        <input bind:value={maxDate}
-                               placeholder="dd-mm-yyyy"
-                               on:change={updateSearch}
-                               type="date"/>
-                        <strong on:click={clearDates} class="red">X</strong>
-                        </span>
-                    </div>
-                </th>
-                <th>
-                    In
-                    <span class:block={screen.small}>
+<table class:small={screen.small} class:large={screen.large} class="pure-table">
+    <thead>
+    <tr>
+        <th>
+            Time
+        </th>
+        <th>
+            In
+            <span class:block={screen.small}>
                     $<input min="0" step="0.00000001" type="number"
                             bind:value={minInputAmount}
-                            on:change={updateSearch}/>
+                            on:change={update}/>
                     </span>
-                    -
-                    <span class:block={screen.small}>
+            -
+            <span class:block={screen.small}>
                     $<input min="0" step="0.00000001" type="number"
                             bind:value={maxInputAmount}
-                            on:change={updateSearch}/>
+                            on:change={update}/>
                     <strong on:click={clearInputAmount} class="red">X</strong>
                     </span>
-                </th>
-                <th>
-                    Out
-                    <span class:block={screen.small}>
+        </th>
+        <th>
+            Out
+            <span class:block={screen.small}>
                     $<input min="0" step="0.00000001" type="number"
                             bind:value={minOutputAmount}
-                            on:change={updateSearch}/>
+                            on:change={update}/>
                     </span>
-                    -
-                    <span class:block={screen.small}>
+            -
+            <span class:block={screen.small}>
                     $<input min="0" step="0.00000001" type="number"
                             bind:value={maxOutputAmount}
-                            on:change={updateSearch}/>
+                            on:change={update}/>
                     <strong on:click={clearOutputAmount} class="red">X</strong>
                     </span>
-                </th>
-                {#if screen.large}
-                    <th>
-                        <select class="pure-select address-group" bind:value={fromAddressGroup}
-                                on:change={updateSearch}>
-                            <option value="">&lt;from addresses in group&gt;</option>
-                            {#each account.addressGroups as group}
-                                <option value={group.name}>{group.name}</option>
-                            {/each}
-                        </select>
-                    </th>
-                    <th>
-                        <select class="pure-select address-group" bind:value={toAddressGroup} on:change={updateSearch}>
-                            <option value="">&lt;to addresses in group&gt;</option>
-                            {#each account.addressGroups as group}
-                                <option value={group.name}>{group.name}</option>
-                            {/each}
-                        </select>
-                    </th>
-                {/if}
-            </tr>
-            </thead>
+        </th>
+        {#if screen.large}
+            <th>
+                From
+            </th>
+            <th>
+                To
+            </th>
         {/if}
-        {#if items && items.length}
-            <tbody>
-            {#each poolSwaps as tx}
-                <tr class:selected-row={tx === selectedTX}>
-                    <td>
-                        {#if tx.block}
-                            <TimePastSince start={tx.block.medianTime * 1000} end={now}/>
-                            <br/>
-                            <button on:click={() => toggleTXDetails(tx)}
-                                    class:info={tx === selectedTX}
-                                    type="button"
-                                    class="pure-button info-button icon">
-                                <Icon icon="info"/>
-                            </button>
-                            <strong>{tx.block.blockHeight}</strong>
-                        {:else}
-                            <TimePastSince start={tx.mempool.time} end={now}/>
-                            <br/>
-                            <button on:click={() => toggleTXDetails(tx)}
-                                    class:info={tx === selectedTX}
-                                    type="button"
-                                    class="pure-button info-button icon">
-                                <Icon icon="info"/>
-                            </button>
-                            <strong>{tx.mempool.blockHeight}</strong>
-                            <Help warning={true} help="This TX has not been confirmed so far"/>
-                        {/if}
-                    </td>
-                    <td>
-                        <span><strong>{tx.amountFrom}</strong></span>
-                        <span>{tx.tokenFrom}</span>
+    </tr>
+    </thead>
+    {#if items && items.length}
+        <tbody>
+        {#each poolSwaps as tx}
+            <tr class:selected-row={tx === selectedTX}>
+                <td>
+                    {#if tx.block}
+                        <TimePastSince start={tx.block.medianTime * 1000} end={now}/>
                         <br/>
-
-                        ~{avg(tx.amountFrom, tx.amountTo)} {tx.tokenTo}
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+                        <strong>{tx.block.blockHeight}</strong>
+                    {:else}
+                        <TimePastSince start={tx.mempool.time} end={now}/>
                         <br/>
+                        <button on:click={() => toggleTXDetails(tx)}
+                                class:info={tx === selectedTX}
+                                type="button"
+                                class="pure-button info-button icon">
+                            <Icon icon="info"/>
+                        </button>
+                        <strong>{tx.mempool.blockHeight}</strong>
+                        <Help warning={true} help="This TX has not been confirmed so far"/>
+                    {/if}
+                </td>
+                <td>
+                    <span><strong>{tx.amountFrom}</strong></span>
+                    <span>{tx.tokenFrom}</span>
+                    <br/>
 
-                        {#if tx.swap && tx.amountFrom >= 0.0001}
-                            <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}>
-                                <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
-                            </a>
-                        {:else}
-                            p/l
-                            <Help warning={true}
-                                  help="{tx.amountFrom} {tx.tokenFrom} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
-                        {/if}
+                    ~{avg(tx.amountFrom, tx.amountTo)} {tx.tokenTo}
+                    <br/>
 
-                        <span class="dollar">
+                    {#if tx.swap && tx.amountFrom >= 0.0001}
+                        <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}>
+                            <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
+                        </a>
+                    {:else}
+                        p/l
+                        <Help warning={true}
+                              help="{tx.amountFrom} {tx.tokenFrom} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
+                    {/if}
+
+                    <span class="dollar">
                         {#if tx.tokenFrom == 'USDT' || tx.tokenFrom == 'USDC'}
                             {asUSDT(tx.usdtSwap.estimate)}
                         {:else if tx.usdtSwap}
@@ -634,34 +236,34 @@
                             {/if}
                         {/if}
                         </span>
-                    </td>
-                    <td>
-                        {#if tx.amountTo}
-                            <span><strong>{tx.amountTo}</strong></span>
-                            <span>{tx.tokenTo}</span>
-                            {#if tx.tokenTo !== tx.tokenToAlt}
-                                or {tx.tokenToAlt}
-                                <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
-                            {/if}
-                            <br/>
-
-                            ~{avg(tx.amountTo, tx.amountFrom)} {tx.tokenFrom}
-                            <br/>
-
-                            {#if tx.inverseSwap && tx.amountTo >= 0.0001}
-                                <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
-                                    <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
-                                </a>
-                            {:else}
-                                p/l
-                                <Help warning={true}
-                                      help="{tx.amountTo} {tx.tokenTo} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
-                            {/if}
-                        {:else}
-                            N/A {tx.tokenTo}
+                </td>
+                <td>
+                    {#if tx.amountTo}
+                        <span><strong>{tx.amountTo}</strong></span>
+                        <span>{tx.tokenTo}</span>
+                        {#if tx.tokenTo !== tx.tokenToAlt}
+                            or {tx.tokenToAlt}
+                            <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
                         {/if}
+                        <br/>
 
-                        <span class="dollar">
+                        ~{avg(tx.amountTo, tx.amountFrom)} {tx.tokenFrom}
+                        <br/>
+
+                        {#if tx.inverseSwap && tx.amountTo >= 0.0001}
+                            <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
+                                <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
+                            </a>
+                        {:else}
+                            p/l
+                            <Help warning={true}
+                                  help="{tx.amountTo} {tx.tokenTo} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
+                        {/if}
+                    {:else}
+                        N/A {tx.tokenTo}
+                    {/if}
+
+                    <span class="dollar">
                         {#if tx.amountTo && (tx.tokenTo == 'USDT' || tx.tokenTo == 'USDC')}
                             {asUSDT(tx.amountTo)}
                         {:else if tx.usdtInverseSwap}
@@ -676,52 +278,51 @@
                             {/if}
                         {/if}
                         </span>
+                </td>
+                {#if screen.large}
+                    <td>
+                        {#if tx.from == 'dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'}
+                            <Icon icon="cake"/>
+                        {/if}
+                        <Limit text={tx.from}/>
                     </td>
-                    {#if screen.large}
-                        <td>
-                            {#if tx.from == 'dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'}
-                                <Icon icon="cake"/>
-                            {/if}
-                            <Limit text={tx.from}/>
-                        </td>
-                        <td>
-                            {#if tx.to == '8defichainBurnAddressXXXXXXXdRQkSm'}
-                                <Icon icon="burn"/>
-                            {/if}
-                            {#if tx.from != tx.to}
-                                <Limit text={tx.to}/>
-                            {:else}
-                                &lt;from address&gt;
-                            {/if}
-                        </td>
-                    {/if}
-                </tr>
-                {#if swapBreakdown == null && tx === selectedTX}
-                    <tr>
-                        <td colspan="7">
-                            {#if selectedTX}
-                                <PoolSwapDetails tx={selectedTX}/>
-                            {/if}
-                        </td>
-                    </tr>
-                {:else if swapBreakdown && selectedTX === tx}
-                    <tr>
-                        <td colspan="7">
-                            {#if hasItems(swapBreakdown.breakdown)}
-                                <PoolSwapBreakdown poolSwap={swapBreakdown}/>
-                            {:else}
-                                <div class="warning">
-                                    Something went wrong
-                                </div>
-                            {/if}
-                        </td>
-                    </tr>
+                    <td>
+                        {#if tx.to == '8defichainBurnAddressXXXXXXXdRQkSm'}
+                            <Icon icon="burn"/>
+                        {/if}
+                        {#if tx.from != tx.to}
+                            <Limit text={tx.to}/>
+                        {:else}
+                            &lt;from address&gt;
+                        {/if}
+                    </td>
                 {/if}
-            {/each}
-            </tbody>
-        {/if}
-    </table>
-{/if}
+            </tr>
+            {#if swapBreakdown == null && tx === selectedTX}
+                <tr>
+                    <td colspan="7">
+                        {#if selectedTX}
+                            <PoolSwapDetails tx={selectedTX}/>
+                        {/if}
+                    </td>
+                </tr>
+            {:else if swapBreakdown && selectedTX === tx}
+                <tr>
+                    <td colspan="7">
+                        {#if hasItems(swapBreakdown.breakdown)}
+                            <PoolSwapBreakdown poolSwap={swapBreakdown}/>
+                        {:else}
+                            <div class="warning">
+                                Something went wrong
+                            </div>
+                        {/if}
+                    </td>
+                </tr>
+            {/if}
+        {/each}
+        </tbody>
+    {/if}
+</table>
 
 <style>
     table.large .dollar {
@@ -730,10 +331,6 @@
 
     form, fieldset {
         padding: 0;
-    }
-
-    .from-to {
-        display: inline-block;
     }
 
     tr.selected-row td {
@@ -745,7 +342,7 @@
         color: white;
     }
 
-    table.small td > * {
+    table.small th > *, table.small td > * {
         display: block;
     }
 
@@ -760,26 +357,6 @@
 
     .red {
         color: red;
-    }
-
-    .row {
-        display: flex;
-        flex-direction: row;
-        gap: 0.5rem;
-    }
-
-    .notification-form {
-        display: flex;
-        flex-direction: row;
-        gap: 1rem;
-    }
-
-    .address-group {
-        max-width: 8rem;
-    }
-
-    table .address-group {
-        display: block;
     }
 
     input[type="date"] {

@@ -1,28 +1,38 @@
 <script>
-    export let txID
-    export let minDate
-    export let maxDate
-    export let minBlock
-    export let maxBlock
-    export let fromTokenSymbol
-    export let toTokenSymbol
-    export let minInputAmount
-    export let maxInputAmount
-    export let minOutputAmount
-    export let maxOutputAmount
-    export let minFee
-    export let maxFee
-    export let fromAddressGroup
-    export let fromAddress
-    export let toAddressGroup
-    export let toAddress
+    export let currentFilter
+
+    let query
+    let minDate
+    let maxDate
+    let fromTokenSymbol
+    let toTokenSymbol
+    let minInputAmount
+    let maxInputAmount
+    let minOutputAmount
+    let maxOutputAmount
+    let fromAddressGroup
+    let toAddressGroup
+
+    $: if (currentFilter) {
+        query = currentFilter.query
+        minDate = currentFilter.minDate
+        maxDate = currentFilter.maxDate
+        fromTokenSymbol = currentFilter.fromTokenSymbol
+        toTokenSymbol = currentFilter.toTokenSymbol
+        minInputAmount = currentFilter.minInputAmount
+        maxInputAmount = currentFilter.maxInputAmount
+        minOutputAmount = currentFilter.minOutputAmount
+        maxOutputAmount = currentFilter.maxOutputAmount
+        fromAddressGroup = currentFilter.fromAddressGroup
+        toAddressGroup = currentFilter.toAddressGroup
+    }
 </script>
 <div class="pure-menu-vertical pure-menu">
     <span class="pure-menu-heading">Notify me when</span>
     <ul class="pure-menu-list">
-        {#if txID}
+        {#if query}
             <li class="pure-menu-item pure-menu-link">
-                TX ID: <strong>ignored for Telegram notifications</strong>
+                query {query}: <strong>ignored for Telegram notifications</strong>
             </li>
         {/if}
         {#if minDate}
@@ -33,16 +43,6 @@
         {#if maxDate}
             <li class="pure-menu-item pure-menu-link">
                 max date: <strong>ignored for Telegram notifications</strong>
-            </li>
-        {/if}
-        {#if minBlock}
-            <li class="pure-menu-item pure-menu-link">
-                min block height: <strong>ignored for Telegram notifications</strong>
-            </li>
-        {/if}
-        {#if maxBlock}
-            <li class="pure-menu-item pure-menu-link">
-                max block height: <strong>ignored for Telegram notifications</strong>
             </li>
         {/if}
         <li class="pure-menu-item pure-menu-link">
@@ -67,7 +67,11 @@
             <em>AND</em> From address in:
             <strong>
                 {#if fromAddressGroup}
-                    {fromAddressGroup}
+                    <ul>
+                        {#each fromAddressGroup as address}
+                            <li>{address}</li>
+                        {/each}
+                    </ul>
                 {:else}
                     any
                 {/if}
@@ -76,22 +80,16 @@
         <li class="pure-menu-item pure-menu-link">
             <em>AND</em> To address in: <strong>
             {#if toAddressGroup}
-                {toAddressGroup}
+                <ul>
+                    {#each toAddressGroup as address}
+                        <li>{address}</li>
+                    {/each}
+                </ul>
             {:else}
                 any
             {/if}
         </strong>
         </li>
-        {#if minFee}
-            <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> min fee: <strong>{minFee}</strong>
-            </li>
-        {/if}
-        {#if maxFee}
-            <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> max fee: <strong>{maxFee}</strong>
-            </li>
-        {/if}
         {#if minInputAmount}
             <li class="pure-menu-item  pure-menu-link">
                 <em>AND</em> min input amount: <strong>{minInputAmount} USDT</strong>
@@ -110,16 +108,6 @@
         {#if maxOutputAmount}
             <li class="pure-menu-item pure-menu-link">
                 <em>AND</em> max output amount: <strong>{maxOutputAmount} USDT</strong>
-            </li>
-        {/if}
-        {#if fromAddress}
-            <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> From: <strong>{fromAddress}</strong>
-            </li>
-        {/if}
-        {#if toAddress}
-            <li class="pure-menu-item pure-menu-link">
-                <em>AND</em> To: <strong>{toAddress}</strong>
             </li>
         {/if}
     </ul>
