@@ -163,6 +163,7 @@
 
     const changeViewType = () => {
         items = null
+        pager = {offset: 0}
     }
 
     const showMore = async () => {
