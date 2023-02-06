@@ -96,11 +96,25 @@ const getMempoolBlacklist = () => {
     return []
 }
 
+const getFilter = () => {
+    if (localStorage) {
+        const item = localStorage.getItem('filter')
+        if (item) {
+            const filter = JSON.parse(item)
+            if (filter && typeof filter === 'object') {
+                return filter
+            }
+        }
+    }
+    return {}
+}
+
 export const webSocketStore = writable({
     connected: false,
     connecting: true,
 })
 export const auctionStore = writable([])
+export const filterStore = writable(getFilter())
 export const uuidStore = writable(null)
 export const incomingMessages = writable({connected: false})
 export const outgoingMessages = writable(null)

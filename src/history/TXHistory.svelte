@@ -1,5 +1,20 @@
 <script context="module">
+    import {filterStore} from "../store";
+
     let storedFilter = {}
+
+    const storeFilter = filter => {
+        storedFilter = filter || {}
+        filterStore.set(storedFilter)
+    }
+
+    filterStore.subscribe(filter => {
+        if (localStorage && filter && typeof filter === 'object') {
+            localStorage.setItem('filter', JSON.stringify(filter))
+        }
+    })
+
+    filterStore.subscribe(filter => storedFilter = filter)
 </script>
 
 <script>
@@ -107,7 +122,6 @@
         search = getMore ? search : null
         items = getMore ? items : null
 
-        console.log(filter)
         const requestBody = {
             ...(currentFilter || {}),
             ...filter,
@@ -115,7 +129,7 @@
             query
         }
         currentFilter = requestBody
-        storedFilter = currentFilter
+        storeFilter(currentFilter)
 
         if (getMore) {
             requestBody.pager = pager
