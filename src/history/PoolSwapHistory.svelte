@@ -205,10 +205,8 @@
                     {/if}
                 </td>
                 <td>
-                    <span><strong>{tx.amountFrom}</strong></span>
-                    <span>{tx.tokenFrom}</span>
+                    <span><strong>{tx.amountFrom} {tx.tokenFrom}</strong></span>
                     <br/>
-
                     ~{avg(tx.amountFrom, tx.amountTo)} {tx.tokenTo}
                     <br/>
 
@@ -239,8 +237,7 @@
                 </td>
                 <td>
                     {#if tx.amountTo}
-                        <span><strong>{tx.amountTo}</strong></span>
-                        <span>{tx.tokenTo}</span>
+                        <span><strong>{tx.amountTo} {tx.tokenTo}</strong></span>
                         {#if tx.tokenTo !== tx.tokenToAlt}
                             or {tx.tokenToAlt}
                             <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
