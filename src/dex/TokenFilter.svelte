@@ -84,7 +84,7 @@
             {#if !(isFrom && token == '#is sold or bought')}
                 <li on:click={() => selectToken(token)}
                     class="pure-menu-item">
-                    <a href="#" class="pure-menu-link">
+                    <a href="#" on:click|preventDefault class="pure-menu-link">
                         {#if token == '#is sold or bought'}
                             is <strong>#sold or bought</strong>
                         {:else}

@@ -61,10 +61,20 @@
         }
     ]
 
+    const getViewType = (filter) => {
+        const hash = (window.location.hash || '').toLowerCase()
+        for (const viewType of viewTypes) {
+            if (hash.includes(viewType.id.toLowerCase())) {
+                return viewType
+            }
+        }
+        return viewTypes.find(v => v.id === filter.id) || viewTypes[0]
+    }
+
     let currentFilter = storedFilter
     let query = currentFilter.query
 
-    let viewType = viewTypes.find(v => v.id === currentFilter.id) || viewTypes[0]
+    let viewType = getViewType(currentFilter)
     let abortController = new AbortController()
     let items
     let search
@@ -185,7 +195,7 @@
     }
 
     const refresh = async (filter, getMore) => {
-        await fetchItems(filter, getMore).catch(e => {
+        return await fetchItems(filter, getMore).catch(e => {
             if (e.name !== 'AbortError') {
                 request = {
                     loading: false,

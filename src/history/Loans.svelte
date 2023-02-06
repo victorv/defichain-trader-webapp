@@ -8,6 +8,7 @@
     let now = new Date().getTime()
 
     onMount(async () => {
+        location.hash = `#explore/Loans`
         await refresh({})
     })
 </script>

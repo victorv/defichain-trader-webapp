@@ -2,8 +2,8 @@
     const prefix = '#explore/swaps/'
 
     const defaultTokenSymbols = {
-        fromTokenSymbol: 'Any',
-        toTokenSymbol: 'Any'
+        fromTokenSymbol: '',
+        toTokenSymbol: ''
     }
 </script>
 
@@ -29,10 +29,10 @@
 
     let notificationTitle
 
-    let minInputAmount
-    let maxInputAmount
-    let minOutputAmount
-    let maxOutputAmount
+    let minInputAmount = currentFilter.minInputAmount
+    let maxInputAmount = currentFilter.maxInputAmount
+    let minOutputAmount = currentFilter.minOutputAmount
+    let maxOutputAmount = currentFilter.maxOutputAmount
 
     let subs = []
     let now = new Date().getTime()
@@ -47,8 +47,8 @@
     const tokenSymbols = getTokenSymbols(allTokens, defaultTokenSymbols, prefix)
 
     let swapBreakdown
-    let fromTokenSymbol = currentFilter.fromTokenSymbol || tokenSymbols.fromTokenSymbol
-    let toTokenSymbol = currentFilter.toTokenSymbol || tokenSymbols.toTokenSymbol
+    let fromTokenSymbol = (tokenSymbols.fromTokenSymbol ? tokenSymbols.fromTokenSymbol : currentFilter.fromTokenSymbol) || 'Any'
+    let toTokenSymbol = (tokenSymbols.toTokenSymbol ? tokenSymbols.toTokenSymbol : currentFilter.toTokenSymbol) || 'Any'
 
     let selectedTX
 
@@ -66,8 +66,8 @@
     })
 
     async function update() {
+        location.hash = `#explore/PoolSwap/${fromTokenSymbol}+to+${toTokenSymbol}`
         await refresh(createSearch())
-        location.hash = `#explore/swaps/${fromTokenSymbol}+to+${toTokenSymbol}`
     }
 
     const clearInputAmount = async () => {

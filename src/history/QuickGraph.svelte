@@ -156,13 +156,13 @@
     }
 
     const updateGraph = async () => {
+        location.hash = `#graph/PoolSwap/${fromTokenSymbol}+to+${toTokenSymbol}`
         await update().catch(e => {
             request = {
                 loading: false,
                 error: `Unable to load graph: ${e.message}`,
             }
         })
-        location.hash = `#graph/swap/${fromTokenSymbol}+to+${toTokenSymbol}`
     }
 
     const updateBreakdownsGracefully = async () => {

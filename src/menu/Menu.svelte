@@ -43,7 +43,7 @@
             <li class:pure-menu-selected={componentType === TXHistory}
                 on:click={() => change(TXHistory)}
                 class="pure-menu-item">
-                <a href="#explore/swaps" class="pure-menu-link">Explore</a>
+                <a on:click|preventDefault href="#explore" class="pure-menu-link">Explore</a>
             </li>
 
             <li class:pure-menu-selected={componentType === QuickGraph}

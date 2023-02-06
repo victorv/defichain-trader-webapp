@@ -10,6 +10,7 @@
     const isRemoved = result => result.amountA > 0 || result.amountB > 0
 
     onMount(async () => {
+        location.hash = `#explore/PoolLiquidity`
         await refresh({})
     })
 </script>

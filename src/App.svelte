@@ -13,10 +13,10 @@
         if (!hash) {
             return TXHistory
         }
-        if (hash.startsWith('#explore/swaps')) {
+        if (hash.startsWith('#explore')) {
             return TXHistory
         }
-        if (hash.startsWith('#graph/swap')) {
+        if (hash.startsWith('#graph')) {
             return QuickGraph
         }
         if (hash === '#mempool') {
