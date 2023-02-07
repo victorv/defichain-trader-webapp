@@ -107,6 +107,7 @@ const getFilter = () => {
                 delete filter.fromAddress
                 delete filter.toAddress
                 delete filter.txID
+                delete filter.pager
                 return filter
             }
         }
