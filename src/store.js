@@ -102,6 +102,11 @@ const getFilter = () => {
         if (item) {
             const filter = JSON.parse(item)
             if (filter && typeof filter === 'object') {
+                delete filter.minBlock
+                delete filter.maxBlock
+                delete filter.fromAddress
+                delete filter.toAddress
+                delete filter.txID
                 return filter
             }
         }
