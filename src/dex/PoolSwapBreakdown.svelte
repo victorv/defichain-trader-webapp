@@ -179,12 +179,12 @@
                 </tr>
             {/if}
             <tr>
-                <th role="rowheader">{swap.tokenFrom} / {swap.tokenTo}</th>
-                <td>{roundTo(swap.amountFrom / swap.amountTo, 8)}</td>
+                <th role="rowheader">Price {swap.tokenFrom}</th>
+                <td>1 {swap.tokenFrom} = {roundTo(swap.amountTo / swap.amountFrom, 8)} {swap.tokenTo}</td>
             </tr>
             <tr>
-                <th role="rowheader">{swap.tokenTo} / {swap.tokenFrom}</th>
-                <td>{roundTo(swap.amountTo / swap.amountFrom, 8)}</td>
+                <th role="rowheader">Price {swap.tokenTo}</th>
+                <td>1 {swap.tokenTo} = {roundTo(swap.amountFrom / swap.amountTo, 8)} {swap.tokenFrom}</td>
             </tr>
             <tr>
                 <th role="rowheader">Commission</th>
