@@ -1,12 +1,12 @@
 <script>
-    import Fee from "./Fee.svelte";
     import Req from "./Req.svelte";
-    import {hasItems} from "../common/common";
+    import {hasItems, roundTo} from "../common/common";
     import Percentage from "./Percentage.svelte";
     import Help from "../common/Help.svelte";
     import ProfitLoss from "./ProfitLoss.svelte";
     import {getHeader, isWorseDefaultPath} from "./dex";
     import BreakdownHeader from "./BreakdownHeader.svelte";
+    import Fee from "./Fee.svelte";
 
     export let poolSwap
 
@@ -178,6 +178,14 @@
                     </td>
                 </tr>
             {/if}
+            <tr>
+                <th role="rowheader">{swap.tokenFrom} / {swap.tokenTo}</th>
+                <td>{roundTo(swap.amountFrom / swap.amountTo, 8)}</td>
+            </tr>
+            <tr>
+                <th role="rowheader">{swap.tokenTo} / {swap.tokenFrom}</th>
+                <td>{roundTo(swap.amountTo / swap.amountFrom, 8)}</td>
+            </tr>
             <tr>
                 <th role="rowheader">Commission</th>
                 <td>
