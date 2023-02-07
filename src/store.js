@@ -108,6 +108,17 @@ const getFilter = () => {
                 delete filter.toAddress
                 delete filter.txID
                 delete filter.pager
+                delete filter.minDate
+                delete filter.minDateText
+                delete filter.maxDate
+                delete filter.maxDateText
+                delete filter.query
+                delete filter.minInputAmount
+                delete filter.maxInputAmount
+                delete filter.minOutputAmount
+                delete filter.maxOutputAmount
+                delete filter.fromTokenSymbol
+                delete filter.toTokenSymbol
                 return filter
             }
         }
