@@ -1,5 +1,5 @@
 <script context="module">
-    const prefix = '#graph/swap/'
+    const prefix = '#graph/PoolSwap/'
 
     const defaultTokenSymbols = {
         fromTokenSymbol: 'DUSD',
