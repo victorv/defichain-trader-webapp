@@ -4,6 +4,7 @@
     import WebSocketStatus from "../WebSocketStatus.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import Help from "../common/Help.svelte";
+    import {asDollars} from "../common/common";
 
     export let allTokens
 
@@ -69,11 +70,7 @@
                 <Help help="Hide TXs where the total USDT value of all amounts is less than the specified number. TXs that don't involve quantifiable amounts are always valued at 0 USDT."/>
             </th>
             <th>
-                Time
-            </th>
-
-            <th>
-                Fee
+                Owner
             </th>
         </tr>
         </thead>
@@ -85,22 +82,17 @@
                         <button on:click={() => hide(tx.type)} class="pure-button icon">
                             <strong class="red">X</strong>
                         </button>
-                        {tx.type}
-                    </td>
-                    <td>
-                        {tx.description}
-                        {#if tx.usdtAmount > 0.0}
-                            <br/>
-                            <strong>
-                                total: {tx.usdtAmount} USDT
-                            </strong>
-                        {/if}
-                    </td>
-                    <td>
+                        <strong>{tx.type}</strong>
+                        <br/>
                         <TimePastSince start={tx.time} end={now}/>
                     </td>
+                    <td class="server">
+                        {@html tx.description}
+                        <br/>
+                        <span class="brown">{asDollars(tx.usdtAmount)}</span>
+                    </td>
                     <td>
-                        {tx.fee}
+                        {tx.owner}<br/>
                     </td>
                 </tr>
             {/each}
@@ -118,7 +110,7 @@
 {/if}
 
 <style>
-    span {
+    .container span {
         padding: 1rem;
     }
 
@@ -131,6 +123,10 @@
 
     div > div {
         width: 50vw;
+    }
+
+    .brown {
+        color: saddlebrown;
     }
 
     .red {

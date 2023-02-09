@@ -81,3 +81,11 @@ table.pure-table th, table.pure-table td {
 .block {
 	display: block;
 }
+
+.server .token {
+	font-weight: bold;
+}
+
+.server .amount {
+	color: darkblue;
+}
