@@ -136,6 +136,7 @@
             ...(currentFilter || {}),
             ...filter,
             id: viewType.id,
+            pager: null,
             query
         }
         currentFilter = requestBody
