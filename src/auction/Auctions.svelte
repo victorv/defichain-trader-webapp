@@ -1,10 +1,9 @@
 <script>
     import {onDestroy, onMount} from "svelte";
-    import ProfitLoss from "../dex/ProfitLoss.svelte";
-    import Help from "../common/Help.svelte";
-    import {hasItems} from "../common/common";
+    import {asDollars, calcProfitLoss, hasItems} from "../common/common";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {auctionStore} from "../store";
+    import Percentage from "../dex/Percentage.svelte";
 
     let auctions
     let activeCollateral
@@ -38,27 +37,17 @@
 <h1>BETA</h1>
 
 {#if hasItems(auctions)}
-    <ul>
+    <ul class="server">
         {#each auctions as auction}
             <li>
                 Vault: <a target="_blank" href="https://defiscan.live/vaults/{auction.vaultId}">{auction.vaultId}</a>
                 {#each auction.batches as batch}
-                    <p>
-                        Batch {batch.index}, expires in {auction.blocksRemaining} blocks<br/>
-                        min bid: <strong>{batch.minimumBid.toFixed(8)} {batch.loan.token}</strong>
-                        max bid: <strong>{batch.maximumBid.toFixed(8)} {batch.loan.token}</strong>
-                    </p>
                     <table class="pure-table">
                         <thead>
                         <tr>
                             <td>
-                                Amount
-                            </td>
-                            <td>
-                                swap min bid on DEX
-                            </td>
-                            <td>
-                                swap collateral on DEX
+                                Batch <span class="amount">{batch.index}</span>, expires in <span
+                                    class="amount">{auction.blocksRemaining}</span> blocks
                             </td>
                         </tr>
                         </thead>
@@ -66,51 +55,13 @@
                         {#each batch.collaterals as collateral}
                             <tr>
                                 <td>
-                                    {collateral.tokenAmount.value} {collateral.tokenAmount.token}
+                                    <span class="amount">{collateral.tokenAmount.value}</span>
+                                    <span class="token">{collateral.tokenAmount.token}</span>
+                                    =
+                                    <span class="amount">{collateral.loanTokenAmount}</span>
+                                    <span class="token">{batch.loan.token}</span>
                                     <br/>
-                                    ${collateral.tokenAmount.valueUSD}
-                                </td>
-                                <td>
-                                    {#if collateral.swapFromLoan}
-                                        {collateral.swapFromLoan.amountFrom.toFixed(8)}
-                                        {collateral.swapFromLoan.tokenFrom} to
-                                        {collateral.swapFromLoan.estimate.toFixed(8)}
-                                        {collateral.swapFromLoan.tokenTo}
-                                    {/if}
-                                    <br/>
-                                    {#if collateral.swapFromLoan && collateral.swapFromLoan.amountFrom >= 0.0001}
-                                        <ProfitLoss poolSwap={collateral.swapFromLoan}
-                                                    estimate={collateral.swapFromLoan.estimate}/>
-                                        <a href="#"
-                                           on:click|preventDefault={() => toggleSwapBreakdown(collateral, collateral.swapFromLoan)}>
-                                            proof
-                                        </a>
-                                    {:else}
-                                        profit/loss
-                                        <Help warning={true}
-                                              help="Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
-                                    {/if}
-                                </td>
-                                <td>
-                                    {#if collateral.swapToLoan}
-                                        {collateral.swapToLoan.amountFrom.toFixed(8)}
-                                        {collateral.swapToLoan.tokenFrom} to
-                                        {collateral.swapToLoan.estimate.toFixed(8)}
-                                        {collateral.swapToLoan.tokenTo}
-                                    {/if}
-                                    <br/>
-                                    {#if collateral.swapToLoan && collateral.swapToLoan.amountFrom >= 0.0001}
-                                        <ProfitLoss poolSwap={collateral.swapToLoan}
-                                                    estimate={collateral.swapToLoan.estimate}/>
-                                        <a href="#"
-                                           on:click|preventDefault={() => toggleSwapBreakdown(collateral, collateral.swapToLoan)}>
-                                            proof
-                                        </a>
-                                    {:else}
-                                        profit/loss
-                                        <Help warning={true}
-                                              help="Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
-                                    {/if}
+                                    <span class="brown">{asDollars(collateral.tokenAmount.valueUSD)}</span>
                                 </td>
                             </tr>
                             {#if activeSwap && collateral === activeCollateral}
@@ -127,6 +78,21 @@
                                 </tr>
                             {/if}
                         {/each}
+                        <tr>
+                            <td>
+                                <span class="amount">{batch.maxBid}</span>
+                                <span class="token">{batch.loan.token}</span>
+                                (max bid)
+                                -
+                                <span class="amount">{batch.minBid}</span>
+                                <span class="token">{batch.loan.token}</span>
+                                (min bid)
+                                <br/>
+                                = {+batch.maxBid - + batch.minBid}
+                                or
+                                <Percentage number={calcProfitLoss(batch.minBid, batch.maxBid)}/>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 {/each}
@@ -146,6 +112,9 @@
 
     li {
         margin: 1rem;
-        border-top: 1px solid black;
+    }
+
+    .brown {
+        color: saddlebrown;
     }
 </style>
