@@ -48,7 +48,7 @@
 <BreakdownHeader {breakdownIndex} {poolSwap} {setBreakdown}/>
 
 {#if breakdown}
-    <table class="pure-table">
+    <table class="pure-table server">
         <tbody>
         <tr>
             <th role="rowheader" class="banner">Summary</th>
@@ -73,7 +73,8 @@
                       help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
             </th>
             <td>
-                {breakdown.estimate} {poolSwap.tokenTo}
+                <span class="amount">{breakdown.estimate}</span>
+                <span class="token">{poolSwap.tokenTo}</span>
             </td>
         </tr>
         {#if poolSwap.desiredResult}
@@ -91,7 +92,8 @@
                     <Help help="Used to calculate your profit/loss% and the maximum price."/>
                 </th>
                 <td>
-                    {poolSwap.desiredResult.toFixed(8)} {poolSwap.tokenTo}
+                    <span class="amount">{poolSwap.desiredResult.toFixed(8)}</span>
+                    <span class="token">{poolSwap.tokenTo}</span>
                 </td>
             </tr>
             {#if poolSwap.maxPrice}
@@ -101,7 +103,11 @@
                         <Help help="Maximum price you can pay while still reaching your desired result. This number can be used for on-chain-swaps to prevent unexpected slippage."/>
                     </th>
                     <td>
-                        {poolSwap.maxPrice.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
+                        <span class="amount">{poolSwap.maxPrice.toFixed(8)}</span>
+                        <span class="token">{poolSwap.tokenFrom}</span>
+                        =
+                        <span class="amount">1</span>
+                        <span class="token">{poolSwap.tokenTo}</span>
                     </td>
                 </tr>
             {/if}
@@ -109,11 +115,14 @@
         {#if breakdown.price}
             <tr>
                 <th role="rowheader">
-                    Average Price Payed
-                    <Help help="Average price you have payed."/>
+                    Average price paid
                 </th>
                 <td>
-                    {breakdown.price.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
+                    <span class="amount">{breakdown.price.toFixed(8)}</span>
+                    <span class="token">{poolSwap.tokenFrom}</span>
+                    =
+                    <span class="amount">1</span>
+                    <span class="token">{poolSwap.tokenTo}</span>
                 </td>
             </tr>
         {/if}
@@ -124,7 +133,11 @@
             </th>
             <td>
                 {#if poolSwap.oraclePrice}
-                    {poolSwap.oraclePrice.toFixed(8)} {poolSwap.tokenFrom} = 1 {poolSwap.tokenTo}
+                    <span class="amount">{poolSwap.oraclePrice.toFixed(8)}</span>
+                    <span class="token">{poolSwap.tokenFrom}</span>
+                    =
+                    <span class="amount">1</span>
+                    <span class="token">{poolSwap.tokenTo}</span>
                 {:else}
                     Unknown
                 {/if}
@@ -149,9 +162,11 @@
                     Swap {index + 1}
                 </th>
                 <td>
-                    {swap.amountFrom} {swap.tokenFrom} to
-                    <strong>{swap.amountTo}</strong>
-                    {swap.tokenTo}
+                    <span class="amount">{swap.amountFrom}</span>
+                    <span class="token">{swap.tokenFrom}</span>
+                    to
+                    <span class="amount">{swap.amountTo}</span>
+                    <span class="token">{swap.tokenTo}</span>
                 </td>
             </tr>
             {#if !swap.status}
@@ -179,12 +194,24 @@
                 </tr>
             {/if}
             <tr>
-                <th role="rowheader">Price {swap.tokenFrom}</th>
-                <td>1 {swap.tokenFrom} = {roundTo(swap.amountTo / swap.amountFrom, 8)} {swap.tokenTo}</td>
+                <th role="rowheader">Average price paid for {swap.tokenFrom}</th>
+                <td>
+                    <span class="amount">1</span>
+                    <span class="token">{swap.tokenFrom}</span>
+                    =
+                    <span class="amount">{roundTo(swap.amountTo / swap.amountFrom, 8)}</span>
+                    <span class="token">{swap.tokenTo}</span>
+                </td>
             </tr>
             <tr>
-                <th role="rowheader">Price {swap.tokenTo}</th>
-                <td>1 {swap.tokenTo} = {roundTo(swap.amountFrom / swap.amountTo, 8)} {swap.tokenFrom}</td>
+                <th role="rowheader">Average price paid for {swap.tokenTo}</th>
+                <td>
+                    <span class="amount">1</span>
+                    <span class="token">{swap.tokenTo}</span>
+                    =
+                    <span class="amount">{roundTo(swap.amountFrom / swap.amountTo, 8)}</span>
+                    <span class="token">{swap.tokenFrom}</span>
+                </td>
             </tr>
             <tr>
                 <th role="rowheader">Commission</th>
