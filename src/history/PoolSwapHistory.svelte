@@ -1,4 +1,5 @@
 <script context="module">
+    const tokensUSD = ["DUSD", "BTC", "ETH", "DFI", "DOGE", "LTC", "BCH"]
     const prefix = '#explore/PoolSwap/'
 
     const defaultTokenSymbols = {
@@ -12,7 +13,15 @@
     import PoolSwapDetails from "./PoolSwapDetails.svelte";
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
-    import {asUSDT, avg, getTokenSymbols, hasItems} from "../common/common";
+    import {
+        asDollars,
+        asTokenAmount,
+        asUSDT,
+        asWholeTokenAmount,
+        avg,
+        getTokenSymbols,
+        hasItems
+    } from "../common/common";
     import Help from "../common/Help.svelte";
     import Limit from "../common/Limit.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
@@ -121,6 +130,29 @@
         swapBreakdown = swapResult
         selectedTX = swap
     }
+
+    const showProfitLoss = tx => {
+        return tx.swap &&
+            tx.swap.estimate > 0.0001 &&
+            tx.inverseSwap &&
+            tx.inverseSwap.estimate > 0.0001
+    }
+
+    const showUSD = (tx, token) => {
+        return showProfitLoss(tx) &&
+            tokensUSD.includes(token) &&
+            tx.usdtSwap &&
+            tx.usdtSwap.estimate > 0.01 &&
+            tx.usdtInverseSwap &&
+            tx.usdtInverseSwap.estimate > 0.01
+    }
+
+    const showDUSD = (tx, token) => {
+        return showProfitLoss(tx) &&
+            !tokensUSD.includes(token) &&
+            tx.dusd &&
+            tx.inverseDUSD
+    }
 </script>
 
 <form class="pure-form" on:submit|preventDefault>
@@ -130,7 +162,7 @@
     </fieldset>
 </form>
 
-<table class:small={screen.small} class:large={screen.large} class="pure-table">
+<table class:small={screen.small} class:large={screen.large} class="pure-table server">
     <thead>
     <tr>
         <th>
@@ -145,11 +177,16 @@
                     </span>
             -
             <span class:block={screen.small}>
-                    $<input min="0" step="0.00000001" type="number"
-                            bind:value={maxInputAmount}
-                            on:change={update}/>
-                    <strong on:click={clearInputAmount} class="red">X</strong>
-                    </span>
+                $
+                <input min="0"
+                       step="0.00000001"
+                       type="number"
+                       bind:value={maxInputAmount}
+                       on:change={update}/>
+                <strong on:click={clearInputAmount}
+                        class="red">X
+                </strong>
+            </span>
         </th>
         <th>
             Out
@@ -206,75 +243,59 @@
                 </td>
                 <td>
                     <span><strong>{tx.amountFrom} {tx.tokenFrom}</strong></span>
-                    <br/>
-                    ~{avg(tx.amountFrom, tx.amountTo)} {tx.tokenTo}
-                    <br/>
 
-                    {#if tx.swap && tx.amountFrom >= 0.0001}
-                        <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}>
-                            <ProfitLoss poolSwap={tx.swap} estimate={tx.swap.estimate}/>
+                    {#if showProfitLoss(tx)}
+                        <br/>
+                        ~{avg(tx.amountFrom, tx.amountTo)} {tx.tokenTo}
+
+                        <br/>
+                        <a on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}
+                           href="#">
+                            <ProfitLoss poolSwap={tx.swap}
+                                        estimate={tx.swap.estimate}/>
                         </a>
-                    {:else}
-                        p/l
-                        <Help warning={true}
-                              help="{tx.amountFrom} {tx.tokenFrom} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
                     {/if}
 
                     <span class="dollar">
-                        {#if tx.tokenFrom == 'USDT' || tx.tokenFrom == 'USDC'}
-                            {asUSDT(tx.usdtSwap.estimate)}
-                        {:else if tx.usdtSwap}
-                            {#if tx.usdtSwap.estimate > 0.09}
-                                <a href="#"
-                                   on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}>
-                                    {asUSDT(tx.usdtSwap.estimate)}
-                                </a>
-                            {:else}
+                        {#if showUSD(tx, tx.tokenFrom)}
+                            <a on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}
+                               href="#">
                                 {asUSDT(tx.usdtSwap.estimate)}
-                            {/if}
+                            </a>
+                        {:else if showDUSD(tx, tx.tokenFrom)}
+                            <span class="amount">{asWholeTokenAmount(tx.dusd, 2)}</span>
+                            <span class="token">DUSD</span>
                         {/if}
-                        </span>
+                    </span>
                 </td>
                 <td>
-                    {#if tx.amountTo}
-                        <span><strong>{tx.amountTo} {tx.tokenTo}</strong></span>
-                        {#if tx.tokenTo !== tx.tokenToAlt}
-                            or {tx.tokenToAlt}
-                            <Help help="This transaction contains conflicting information that specifies two distinct outcomes."/>
-                        {/if}
-                        <br/>
+                    <span>
+                        <strong>{tx.amountTo} {tx.tokenTo}</strong>
+                    </span>
 
+                    {#if showProfitLoss(tx)}
+                        <br/>
                         ~{avg(tx.amountTo, tx.amountFrom)} {tx.tokenFrom}
-                        <br/>
 
-                        {#if tx.inverseSwap && tx.amountTo >= 0.0001}
-                            <a href="#" on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
-                                <ProfitLoss poolSwap={tx.inverseSwap} estimate={tx.inverseSwap.estimate}/>
-                            </a>
-                        {:else}
-                            p/l
-                            <Help warning={true}
-                                  help="{tx.amountTo} {tx.tokenTo} is too small! Currently it is not possible to calculate profit/loss for input amounts that are smaller than 0.0001."/>
-                        {/if}
-                    {:else}
-                        N/A {tx.tokenTo}
+                        <br/>
+                        <a href="#"
+                           on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
+                            <ProfitLoss poolSwap={tx.inverseSwap}
+                                        estimate={tx.inverseSwap.estimate}/>
+                        </a>
                     {/if}
 
                     <span class="dollar">
-                        {#if tx.amountTo && (tx.tokenTo == 'USDT' || tx.tokenTo == 'USDC')}
-                            {asUSDT(tx.amountTo)}
-                        {:else if tx.usdtInverseSwap}
-
-                            {#if tx.usdtInverseSwap.estimate > 0.09}
-                                <a href="#"
-                                   on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}>
-                                    {asUSDT(tx.usdtInverseSwap.estimate)}
-                                </a>
-                            {:else}
+                        {#if showUSD(tx, tx.tokenTo)}
+                            <a on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}
+                               href="#">
                                 {asUSDT(tx.usdtInverseSwap.estimate)}
-                            {/if}
+                            </a>
+                        {:else if showDUSD(tx, tx.tokenTo)}
+                            <span class="amount">{asWholeTokenAmount(tx.inverseDUSD, 2)}</span>
+                            <span class="token">DUSD</span>
                         {/if}
-                        </span>
+                    </span>
                 </td>
                 {#if screen.large}
                     <td>
@@ -331,12 +352,7 @@
     }
 
     tr.selected-row td {
-        background: #333;
-        color: white;
-    }
-
-    tr.selected-row a {
-        color: white;
+        border: 2px solid #333;
     }
 
     table.small th > *, table.small td > * {
