@@ -330,7 +330,7 @@
                         </p>
 
                         {#if hasItems(swapBreakdown.breakdown)}
-                            <PoolSwapBreakdown poolSwap={swapBreakdown}/>
+                            <PoolSwapBreakdown maxPrice={false} poolSwap={swapBreakdown}/>
                         {:else}
                             <div class="warning">
                                 Something went wrong

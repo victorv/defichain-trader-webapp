@@ -9,6 +9,7 @@
     import Fee from "./Fee.svelte";
 
     export let poolSwap
+    export let maxPrice = true
 
     let breakdownIndex = 0
     let breakdown
@@ -96,7 +97,7 @@
                     <span class="token">{poolSwap.tokenTo}</span>
                 </td>
             </tr>
-            {#if poolSwap.maxPrice}
+            {#if maxPrice && poolSwap.maxPrice}
                 <tr>
                     <th role="rowheader">
                         Max Price
