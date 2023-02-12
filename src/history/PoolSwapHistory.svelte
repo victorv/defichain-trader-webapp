@@ -60,6 +60,7 @@
     let toTokenSymbol = (tokenSymbols.toTokenSymbol ? tokenSymbols.toTokenSymbol : currentFilter.toTokenSymbol) || 'Any'
 
     let selectedTX
+    let selectionType
 
     onMount(async () => {
         interval = setInterval(() => {
@@ -109,26 +110,15 @@
         await update()
     }
 
-    const toggleTXDetails = async tx => {
-        swapBreakdown = null
-
-        selectedTX === tx ? selectedTX = null : selectedTX = tx
-    }
-
-    const toggleSwapBreakdown = async (swap, swapResult, desiredResult) => {
-        if (desiredResult) {
-            swap.desiredResult = desiredResult
-            swapResult.desiredResult = desiredResult
-        }
-
-        if (selectedTX === swap && swapResult == swapBreakdown) {
+    const toggleTX = async (type, tx, swapResult) => {
+        if (selectionType === type && tx === selectedTX) {
             selectedTX = null
             swapBreakdown = null
-            return
+        } else {
+            swapBreakdown = swapResult
+            selectedTX = tx
+            selectionType = type
         }
-
-        swapBreakdown = swapResult
-        selectedTX = swap
     }
 
     const showProfitLoss = tx => {
@@ -220,8 +210,8 @@
                     <strong>{tx.block.blockHeight}</strong>
                 </td>
                 <td>
-                    <button on:click={() => toggleTXDetails(tx)}
-                            class:info={tx === selectedTX}
+                    <button on:click={() => toggleTX('info', tx)}
+                            class:info={tx === selectedTX && selectionType === 'info'}
                             type="button"
                             class="pure-button info-button icon">
                         <Icon icon="info"/>
@@ -243,19 +233,20 @@
                         <span class="token">{tx.tokenTo}</span>
 
                         <br/>
-                        <a on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.swap)}
-                           href="#">
+                        <button on:click|preventDefault={() => toggleTX('swap', tx, tx.swap)}
+                                class:info={tx === selectedTX && selectionType === 'swap'}
+                                class="pure-button icon"
+                                type="button">
                             <ProfitLoss poolSwap={tx.swap}
                                         estimate={tx.swap.estimate}/>
-                        </a>
+                        </button>
                     {/if}
 
                     <span class="dollar">
                         {#if showUSD(tx, tx.tokenFrom)}
-                            <a on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtSwap, tx.usdtSwap.estimate)}
-                               href="#">
+                            <span class="amount">
                                 {asUSDT(tx.usdtSwap.estimate)}
-                            </a>
+                            </span>
                         {:else if showDUSD(tx, tx.tokenFrom)}
                             <span class="amount">{asWholeTokenAmount(tx.dusd, 2)}</span>
                             <span class="token">DUSD</span>
@@ -274,19 +265,20 @@
                         <span class="token">{tx.tokenFrom}</span>
 
                         <br/>
-                        <a href="#"
-                           on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.inverseSwap)}>
+                        <button on:click|preventDefault={() => toggleTX('inverseSwap', tx, tx.inverseSwap)}
+                                class:info={tx === selectedTX && selectionType === 'inverseSwap'}
+                                class="pure-button icon"
+                                type="button">
                             <ProfitLoss poolSwap={tx.inverseSwap}
                                         estimate={tx.inverseSwap.estimate}/>
-                        </a>
+                        </button>
                     {/if}
 
                     <span class="dollar">
                         {#if showUSD(tx, tx.tokenTo)}
-                            <a on:click|preventDefault={() => toggleSwapBreakdown(tx, tx.usdtInverseSwap, tx.usdtInverseSwap.estimate)}
-                               href="#">
+                            <span class="amount">
                                 {asUSDT(tx.usdtInverseSwap.estimate)}
-                            </a>
+                            </span>
                         {:else if showDUSD(tx, tx.tokenTo)}
                             <span class="amount">{asWholeTokenAmount(tx.inverseDUSD, 2)}</span>
                             <span class="token">DUSD</span>
@@ -312,7 +304,7 @@
                     </td>
                 {/if}
             </tr>
-            {#if swapBreakdown == null && tx === selectedTX}
+            {#if selectionType === 'info' && tx === selectedTX}
                 <tr>
                     <td colspan={screen.small ? 2 : 4}>
                         {#if selectedTX}
@@ -320,9 +312,23 @@
                         {/if}
                     </td>
                 </tr>
-            {:else if swapBreakdown && selectedTX === tx}
+            {:else if selectedTX === tx}
                 <tr>
                     <td colspan={screen.small ? 2 : 4}>
+                        <p>
+                            {#if selectionType === 'swap'}
+                                <span class="amount">{tx.amountFrom}</span>
+                                <span class="token">{tx.tokenFrom}</span>
+                                to
+                                <span class="token">{tx.tokenTo}</span>, now compared to then
+                            {:else if selectionType === 'inverseSwap'}
+                                <span class="amount">{tx.amountTo}</span>
+                                <span class="token">{tx.tokenTo}</span>
+                                to
+                                <span class="token">{tx.tokenFrom}</span>, now compared to then
+                            {/if}
+                        </p>
+
                         {#if hasItems(swapBreakdown.breakdown)}
                             <PoolSwapBreakdown poolSwap={swapBreakdown}/>
                         {:else}
@@ -339,6 +345,10 @@
 </table>
 
 <style>
+    .dollar {
+        padding: 0.2rem;
+    }
+
     table.server {
         table-layout: fixed;
     }

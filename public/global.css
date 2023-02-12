@@ -89,3 +89,7 @@ table.pure-table th, table.pure-table td {
 .server .amount {
 	color: darkblue;
 }
+
+.pure-button.info .loss, .pure-button.info .profit {
+	color: white;
+}
