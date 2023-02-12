@@ -1,5 +1,4 @@
 <script context="module">
-    const tokensUSD = ["BTC", "ETH", "DFI", "DOGE", "LTC", "BCH", "csETH"]
     const prefix = '#explore/PoolSwap/'
 
     const defaultTokenSymbols = {
