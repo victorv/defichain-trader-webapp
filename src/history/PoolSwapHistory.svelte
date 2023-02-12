@@ -314,7 +314,7 @@
             </tr>
             {#if swapBreakdown == null && tx === selectedTX}
                 <tr>
-                    <td colspan="2">
+                    <td colspan={screen.small ? 2 : 4}>
                         {#if selectedTX}
                             <PoolSwapDetails tx={selectedTX}/>
                         {/if}
@@ -322,7 +322,7 @@
                 </tr>
             {:else if swapBreakdown && selectedTX === tx}
                 <tr>
-                    <td colspan="2">
+                    <td colspan={screen.small ? 2 : 4}>
                         {#if hasItems(swapBreakdown.breakdown)}
                             <PoolSwapBreakdown poolSwap={swapBreakdown}/>
                         {:else}
