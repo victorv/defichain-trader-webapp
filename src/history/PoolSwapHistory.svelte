@@ -133,23 +133,33 @@
     }
 </script>
 
-<form class="pure-form" on:submit|preventDefault>
+<form class="pure-form"
+      on:submit|preventDefault>
     <fieldset>
-        <FromToTokenFilter supportAnyToken={true} supportPseudo={true}
-                           {allTokens} {fromTokenSymbol} {toTokenSymbol} {onTokenSelectionChanged}/>
+        <FromToTokenFilter supportAnyToken={true}
+                           supportPseudo={true}
+                           {allTokens}
+                           {fromTokenSymbol}
+                           {toTokenSymbol}
+                           {onTokenSelectionChanged}/>
     </fieldset>
 </form>
 
-<table class:small={screen.small} class:large={screen.large} class="pure-table server">
+<table class:small={screen.small}
+       class:large={screen.large}
+       class="pure-table server">
     <thead>
     <tr>
         <th>
             In
             <span class:block={screen.small}>
-                    $<input min="0" step="0.00000001" type="number"
-                            bind:value={minInputAmount}
-                            on:change={update}/>
-                    </span>
+                $
+                <input min="0"
+                       step="0.00000001"
+                       type="number"
+                       bind:value={minInputAmount}
+                       on:change={update}/>
+            </span>
             -
             <span class:block={screen.small}>
                 $
@@ -166,17 +176,25 @@
         <th>
             Out
             <span class:block={screen.small}>
-                    $<input min="0" step="0.00000001" type="number"
-                            bind:value={minOutputAmount}
-                            on:change={update}/>
-                    </span>
+                $
+                <input min="0"
+                       step="0.00000001"
+                       type="number"
+                       bind:value={minOutputAmount}
+                       on:change={update}/>
+            </span>
             -
             <span class:block={screen.small}>
-                    $<input min="0" step="0.00000001" type="number"
-                            bind:value={maxOutputAmount}
-                            on:change={update}/>
-                    <strong on:click={clearOutputAmount} class="red">X</strong>
-                    </span>
+                $
+                <input min="0"
+                       step="0.00000001"
+                       type="number"
+                       bind:value={maxOutputAmount}
+                       on:change={update}/>
+                <strong on:click={clearOutputAmount}
+                        class="red">X
+                </strong>
+            </span>
         </th>
         {#if screen.large}
             <th>
@@ -234,10 +252,12 @@
 
                     <span class="dollar avg">
                         {#if showUSD(tx)}
-                            <span class="amount">
-                                ${asShortAmount(tx.usdtSwap.estimate)}
-                            </span>
-                            <br/>
+                            {#if tx.tokenFrom !== 'USDT' && tx.tokenFrom !== 'USDC'}
+                                <span class="amount">
+                                    ${asShortAmount(tx.usdtSwap.estimate)}
+                                </span>
+                                <br/>
+                            {/if}
                             <span class="amount">{asShortAmount(tx.dusd)}</span>
                             <span class="token">DUSD</span>
                         {/if}
@@ -268,10 +288,12 @@
 
                     <span class="dollar avg">
                         {#if showUSD(tx)}
-                            <span class="amount">
-                                ${asShortAmount(tx.usdtInverseSwap.estimate)}
-                            </span>
-                            <br/>
+                            {#if tx.tokenTo !== 'USDT' && tx.tokenTo !== 'USDC'}
+                                <span class="amount">
+                                    ${asShortAmount(tx.usdtInverseSwap.estimate)}
+                                </span>
+                                <br/>
+                            {/if}
                             <span class="amount">{asShortAmount(tx.inverseDUSD)}</span>
                             <span class="token">DUSD</span>
                         {/if}
@@ -313,18 +335,21 @@
                                 <span class="amount">{tx.amountFrom}</span>
                                 <span class="token">{tx.tokenFrom}</span>
                                 to
-                                <span class="token">{tx.tokenTo}</span> now
+                                <span class="token">{tx.tokenTo}</span>
+                                now
                             {:else if selectionType === 'inverseSwap'}
                                 If you swap
                                 <span class="amount">{tx.amountTo}</span>
                                 <span class="token">{tx.tokenTo}</span>
                                 to
-                                <span class="token">{tx.tokenFrom}</span> now
+                                <span class="token">{tx.tokenFrom}</span>
+                                now
                             {/if}
                         </p>
 
                         {#if hasItems(swapBreakdown.breakdown)}
-                            <PoolSwapBreakdown maxPrice={false} poolSwap={swapBreakdown}/>
+                            <PoolSwapBreakdown maxPrice={false}
+                                               poolSwap={swapBreakdown}/>
                         {:else}
                             <div class="warning">
                                 Something went wrong
