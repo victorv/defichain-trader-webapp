@@ -229,8 +229,10 @@
 
                     {#if showProfitLoss(tx)}
                         <br/>
-                        <span class="amount">~{avg(tx.amountFrom, tx.amountTo)}</span>
-                        <span class="token">{tx.tokenTo}</span>
+                        <span class="avg">
+                            <span class="amount">~{avg(tx.amountFrom, tx.amountTo)}</span>
+                            <span class="token">{tx.tokenTo}</span>
+                        </span>
 
                         <br/>
                         <button on:click|preventDefault={() => toggleTX('swap', tx, tx.swap)}
@@ -261,8 +263,10 @@
 
                     {#if showProfitLoss(tx)}
                         <br/>
-                        <span class="amount">~{avg(tx.amountTo, tx.amountFrom)} </span>
-                        <span class="token">{tx.tokenFrom}</span>
+                        <span class="avg">
+                            <span class="amount">~{avg(tx.amountTo, tx.amountFrom)} </span>
+                            <span class="token">{tx.tokenFrom}</span>
+                        </span>
 
                         <br/>
                         <button on:click|preventDefault={() => toggleTX('inverseSwap', tx, tx.inverseSwap)}
@@ -388,5 +392,13 @@
 
     input[type="date"] {
         max-width: none;
+    }
+
+    .avg {
+        font-size: 80%;
+    }
+
+    .avg .token {
+        color: gray;
     }
 </style>
