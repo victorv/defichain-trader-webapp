@@ -216,7 +216,8 @@
             <tr>
                 <th role="rowheader">Commission</th>
                 <td>
-                    {swap.commission} {swap.tokenFrom}
+                    <span class="amount">{swap.commission}</span>
+                    <span class="token">{swap.tokenFrom}</span>
                     <Fee number={swap.commissionPct}/>
                 </td>
             </tr>
@@ -224,7 +225,8 @@
                 <th role="rowheader">In Fee</th>
                 <td>
                     {#if swap.inFee}
-                        {swap.inFee} {swap.tokenFrom}
+                        <span class="amount">{swap.inFee}</span>
+                        <span class="token">{swap.tokenFrom}</span>
                         <Fee number={swap.inFeePct}/>
                     {:else}
                         None
@@ -235,7 +237,8 @@
                 <th role="rowheader">Out Fee</th>
                 <td>
                     {#if swap.outFee}
-                        {swap.outFee.toFixed(8)} {swap.tokenTo}
+                        <span class="amount">{swap.outFee.toFixed(8)}</span>
+                        <span class="token">{swap.tokenTo}</span>
                         <Fee number={swap.outFeePct}/>
                     {:else}
                         None
