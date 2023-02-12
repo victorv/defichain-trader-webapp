@@ -345,7 +345,7 @@
 
     .header td {
         border: 0;
-        background-color: rgb(220, 220, 200);
+        background-color: rgb(240, 240, 240);
     }
 
     table.server thead td {
