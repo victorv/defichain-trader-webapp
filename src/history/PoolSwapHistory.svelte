@@ -244,7 +244,7 @@
                         </button>
                     {/if}
 
-                    <span class="dollar">
+                    <span class="dollar avg">
                         {#if showUSD(tx, tx.tokenFrom)}
                             <span class="amount">
                                 {asUSDT(tx.usdtSwap.estimate)}
@@ -278,7 +278,7 @@
                         </button>
                     {/if}
 
-                    <span class="dollar">
+                    <span class="dollar avg">
                         {#if showUSD(tx, tx.tokenTo)}
                             <span class="amount">
                                 {asUSDT(tx.usdtInverseSwap.estimate)}
