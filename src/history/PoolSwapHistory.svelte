@@ -1,5 +1,5 @@
 <script context="module">
-    const tokensUSD = ["DUSD", "BTC", "ETH", "DFI", "DOGE", "LTC", "BCH"]
+    const tokensUSD = ["BTC", "ETH", "DFI", "DOGE", "LTC", "BCH", "csETH"]
     const prefix = '#explore/PoolSwap/'
 
     const defaultTokenSymbols = {
@@ -14,15 +14,11 @@
     import Icon from "../common/Icon.svelte";
     import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {
-        asDollars,
-        asTokenAmount,
-        asUSDT,
-        asWholeTokenAmount,
+        asShortAmount,
         avg,
         getTokenSymbols,
         hasItems
     } from "../common/common";
-    import Help from "../common/Help.svelte";
     import Limit from "../common/Limit.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import {onDestroy, onMount} from "svelte";
@@ -128,20 +124,12 @@
             tx.inverseSwap.estimate > 0.0001
     }
 
-    const showUSD = (tx, token) => {
+    const showUSD = tx => {
         return showProfitLoss(tx) &&
-            tokensUSD.includes(token) &&
             tx.usdtSwap &&
             tx.usdtSwap.estimate > 0.01 &&
             tx.usdtInverseSwap &&
             tx.usdtInverseSwap.estimate > 0.01
-    }
-
-    const showDUSD = (tx, token) => {
-        return showProfitLoss(tx) &&
-            !tokensUSD.includes(token) &&
-            tx.dusd &&
-            tx.inverseDUSD
     }
 </script>
 
@@ -245,12 +233,12 @@
                     {/if}
 
                     <span class="dollar avg">
-                        {#if showUSD(tx, tx.tokenFrom)}
+                        {#if showUSD(tx)}
                             <span class="amount">
-                                {asUSDT(tx.usdtSwap.estimate)}
+                                ${asShortAmount(tx.usdtSwap.estimate)}
                             </span>
-                        {:else if showDUSD(tx, tx.tokenFrom)}
-                            <span class="amount">{asWholeTokenAmount(tx.dusd, 2)}</span>
+                            <br/>
+                            <span class="amount">{asShortAmount(tx.dusd)}</span>
                             <span class="token">DUSD</span>
                         {/if}
                     </span>
@@ -279,12 +267,12 @@
                     {/if}
 
                     <span class="dollar avg">
-                        {#if showUSD(tx, tx.tokenTo)}
+                        {#if showUSD(tx)}
                             <span class="amount">
-                                {asUSDT(tx.usdtInverseSwap.estimate)}
+                                ${asShortAmount(tx.usdtInverseSwap.estimate)}
                             </span>
-                        {:else if showDUSD(tx, tx.tokenTo)}
-                            <span class="amount">{asWholeTokenAmount(tx.inverseDUSD, 2)}</span>
+                            <br/>
+                            <span class="amount">{asShortAmount(tx.inverseDUSD)}</span>
                             <span class="token">DUSD</span>
                         {/if}
                     </span>
@@ -351,7 +339,15 @@
 </table>
 
 <style>
+    td {
+        position: relative;
+    }
+
     .dollar {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        text-align: right;
         padding: 0.2rem;
     }
 
@@ -366,10 +362,6 @@
 
     table.server thead td {
         width: 50%;
-    }
-
-    table .dollar {
-        float: right;
     }
 
     table.small {

@@ -11,12 +11,13 @@ export const roundTo = (number, decimals) => {
     return Math.round(number * m) / m
 }
 
-export const asUSDT = num => {
+export const asShortAmount = num => {
+    const maxDigits = num < 1000.0 ? 2 : 0
     return new Intl.NumberFormat(`en-US`, {
         currency: `USD`,
         style: 'currency',
-        maximumFractionDigits: 2,
-    }).format(num)
+        maximumFractionDigits: maxDigits,
+    }).format(num).substring(1)
 }
 
 export const avg = (a, b) => {
@@ -24,14 +25,6 @@ export const avg = (a, b) => {
         return 0
     }
     return (b / a).toFixed(8)
-}
-
-export const asWholeTokenAmount = (num, digits) => {
-    return new Intl.NumberFormat(`en-US`, {
-        currency: `USD`,
-        style: 'currency',
-        maximumFractionDigits: digits,
-    }).format(num).substring(1)
 }
 
 export const asTokenAmount = num => {
