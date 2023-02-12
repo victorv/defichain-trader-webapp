@@ -166,9 +166,6 @@
     <thead>
     <tr>
         <th>
-            Time
-        </th>
-        <th>
             In
             <span class:block={screen.small}>
                     $<input min="0" step="0.00000001" type="number"
@@ -216,19 +213,26 @@
     {#if items && items.length}
         <tbody>
         {#each poolSwaps as tx}
-            <tr class:selected-row={tx === selectedTX}>
+            <tr class="header">
                 <td>
                     <TimePastSince start={tx.block.medianTime * 1000}
                                    end={now}/>
-                    <br/>
+                    <strong>{tx.block.blockHeight}</strong>
+                </td>
+                <td>
                     <button on:click={() => toggleTXDetails(tx)}
                             class:info={tx === selectedTX}
                             type="button"
                             class="pure-button info-button icon">
                         <Icon icon="info"/>
                     </button>
-                    <strong>{tx.block.blockHeight}</strong>
                 </td>
+                {#if screen.large}
+                    <td></td>
+                    <td></td>
+                {/if}
+            </tr>
+            <tr class:selected-row={tx === selectedTX}>
                 <td>
                     <span class="amount">{tx.amountFrom}</span>
                     <span class="token">{tx.tokenFrom}</span>
@@ -310,7 +314,7 @@
             </tr>
             {#if swapBreakdown == null && tx === selectedTX}
                 <tr>
-                    <td colspan="7">
+                    <td colspan="2">
                         {#if selectedTX}
                             <PoolSwapDetails tx={selectedTX}/>
                         {/if}
@@ -318,7 +322,7 @@
                 </tr>
             {:else if swapBreakdown && selectedTX === tx}
                 <tr>
-                    <td colspan="7">
+                    <td colspan="2">
                         {#if hasItems(swapBreakdown.breakdown)}
                             <PoolSwapBreakdown poolSwap={swapBreakdown}/>
                         {:else}
@@ -335,16 +339,29 @@
 </table>
 
 <style>
-    table.large .dollar {
+    table.server {
+        table-layout: fixed;
+    }
+
+    .header td {
+        border: 0;
+        background-color: rgb(220, 220, 200);
+    }
+
+    table.server thead td {
+        width: 50%;
+    }
+
+    table .dollar {
         float: right;
+    }
+
+    table.small {
+        font-size: 90%;
     }
 
     form, fieldset {
         padding: 0;
-    }
-
-    tr.selected-row td {
-        border: 2px solid #333;
     }
 
     th input, th select {
