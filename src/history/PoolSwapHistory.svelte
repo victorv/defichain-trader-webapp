@@ -321,15 +321,17 @@
                     <td colspan={screen.small ? 2 : 4}>
                         <p>
                             {#if selectionType === 'swap'}
+                                If you swap
                                 <span class="amount">{tx.amountFrom}</span>
                                 <span class="token">{tx.tokenFrom}</span>
                                 to
-                                <span class="token">{tx.tokenTo}</span>, now compared to then
+                                <span class="token">{tx.tokenTo}</span> now
                             {:else if selectionType === 'inverseSwap'}
+                                If you swap
                                 <span class="amount">{tx.amountTo}</span>
                                 <span class="token">{tx.tokenTo}</span>
                                 to
-                                <span class="token">{tx.tokenFrom}</span>, now compared to then
+                                <span class="token">{tx.tokenFrom}</span> now
                             {/if}
                         </p>
 
