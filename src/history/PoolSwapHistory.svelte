@@ -22,6 +22,7 @@
     import TimePastSince from "../common/TimePastSince.svelte";
     import {onDestroy, onMount} from "svelte";
     import ProfitLoss from "../dex/ProfitLoss.svelte";
+    import QuickGraph from "./QuickGraph.svelte";
 
     export let allTokens
 
@@ -238,8 +239,14 @@
                     <button on:click={() => toggleTX('info', tx)}
                             class:info={tx === selectedTX && selectionType === 'info'}
                             type="button"
-                            class="pure-button info-button icon">
+                            class="pure-button icon">
                         <Icon icon="info"/>
+                    </button>
+                    <button on:click={() => toggleTX('graph', tx)}
+                            class:info={tx === selectedTX && selectionType === 'graph'}
+                            type="button"
+                            class="pure-button icon">
+                        <Icon icon="graph"/>
                     </button>
                 </td>
                 {#if screen.large}
@@ -337,25 +344,30 @@
                     </td>
                 {/if}
             </tr>
-            {#if selectionType === 'info' && tx === selectedTX}
+            {#if tx === selectedTX}
                 <tr>
                     <td colspan={screen.small ? 2 : 4}>
-                        {#if selectedTX}
-                            <PoolSwapDetails tx={selectedTX}/>
-                        {/if}
-                    </td>
-                </tr>
-            {:else if selectedTX === tx}
-                <tr>
-                    <td colspan={screen.small ? 2 : 4}>
-                        {#if hasItems(swapBreakdown.breakdown)}
-                            <PoolSwapBreakdown maxPrice={false}
-                                               title={createTitle(tx, selectionType)}
-                                               poolSwap={swapBreakdown}/>
-                        {:else}
-                            <div class="warning">
-                                Something went wrong
-                            </div>
+                        {#if selectionType === 'info'}
+
+                            {#if selectedTX}
+                                <PoolSwapDetails tx={selectedTX}/>
+                            {/if}
+                        {:else if selectionType === 'graph'}
+                            <QuickGraph freezeTokens={true}
+                                        {allTokens}
+                                        amount={1.0}
+                                        fromTokenSymbol={tx.tokenFrom}
+                                        toTokenSymbol={tx.tokenTo}/>
+                        {:else if selectionType}
+                            {#if hasItems(swapBreakdown.breakdown)}
+                                <PoolSwapBreakdown maxPrice={false}
+                                                   title={createTitle(tx, selectionType)}
+                                                   poolSwap={swapBreakdown}/>
+                            {:else}
+                                <div class="warning">
+                                    Something went wrong
+                                </div>
+                            {/if}
                         {/if}
                     </td>
                 </tr>

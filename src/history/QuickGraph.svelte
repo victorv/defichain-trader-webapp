@@ -156,7 +156,9 @@
     }
 
     const updateGraph = async () => {
-        location.hash = `#graph/PoolSwap/${fromTokenSymbol}+to+${toTokenSymbol}`
+        if (!freezeTokens) {
+            location.hash = `#graph/PoolSwap/${fromTokenSymbol}+to+${toTokenSymbol}`
+        }
         await update().catch(e => {
             request = {
                 loading: false,
