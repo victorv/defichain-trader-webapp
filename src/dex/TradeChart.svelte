@@ -82,7 +82,7 @@
 
     function resize() {
         const bounds = canvasElement.getBoundingClientRect()
-        chart.resize(bounds.width, window.innerHeight - bounds.y - 10)
+        chart.resize(bounds.width, Math.max(window.innerHeight / 2, window.innerHeight - bounds.y - 10))
         chart.timeScale().fitContent()
     }
 
