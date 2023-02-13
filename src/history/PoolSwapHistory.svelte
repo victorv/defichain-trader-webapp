@@ -130,6 +130,26 @@
             tx.usdtInverseSwap &&
             tx.usdtInverseSwap.estimate > 0.01
     }
+
+    const createTitle = (tx, selectionType) => {
+        if (selectionType === 'swap') {
+            return `if you swap
+            <span class="amount">${tx.amountFrom}</span>
+            <span class="token">${tx.tokenFrom}</span>
+            to
+            <span class="token">${tx.tokenTo}</span>
+            now`
+        }
+        if (selectionType === 'inverseSwap') {
+            return `if you swap
+            <span class="amount">${tx.amountTo}</span>
+            <span class="token">${tx.tokenTo}</span>
+            to
+            <span class="token">${tx.tokenFrom}</span>
+            now`
+        }
+        return ''
+    }
 </script>
 
 <form class="pure-form"
@@ -328,26 +348,9 @@
             {:else if selectedTX === tx}
                 <tr>
                     <td colspan={screen.small ? 2 : 4}>
-                        <p>
-                            {#if selectionType === 'swap'}
-                                If you swap
-                                <span class="amount">{tx.amountFrom}</span>
-                                <span class="token">{tx.tokenFrom}</span>
-                                to
-                                <span class="token">{tx.tokenTo}</span>
-                                now
-                            {:else if selectionType === 'inverseSwap'}
-                                If you swap
-                                <span class="amount">{tx.amountTo}</span>
-                                <span class="token">{tx.tokenTo}</span>
-                                to
-                                <span class="token">{tx.tokenFrom}</span>
-                                now
-                            {/if}
-                        </p>
-
                         {#if hasItems(swapBreakdown.breakdown)}
                             <PoolSwapBreakdown maxPrice={false}
+                                               title={createTitle(tx, selectionType)}
                                                poolSwap={swapBreakdown}/>
                         {:else}
                             <div class="warning">

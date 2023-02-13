@@ -1,6 +1,6 @@
 <script>
     import Req from "./Req.svelte";
-    import {hasItems, roundTo} from "../common/common";
+    import {calcProfitLoss, hasItems, roundTo} from "../common/common";
     import Percentage from "./Percentage.svelte";
     import Help from "../common/Help.svelte";
     import ProfitLoss from "./ProfitLoss.svelte";
@@ -9,6 +9,7 @@
     import Fee from "./Fee.svelte";
 
     export let poolSwap
+    export let title
     export let maxPrice = true
 
     let breakdownIndex = 0
@@ -48,14 +49,24 @@
 
 <BreakdownHeader {breakdownIndex} {poolSwap} {setBreakdown}/>
 
-{#if breakdown}
+{#if poolSwap.amountFrom < 0.0005 || breakdown.estimate < 0.0005}
+    <div class="error">
+        Swaps where the input or output amount are smaller than 0.0005 are unsupported.
+    </div>
+{:else if breakdown}
     <table class="pure-table server">
         <tbody>
         <tr>
-            <th role="rowheader" class="banner">Summary</th>
+            <th role="rowheader"
+                class="banner">Target
+            </th>
             <td>
                 <strong>{header}</strong>
+                {#if title}
+                    {@html title}
+                {/if}
                 {#if isWorseDefaultPath(poolSwap, breakdown)}
+
                     <Help warning={true}
                           help="Careful! A swap from {poolSwap.tokenFrom} to {poolSwap.tokenTo} will always go through this pool! Swap to another token first or use a wallet that automatically does this for you."/>
                 {/if}
@@ -69,64 +80,71 @@
         </tr>
         <tr>
             <th role="rowheader">
-                Estimate
-                <Help warning={true}
-                      help="Swaps from <= 0.00001 are currently inaccurate and are off by at least 0.2%. The estimate may have changed by the time you try your swap. Always use the max price to prevent unexpected slippage."/>
+                Current result
             </th>
             <td>
                 <span class="amount">{breakdown.estimate}</span>
                 <span class="token">{poolSwap.tokenTo}</span>
             </td>
         </tr>
+        <tr>
+            <th role="rowheader">
+                {#if !maxPrice}
+                    Past result
+                {:else}
+                    Desired Result
+                {/if}
+            </th>
+            <td>
+                <span class="amount">{poolSwap.desiredResult.toFixed(8)}</span>
+                <span class="token">{poolSwap.tokenTo}</span>
+            </td>
+        </tr>
         {#if poolSwap.desiredResult}
             <tr>
                 <th role="rowheader">
-                    Profit/loss
+                    {#if calcProfitLoss(poolSwap.desiredResult, breakdown.estimate) >= 0.0}
+                        Profit
+                        {#if maxPrice}
+                            (relative to target)
+                        {:else}
+                            (relative to past result)
+                        {/if}
+                    {:else}
+                        Loss
+                        {#if maxPrice}
+                            (relative to target)
+                        {:else}
+                            (relative to past result)
+                        {/if}
+                    {/if}
                 </th>
                 <td>
                     <ProfitLoss {poolSwap} estimate={breakdown.estimate}/>
-                </td>
-            </tr>
-            <tr>
-                <th role="rowheader">
-                    Desired Result
-                    <Help help="Used to calculate your profit/loss% and the maximum price."/>
-                </th>
-                <td>
-                    <span class="amount">{poolSwap.desiredResult.toFixed(8)}</span>
-                    <span class="token">{poolSwap.tokenTo}</span>
                 </td>
             </tr>
             {#if maxPrice && poolSwap.maxPrice}
                 <tr>
                     <th role="rowheader">
                         Max Price
-                        <Help help="Maximum price you can pay while still reaching your desired result. This number can be used for on-chain-swaps to prevent unexpected slippage."/>
                     </th>
                     <td>
+                        pay at most
                         <span class="amount">{poolSwap.maxPrice.toFixed(8)}</span>
                         <span class="token">{poolSwap.tokenFrom}</span>
-                        =
+                        for
                         <span class="amount">1</span>
                         <span class="token">{poolSwap.tokenTo}</span>
+                        to reach you desired result
                     </td>
                 </tr>
             {/if}
         {/if}
-        {#if breakdown.price}
-            <tr>
-                <th role="rowheader">
-                    Average price paid
-                </th>
-                <td>
-                    <span class="amount">{breakdown.price.toFixed(8)}</span>
-                    <span class="token">{poolSwap.tokenFrom}</span>
-                    =
-                    <span class="amount">1</span>
-                    <span class="token">{poolSwap.tokenTo}</span>
-                </td>
-            </tr>
-        {/if}
+        <tr>
+            <th role="rowheader" class="banner">Oracle</th>
+            <td>
+            </td>
+        </tr>
         <tr>
             <th role="rowheader">
                 Oracle Price
@@ -195,7 +213,7 @@
                 </tr>
             {/if}
             <tr>
-                <th role="rowheader">Average price paid for {swap.tokenFrom}</th>
+                <th role="rowheader">{swap.tokenFrom}:{swap.tokenTo}</th>
                 <td>
                     <span class="amount">1</span>
                     <span class="token">{swap.tokenFrom}</span>
@@ -205,7 +223,7 @@
                 </td>
             </tr>
             <tr>
-                <th role="rowheader">Average price paid for {swap.tokenTo}</th>
+                <th role="rowheader">{swap.tokenTo}:{swap.tokenFrom}</th>
                 <td>
                     <span class="amount">1</span>
                     <span class="token">{swap.tokenTo}</span>
