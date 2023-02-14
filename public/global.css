@@ -56,7 +56,7 @@ th.banner {
 	font-family: monospace, monospace;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	max-width: 7ch;
+	max-width: 12ch;
 	overflow: hidden;
 }
 

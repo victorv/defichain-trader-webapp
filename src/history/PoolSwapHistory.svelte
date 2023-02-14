@@ -337,7 +337,7 @@
                             <Icon icon="burn"/>
                         {/if}
                         {#if tx.from != tx.to}
-                            <Limit text={tx.to}/>
+                            <Limit text={tx.to} />
                         {:else}
                             &lt;from address&gt;
                         {/if}
@@ -390,7 +390,7 @@
         padding: 0.2rem;
     }
 
-    table.server {
+    table.large {
         table-layout: fixed;
     }
 
@@ -399,8 +399,12 @@
         background-color: rgb(240, 240, 240);
     }
 
-    table.server thead td {
+    table.small thead th {
         width: 50%;
+    }
+
+    table.large th:nth-child(3),  table.large th:nth-child(4) {
+        width: 16ch;
     }
 
     table.small {

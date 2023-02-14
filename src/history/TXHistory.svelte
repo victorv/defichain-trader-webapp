@@ -240,7 +240,7 @@
     {#if viewType.id === 'PoolSwap'}
         <PoolSwapHistory {currentFilter} {screen} {allTokens} {items} {refresh}/>
     {:else if viewType.id === 'PoolLiquidity'}
-        <PoolLiquidity {items} {refresh}/>
+        <PoolLiquidity {currentFilter} {screen} {items} {refresh}/>
     {:else if viewType.id === 'Loan'}
         <Loans {items} {refresh}/>
     {/if}
