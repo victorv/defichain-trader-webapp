@@ -51,29 +51,6 @@
 </script>
 
 {#if items}
-<!--    <ul>-->
-<!--        {#each items as result}-->
-<!--            <li>-->
-<!--                <span class="gray">-->
-<!--                    {result.type}-->
-<!--                </span>-->
-<!--                <a class="limited" target="_blank" href="https://defiscan.live/transactions/{result.txID}">{result.txID}</a>-->
-<!--                <br/>-->
-<!--                <TimePastSince start={result.time * 1000} end={now}/>,-->
-<!--                <a target="_blank" href="https://defiscan.live/blocks/{result.blockHeight}">{result.blockHeight}</a>-->
-<!--                <br/>-->
-<!--                {Math.abs(result.amountA)}-->
-<!--                <strong>{result.tokenA}</strong>-->
-<!--                <span class="gray">&amp;</span>-->
-<!--                {Math.abs(result.amountB)}-->
-<!--                <strong>{result.tokenB}</strong>-->
-<!--                <br/>-->
-<!--                {result.shares} <span class="gray">shares</span>-->
-<!--                for <a target="_blank" class="limited" href="https://defiscan.live/address/{result.owner}">{result.owner}</a>-->
-<!--            </li>-->
-<!--        {/each}-->
-<!--    </ul>-->
-
     <table class:small={screen.small}
            class:large={screen.large}
            class="pure-table server">
