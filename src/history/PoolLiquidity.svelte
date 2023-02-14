@@ -110,11 +110,7 @@
                         </td>
                     {/if}
                     <td>
-                        {#if tx.type === 'AddPoolLiquidity'}
-                            Add Liquidity
-                        {:else if tx.type === 'RemovePoolLiquidity'}
-                            Remove Liquidity
-                        {/if}
+                        {tx.type}
                     </td>
                 </tr>
             {/each}

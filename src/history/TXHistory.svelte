@@ -242,7 +242,7 @@
     {:else if viewType.id === 'PoolLiquidity'}
         <PoolLiquidity {currentFilter} {screen} {items} {refresh}/>
     {:else if viewType.id === 'Loan'}
-        <Loans {items} {refresh}/>
+        <Loans {items} {currentFilter} {screen} {refresh}/>
     {/if}
 {/if}
 
