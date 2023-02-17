@@ -1,6 +1,7 @@
 <script context="module">
-    import {filterStore} from "../store";
+    import {addAddressGroup, filterStore, isTemporary, tempLabel} from "../store";
 
+    let doOnce
     let storedFilter = {}
 
     const storeFilter = filter => {
@@ -10,9 +11,60 @@
 
     filterStore.subscribe(filter => {
         if (localStorage && filter && typeof filter === 'object') {
-            localStorage.setItem('filter', JSON.stringify(filter))
+            if (!isTemporary(filter.fromAddressGroupText) && !isTemporary(filter.toAddressGroupText)) {
+                localStorage.setItem('filter', JSON.stringify(filter))
+            }
         }
     })
+
+    const getSearchParams = () => {
+        if (doOnce) {
+            return {}
+        }
+        doOnce = true
+
+        const search = location.search ? location.search.substring(1) : ''
+
+        const params = {}
+        const paramPairs = search.split("&")
+            .map(param => param.split("="))
+        for (const param of paramPairs) {
+            params[param[0]] = param[1]
+        }
+        return params
+    }
+
+    const getFilter = async () => {
+        const searchParams = getSearchParams()
+        const uuid = searchParams['uuid']
+        const blockRange = searchParams['blockRange']
+        if (uuid && blockRange) {
+            const filterReq = await fetch(`filter?uuid=${uuid}&blockRange=${blockRange}`)
+            const filter = await filterReq.json()
+            if (Array.isArray(filter.fromAddressGroup)) {
+                const name = 'from [temporary group]'
+                addAddressGroup({
+                    name,
+                    addresses: Array.isArray(filter.fromAddressGroup)
+                        ? filter.fromAddressGroup
+                        : []
+                })
+                filter.fromAddressGroupText = name
+            }
+
+            const name = `to ${tempLabel}`
+            addAddressGroup({
+                name,
+                addresses: Array.isArray(filter.toAddressGroup)
+                    ? filter.toAddressGroup
+                    : []
+            })
+            filter.toAddressGroupText = `to ${tempLabel}`
+
+            return filter
+        }
+        return null
+    }
 
     filterStore.subscribe(filter => storedFilter = filter)
 </script>
@@ -27,6 +79,7 @@
     import GlobalFilters from "./GlobalFilters.svelte";
     import Tools from "./Tools.svelte";
     import Loans from "./Loans.svelte";
+    import ManageFilters from "./ManageFilters.svelte";
 
     export let allTokens
 
@@ -154,7 +207,7 @@
             error: null,
         }
 
-        const response = await fetch(`/${viewType.path}?uuid=${uuid}`, {
+        const response = await fetch(`/${viewType.path}`, {
             method: 'POST',
             body: JSON.stringify({
                 ...requestBody,
@@ -207,7 +260,15 @@
         })
     }
 
-    onMount(() => {
+    onMount(async () => {
+        const filter = await getFilter()
+        if (filter) {
+            currentFilter = {
+                ...(currentFilter || {}),
+                ...filter
+            }
+        }
+
         const sub1 = accountStore.subscribe(newAccount => account = newAccount)
         const sub2 = uuidStore.subscribe(newUUID => {
             uuid = newUUID
@@ -221,34 +282,56 @@
 </script>
 
 <form on:submit|preventDefault={() => refresh(currentFilter || {})}>
-    <select on:change={changeViewType} bind:value={viewType}>
+    <select on:change={changeViewType}
+            bind:value={viewType}>
         {#each viewTypes as viewType}
             <option value={viewType}>{viewType.label}</option>
         {/each}
     </select>
-    <input bind:value={query} type="text" placeholder="address/tx/block height"/>
-    <button class="pure-button icon" type="submit">
+    <input bind:value={query}
+           type="text"
+           placeholder="address/tx/block height"/>
+    <button class="pure-button icon"
+            type="submit">
         <Icon icon="search"/>
     </button>
     <p class="overflow">
-        <GlobalFilters {currentFilter} updateSearch={refresh}/>
+        <GlobalFilters {currentFilter}
+                       updateSearch={refresh}/>
     </p>
 </form>
 
-<Tools tools={viewType.tools} {uuid} {items} {setRemoteFilter} {currentFilter}/>
+<ManageFilters filter={currentFilter}
+               {refresh}/>
+<Tools tools={viewType.tools}
+       {uuid}
+       {items}
+       {setRemoteFilter}
+       {currentFilter}/>
 {#if screen}
     {#if viewType.id === 'PoolSwap'}
-        <PoolSwapHistory {currentFilter} {screen} {allTokens} {items} {refresh}/>
+        <PoolSwapHistory {currentFilter}
+                         {screen}
+                         {allTokens}
+                         {items}
+                         {refresh}/>
     {:else if viewType.id === 'PoolLiquidity'}
-        <PoolLiquidity {currentFilter} {screen} {items} {refresh}/>
+        <PoolLiquidity {currentFilter}
+                       {screen}
+                       {items}
+                       {refresh}/>
     {:else if viewType.id === 'Loan'}
-        <Loans {items} {currentFilter} {screen} {refresh}/>
+        <Loans {items}
+               {currentFilter}
+               {screen}
+               {refresh}/>
     {/if}
 {/if}
 
 {#if hasMore && !request.error}
     <section class="pager">
-        <button on:click={showMore} class="pure-button"
+        <button on:click={showMore}
+                class="pure-button"
                 type="button">
             Show more
         </button>

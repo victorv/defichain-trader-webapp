@@ -1,3 +1,4 @@
+<svelte:options immutable/>
 <script context="module">
     const prefix = '#explore/PoolSwap/'
 
@@ -62,7 +63,6 @@
         interval = setInterval(() => {
             now = new Date().getTime()
         }, 30000)
-
         await update()
     })
 
@@ -73,7 +73,8 @@
 
     async function update() {
         location.hash = `#explore/PoolSwap/${fromTokenSymbol}+to+${toTokenSymbol}`
-        await refresh(createSearch())
+        const filter = createSearch()
+        await refresh(filter)
     }
 
     const clearInputAmount = async () => {

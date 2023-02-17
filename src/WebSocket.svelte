@@ -1,5 +1,6 @@
 <script>
     import {addPoolswap, incomingMessages, outgoingMessages, webSocketStore} from "./store";
+    import {isLocalhost} from "./common/common";
 
     let socket
     let error
@@ -24,7 +25,7 @@
             socket.close()
         }
 
-        socket = new WebSocket(`${window.location.host.indexOf('localhost') >= 0 ? 'ws' : 'wss'}://${window.location.host}/stream`)
+        socket = new WebSocket(`${isLocalhost() ? 'ws' : 'wss'}://${window.location.host}/stream`)
 
         window.onbeforeunload = function () {
             socket.onclose = function () {

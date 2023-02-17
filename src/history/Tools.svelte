@@ -1,6 +1,6 @@
 <script>
 
-    import {hasItems} from "../common/common";
+    import {hasItems, isLocalhost} from "../common/common";
     import Icon from "../common/Icon.svelte";
     import Popup from "../Popup.svelte";
     import Stats from "../stats/Stats.svelte";
@@ -43,7 +43,7 @@
             }
         })
         if (response.ok) {
-            const bot = window.location.hostname === 'localhost' ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
+            const bot = isLocalhost() ? 'DeFiChainTraderTestBot' : 'DeFiChainTraderBot'
             notificationURL = `https://telegram.me/${bot}?start=${uuid}`
         } else {
             notificationError = 'Sorry we are unable to create this notification: ' + response.statusText

@@ -1,5 +1,8 @@
 import {writable} from "svelte/store";
 
+export const tempLabel = '[temporary group]'
+export const isTemporary = text => text ? text.includes(tempLabel) : false
+
 const cakeDeFiCustomerSwaps = {
     name: 'Cake DeFi: customer swaps',
     addresses: ['dSPPfAPY8BA3TQdqfZRnzJ7212HPWunDms'],
@@ -68,6 +71,16 @@ const getAccount = () => {
 
 export const accountStore = writable(getAccount())
 
+export const addAddressGroup = addressGroup => [
+    accountStore.update(account => ({
+        ...account,
+        addressGroups: [
+            ...account.addressGroups,
+            addressGroup
+        ]
+    }))
+]
+
 export const updateAccount = partialAccount => {
     accountStore.update(account => ({
         ...account,
@@ -77,7 +90,11 @@ export const updateAccount = partialAccount => {
 
 accountStore.subscribe(account => {
     if (localStorage && account && typeof account === 'object') {
-        localStorage.setItem('account', JSON.stringify(account))
+        localStorage.setItem('account', JSON.stringify({
+            addressGroups: (account.addressGroups || []).filter(group =>
+                group.name && !group.name.includes(tempLabel)
+            )
+        }))
     }
 })
 
