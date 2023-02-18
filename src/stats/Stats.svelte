@@ -7,31 +7,56 @@
 
     let txCount
     let stats
+    let byAddress
     let error
     let screen
     let screenSub
+    let fromTokenSymbol
+    let toTokenSymbol
 
     let selectedItem
     let swaps
     let mode
 
-    const getStats = async () => {
-        const response = await fetch(`/stats`, {
+    async function fetchStats(byAddress, params) {
+        const response = await fetch(`/stats?byAddress=${byAddress}`, {
             method: 'POST',
             body: JSON.stringify({
                 ...request,
+                ...params,
                 minDateText: undefined,
                 maxDateText: undefined,
                 fromAddressGroupText: undefined,
-                toAddressGroupText: undefined
+                toAddressGroupText: undefined,
             }),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
         })
+        return response;
+    }
+
+    const getStats = async () => {
+        const response = await fetchStats(false, {});
         stats = await response.json()
         txCount = stats.map(stat => stat.boughtTXCount).reduce((a, b) => a + b, 0.0)
+    }
+
+    const getStatsByAddress = async (from, to) => {
+        if (from === fromTokenSymbol && to === toTokenSymbol) {
+            fromTokenSymbol = null
+            toTokenSymbol = null
+            return
+        }
+
+        fromTokenSymbol = from
+        toTokenSymbol = to
+        const response = await fetchStats(true, {
+            fromTokenSymbol,
+            toTokenSymbol,
+        });
+        byAddress = await response.json()
     }
 
     onMount(async () => {
@@ -73,36 +98,48 @@
                     </td>
                 {/if}
                 <td>
-                    <span class:red={item.amountNetUSD < 0.0} class:green={item.amountNetUSD >= 0.0}>
+                    <span class:red={item.amountNetUSD < 0.0}
+                          class:green={item.amountNetUSD >= 0.0}>
                         {asDollars(item.amountNetUSD)}
                     </span>
                     <br/>
                     <strong>{asTokenAmount(item.amountNet)}</strong>
                     <br/>
-                    <a href="#" on:click={() => {swaps = item.net; selectedItem = item; mode = 'net'}}>details</a>
+                    <a href="#"
+                       on:click|preventDefault={() => {byAddress = null; swaps = item.net; selectedItem = item; mode = 'net'}}>
+                        details
+                    </a>
                 </td>
                 <td>
                     {asDollars(item.amountBoughtUSD)}
                     <br/>
                     <strong>{asTokenAmount(item.amountBought)}</strong>
                     <br/>
-                    <a href="#" on:click={() => {swaps = item.bought; selectedItem = item; mode = 'bought'}}>details</a>
+                    <a href="#"
+                       on:click|preventDefault={() => {byAddress = null; swaps = item.bought; selectedItem = item; mode = 'bought'}}>
+                        details
+                    </a>
                 </td>
                 <td>
                     {asDollars(item.amountSoldUSD)}
                     <br/>
                     <strong>{asTokenAmount(item.amountSold)}</strong>
                     <br/>
-                    <a href="#" on:click={() => {swaps = item.sold; selectedItem = item; mode = 'sold'}}>details</a>
+                    <a href="#"
+                       on:click|preventDefault={() => {byAddress = null; swaps = item.sold; selectedItem = item; mode = 'sold'}}>
+                        details
+                    </a>
                 </td>
             </tr>
             {#if item === selectedItem}
                 <tr>
                     <td colspan="5">
-                        <a href="#" on:click={() => {swaps = null; selectedItem = null}}>hide</a>
+                        <a href="#"
+                           on:click={() => {swaps = null; selectedItem = null}}>hide
+                        </a>
                         {#if mode === 'net'}
 
-                            <table class="pure-table">
+                            <table class="pure-table server">
                                 <thead>
                                 <tr>
                                     {#if screen.large}
@@ -122,9 +159,10 @@
                                                 <strong>{asTokenAmount(swap.volume)}</strong>
                                             </td>
                                             <td>
-                    <span class:red={swap.amountNetUSD < 0.0} class:green={swap.amountNetUSD >= 0.0}>
-                        {asDollars(swap.amountNetUSD)}
-                    </span>
+                                                <span class:red={swap.amountNetUSD < 0.0}
+                                                      class:green={swap.amountNetUSD >= 0.0}>
+                                                    {asDollars(swap.amountNetUSD)}
+                                                </span>
                                                 <br/>
                                                 <strong>{asTokenAmount(swap.amountNet)} {swap.token}</strong>
                                             </td>
@@ -133,13 +171,58 @@
                                             {asDollars(swap.amountBoughtUSD)}
                                             <br/>
                                             <strong>{asTokenAmount(swap.amountBought)} {swap.token}</strong>
+                                            <br/>
+                                            <a href="#"
+                                               on:click|preventDefault={() => getStatsByAddress(item.token, swap.token)}>
+                                                by address
+                                            </a>
                                         </td>
                                         <td>
                                             {asDollars(swap.amountSoldUSD)}
                                             <br/>
                                             <strong>{asTokenAmount(swap.amountSold)} {swap.token}</strong>
+                                            <br/>
+                                            <a href="#"
+                                               on:click|preventDefault={() => getStatsByAddress(swap.token, item.token)}>
+                                                by address
+                                            </a>
                                         </td>
                                     </tr>
+                                    {#if byAddress && ((item.token === fromTokenSymbol && swap.token === toTokenSymbol)
+                                        || (item.token === toTokenSymbol && swap.token === fromTokenSymbol))}
+                                        <tr>
+                                            <td colspan="4">
+                                                <table>
+                                                    <thead>
+                                                    <tr>
+                                                        <th>address</th>
+                                                        <th>input amount</th>
+                                                        <th>output amount</th>
+                                                        <th>tx count</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {#each byAddress as item}
+                                                        <tr>
+                                                            <td>{item.address}</td>
+                                                            <td>
+                                                                <span class="amount">{item.inputAmount}</span>
+                                                                <span class="token">{fromTokenSymbol}</span>
+                                                                <br/>
+                                                                {asDollars(item.inputAmountUSD)}</td>
+                                                            <td>
+                                                                <span class="amount">{item.outputAmount}</span>
+                                                                <span class="token">{toTokenSymbol}</span>
+                                                                <br/>
+                                                                {asDollars(item.outputAmountUSD)}</td>
+                                                            <td>{item.txCount}</td>
+                                                        </tr>
+                                                    {/each}
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    {/if}
                                 {/each}
                             </table>
 
@@ -217,6 +300,7 @@
         <p class="info">Loading results...</p>
     </div>
 {/if}
+
 
 <style>
     .green {
