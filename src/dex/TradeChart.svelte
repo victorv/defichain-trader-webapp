@@ -128,8 +128,6 @@
 
 <div bind:this={canvasElement} class="canvas">
     <div>
-        <strong>Average price paid</strong>
-        <br/>
         {path}
         <br/>
         fees
