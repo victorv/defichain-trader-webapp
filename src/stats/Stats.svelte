@@ -211,6 +211,7 @@
                                                         <th>address</th>
                                                         <th>input amount</th>
                                                         <th>output amount</th>
+                                                        <th>average price</th>
                                                         <th>tx count</th>
                                                     </tr>
                                                     </thead>
@@ -222,12 +223,25 @@
                                                                 <span class="amount">{item.inputAmount}</span>
                                                                 <span class="token">{fromTokenSymbol}</span>
                                                                 <br/>
-                                                                {asDollars(item.inputAmountUSD)}</td>
+                                                                {asDollars(item.inputAmountUSD)}
+                                                            </td>
                                                             <td>
                                                                 <span class="amount">{item.outputAmount}</span>
                                                                 <span class="token">{toTokenSymbol}</span>
                                                                 <br/>
-                                                                {asDollars(item.outputAmountUSD)}</td>
+                                                                {asDollars(item.outputAmountUSD)}
+                                                            </td>
+                                                            <td>
+                                                                <span className="amount">1</span>
+                                                                <span className="token">{fromTokenSymbol}</span> =
+                                                                <span className="amount">{(item.outputAmount / item.inputAmount).toFixed(8)}</span>
+                                                                <span className="token">{toTokenSymbol}</span>
+                                                                <br/>
+                                                                <span className="amount">1</span>
+                                                                <span className="token">{toTokenSymbol}</span> =
+                                                                <span className="amount">{(item.inputAmount / item.outputAmount).toFixed(8)}</span>
+                                                                <span className="token">{fromTokenSymbol}</span>
+                                                            </td>
                                                             <td>{item.txCount}</td>
                                                         </tr>
                                                     {/each}
