@@ -180,20 +180,24 @@
                                             <br/>
                                             <strong>{asTokenAmount(swap.amountBought)} {swap.token}</strong>
                                             <br/>
-                                            <a href="#"
-                                               on:click|preventDefault={() => getStatsByAddress(item.token, swap.token)}>
-                                                by address
-                                            </a>
+                                            {#if swap.amountBought != '0'}
+                                                <a href="#"
+                                                   on:click|preventDefault={() => getStatsByAddress(item.token, swap.token)}>
+                                                    by address
+                                                </a>
+                                            {/if}
                                         </td>
                                         <td>
                                             {asDollars(swap.amountSoldUSD)}
                                             <br/>
                                             <strong>{asTokenAmount(swap.amountSold)} {swap.token}</strong>
                                             <br/>
-                                            <a href="#"
-                                               on:click|preventDefault={() => getStatsByAddress(swap.token, item.token)}>
-                                                by address
-                                            </a>
+                                            {#if swap.amountSold != '0'}
+                                                <a href="#"
+                                                   on:click|preventDefault={() => getStatsByAddress(swap.token, item.token)}>
+                                                    by address
+                                                </a>
+                                            {/if}
                                         </td>
                                     </tr>
                                     {#if byAddress && ((item.token === fromTokenSymbol && swap.token === toTokenSymbol)
