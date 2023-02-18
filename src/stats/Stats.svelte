@@ -2,6 +2,7 @@
     import {onDestroy, onMount} from "svelte";
     import {screenStore} from "../store";
     import {asDollars, asTokenAmount} from "../common/common";
+    import Help from "../common/Help.svelte";
 
     export let request
 
@@ -19,6 +20,8 @@
     let mode
 
     async function fetchStats(byAddress, params) {
+        error = null
+
         const response = await fetch(`/stats?byAddress=${byAddress}`, {
             method: 'POST',
             body: JSON.stringify({
@@ -38,12 +41,14 @@
     }
 
     const getStats = async () => {
+        stats = null
         const response = await fetchStats(false, {});
         stats = await response.json()
         txCount = stats.map(stat => stat.boughtTXCount).reduce((a, b) => a + b, 0.0)
     }
 
     const getStatsByAddress = async (from, to) => {
+        byAddress = null
         if (from === fromTokenSymbol && to === toTokenSymbol) {
             fromTokenSymbol = null
             toTokenSymbol = null
@@ -55,7 +60,10 @@
         const response = await fetchStats(true, {
             fromTokenSymbol,
             toTokenSymbol,
-        });
+        }).catch(e => {
+            error = `Unable to fetch results: ${e.message}`
+            throw e
+        })
         byAddress = await response.json()
     }
 
@@ -192,6 +200,7 @@
                                         || (item.token === toTokenSymbol && swap.token === fromTokenSymbol))}
                                         <tr>
                                             <td colspan="4">
+                                                Why I do I see what I see? <Help warning={true} help="Limit of 15000 transactions applies separately from the main overview and you may see more transactions here than the header suggests."/>
                                                 <table>
                                                     <thead>
                                                     <tr>
@@ -222,6 +231,21 @@
                                                 </table>
                                             </td>
                                         </tr>
+                                        {#if byAddress.length === 0}
+                                            <div class="message">
+                                                <p class="info">0 results found</p>
+                                            </div>
+                                        {/if}
+                                    {:else if error && ((item.token === fromTokenSymbol && swap.token === toTokenSymbol)
+                                        || (item.token === toTokenSymbol && swap.token === fromTokenSymbol))}
+                                        <div class="message">
+                                            <p class="error">{error}</p>
+                                        </div>
+                                    {:else if ((item.token === fromTokenSymbol && swap.token === toTokenSymbol)
+                                        || (item.token === toTokenSymbol && swap.token === fromTokenSymbol))}
+                                        <div class="message">
+                                            <p class="info">Loading results...</p>
+                                        </div>
                                     {/if}
                                 {/each}
                             </table>
