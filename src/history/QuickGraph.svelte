@@ -164,6 +164,7 @@
                 loading: false,
                 error: `Unable to load graph: ${e.message}`,
             }
+            console.log(e)
         })
     }
 
