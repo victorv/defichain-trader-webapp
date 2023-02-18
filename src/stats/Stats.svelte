@@ -232,15 +232,15 @@
                                                                 {asDollars(item.outputAmountUSD)}
                                                             </td>
                                                             <td>
-                                                                <span className="amount">1</span>
-                                                                <span className="token">{fromTokenSymbol}</span> =
-                                                                <span className="amount">{(item.outputAmount / item.inputAmount).toFixed(8)}</span>
-                                                                <span className="token">{toTokenSymbol}</span>
+                                                                <span class="amount">1</span>
+                                                                <span class="token">{fromTokenSymbol}</span> =
+                                                                <span class="amount">{(item.outputAmount / item.inputAmount).toFixed(8)}</span>
+                                                                <span class="token">{toTokenSymbol}</span>
                                                                 <br/>
-                                                                <span className="amount">1</span>
-                                                                <span className="token">{toTokenSymbol}</span> =
-                                                                <span className="amount">{(item.inputAmount / item.outputAmount).toFixed(8)}</span>
-                                                                <span className="token">{fromTokenSymbol}</span>
+                                                                <span class="amount">1</span>
+                                                                <span class="token">{toTokenSymbol}</span> =
+                                                                <span class="amount">{(item.inputAmount / item.outputAmount).toFixed(8)}</span>
+                                                                <span class="token">{fromTokenSymbol}</span>
                                                             </td>
                                                             <td>{item.txCount}</td>
                                                         </tr>
