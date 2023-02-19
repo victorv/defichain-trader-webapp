@@ -44,7 +44,6 @@
 
     const getStats = async () => {
         stats = null
-        byAddress = null
         const response = await fetchStats(false, {});
         stats = await response.json()
         txCount = stats.map(stat => stat.boughtTXCount).reduce((a, b) => a + b, 0.0)
@@ -121,7 +120,7 @@
                     <strong>{asTokenAmount(item.amountNet)}</strong>
                     <br/>
                     <a href="#"
-                       on:click|preventDefault={() => {byAddress = null; swaps = item.net; selectedItem = item; mode = 'net'}}>
+                       on:click|preventDefault={() => {byAddress = null; fromTokenSymbol = null; toTokenSymbol = null; swaps = item.net; selectedItem = item; mode = 'net'}}>
                         details
                     </a>
                 </td>
@@ -131,7 +130,7 @@
                     <strong>{asTokenAmount(item.amountBought)}</strong>
                     <br/>
                     <a href="#"
-                       on:click|preventDefault={() => {byAddress = null; swaps = item.bought; selectedItem = item; mode = 'bought'}}>
+                       on:click|preventDefault={() => {byAddress = null; fromTokenSymbol = null; toTokenSymbol = null; swaps = item.bought; selectedItem = item; mode = 'bought'}}>
                         details
                     </a>
                 </td>
@@ -141,7 +140,7 @@
                     <strong>{asTokenAmount(item.amountSold)}</strong>
                     <br/>
                     <a href="#"
-                       on:click|preventDefault={() => {byAddress = null; swaps = item.sold; selectedItem = item; mode = 'sold'}}>
+                       on:click|preventDefault={() => {byAddress = null; fromTokenSymbol = null; toTokenSymbol = null; swaps = item.sold; selectedItem = item; mode = 'sold'}}>
                         details
                     </a>
                 </td>
