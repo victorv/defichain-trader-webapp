@@ -47,7 +47,7 @@
         txCount = stats.map(stat => stat.boughtTXCount).reduce((a, b) => a + b, 0.0)
     }
 
-    const getStatsByAddress = async (from, to) => {
+    const fetchStatsByAddress = async (from, to) => {
         byAddress = null
         if (from === fromTokenSymbol && to === toTokenSymbol) {
             fromTokenSymbol = null
@@ -60,11 +60,15 @@
         const response = await fetchStats(true, {
             fromTokenSymbol,
             toTokenSymbol,
-        }).catch(e => {
-            error = `Unable to fetch results: ${e.message}`
-            throw e
         })
         byAddress = await response.json()
+    }
+
+    const getStatsByAddress = async (from, to) => {
+        await fetchStatsByAddress(from, to).catch(e => {
+            error = `Unable to fetch results: ${e.message}`
+            console.log(e)
+        })
     }
 
     onMount(async () => {
@@ -72,7 +76,7 @@
 
         await getStats().catch(e => {
             error = `Unable to fetch results: ${e.message}`
-            throw e
+            console.log(e)
         })
     })
 
