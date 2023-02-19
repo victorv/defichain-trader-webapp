@@ -11,7 +11,7 @@
         const diff = endTime.diff(startTime, ["years", "days", "hours", "minutes", "seconds", "milliseconds"]).toObject()
 
         if (diff.years !== 0) {
-            short = `${diff.years}y`
+            short = `${diff.years}y ${diff.days}d`
         } else if (diff.days !== 0) {
             short = `${diff.days}d`
         } else if (diff.hours !== 0) {
