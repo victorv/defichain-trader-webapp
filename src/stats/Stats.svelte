@@ -44,6 +44,7 @@
 
     const getStats = async () => {
         stats = null
+        byAddress = null
         const response = await fetchStats(false, {});
         stats = await response.json()
         txCount = stats.map(stat => stat.boughtTXCount).reduce((a, b) => a + b, 0.0)
