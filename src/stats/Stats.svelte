@@ -3,9 +3,11 @@
     import {screenStore} from "../store";
     import {asDollars, asTokenAmount} from "../common/common";
     import Help from "../common/Help.svelte";
+    import TimePastSince from "../common/TimePastSince.svelte";
 
     export let request
 
+    let now = new Date().getTime()
     let txCount
     let stats
     let byAddress
@@ -208,21 +210,40 @@
                                         || (item.token === toTokenSymbol && swap.token === fromTokenSymbol))}
                                         <tr>
                                             <td colspan="4">
-                                                Why I do I see what I see? <Help warning={true} help="Limit of 15000 transactions applies separately from the main overview and you may see more transactions here than the header suggests."/>
-                                                <table>
+                                                Why I do I see what I see?
+                                                <Help warning={true}
+                                                      help="Limit of 15000 transactions applies separately from the main overview and you may see more transactions here than the header suggests."/>
+                                                <table class="by-address pure-table">
                                                     <thead>
                                                     <tr>
-                                                        <th>address</th>
                                                         <th>input amount</th>
                                                         <th>output amount</th>
-                                                        <th>average price</th>
-                                                        <th>tx count</th>
+                                                        {#if screen.large}
+                                                            <th>average price</th>
+                                                            <th>additional info</th>
+                                                        {/if}
                                                     </tr>
                                                     </thead>
                                                     <tbody>
                                                     {#each byAddress as item}
+                                                        <tr class="header">
+                                                            <td colspan={screen.large ? 4 : 2}>
+                                                                <span class="address">
+                                                                    <a target="_blank" href="https://defiscan.live/address/{item.address}">
+                                                                        {item.address}
+                                                                    </a>
+                                                                </span>
+                                                                <br/>
+                                                                <span class="avg">
+                                                                <TimePastSince start={item.minTime * 1000}
+                                                                               end={now}/>
+                                                                -
+                                                                <TimePastSince start={item.maxTime * 1000}
+                                                                               end={now}/>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
                                                         <tr>
-                                                            <td>{item.address}</td>
                                                             <td>
                                                                 <span class="amount">{item.inputAmount}</span>
                                                                 <span class="token">{fromTokenSymbol}</span>
@@ -235,18 +256,26 @@
                                                                 <br/>
                                                                 {asDollars(item.outputAmountUSD)}
                                                             </td>
-                                                            <td>
-                                                                <span class="amount">1</span>
-                                                                <span class="token">{fromTokenSymbol}</span> =
-                                                                <span class="amount">{(item.outputAmount / item.inputAmount).toFixed(8)}</span>
-                                                                <span class="token">{toTokenSymbol}</span>
-                                                                <br/>
-                                                                <span class="amount">1</span>
-                                                                <span class="token">{toTokenSymbol}</span> =
-                                                                <span class="amount">{(item.inputAmount / item.outputAmount).toFixed(8)}</span>
-                                                                <span class="token">{fromTokenSymbol}</span>
-                                                            </td>
-                                                            <td>{item.txCount}</td>
+                                                            {#if screen.large}
+                                                                <td>
+                                                                    <span class="amount">1</span>
+                                                                    <span class="token">{fromTokenSymbol}</span>
+                                                                    =
+                                                                    <span class="amount">{(item.outputAmount / item.inputAmount).toFixed(8)}</span>
+                                                                    <span class="token">{toTokenSymbol}</span>
+                                                                    <br/>
+                                                                    <span class="amount">1</span>
+                                                                    <span class="token">{toTokenSymbol}</span>
+                                                                    =
+                                                                    <span class="amount">{(item.inputAmount / item.outputAmount).toFixed(8)}</span>
+                                                                    <span class="token">{fromTokenSymbol}</span>
+                                                                </td>
+                                                                <td>
+                                                                    <strong>transactions</strong>: {item.txCount}
+                                                                    <br/>
+                                                                    <strong>blocks</strong>: {item.minBlockHeight} - {item.maxBlockHeight}
+                                                                </td>
+                                                            {/if}
                                                         </tr>
                                                     {/each}
                                                     </tbody>
@@ -349,6 +378,28 @@
 
 
 <style>
+    .address {
+        white-space: break-spaces;
+        word-break: break-all;
+    }
+
+    table.by-address {
+        table-layout: fixed;
+    }
+
+    .large table.by-address th {
+        width: 25%;
+    }
+
+    .small table.by-address th {
+        width: 50%;
+    }
+
+    .header td {
+        border: 0;
+        background-color: rgb(240, 240, 240);
+    }
+
     .green {
         color: green;
     }
@@ -364,5 +415,13 @@
     .message {
         display: flex;
         justify-content: center;
+    }
+
+    .avg {
+        font-size: 80%;
+    }
+
+    .avg .token {
+        color: gray;
     }
 </style>
