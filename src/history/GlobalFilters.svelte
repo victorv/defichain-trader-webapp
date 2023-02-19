@@ -8,8 +8,8 @@
     let account
     let minDate = currentFilter.minDateText
     let maxDate = currentFilter.maxDateText
-    $: fromAddressGroup = currentFilter.fromAddressGroupText
-    $: toAddressGroup = currentFilter.toAddressGroupText
+    let fromAddressGroup = currentFilter.fromAddressGroupText
+    let toAddressGroup = currentFilter.toAddressGroupText
     let sub
 
     const findAddresses = groupName => {
