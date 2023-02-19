@@ -396,6 +396,7 @@
     }
 
     .header td {
+        text-align: right;
         border: 0;
         background-color: rgb(240, 240, 240);
     }
@@ -419,9 +420,5 @@
 
     .avg {
         font-size: 80%;
-    }
-
-    .avg .token {
-        color: gray;
     }
 </style>
