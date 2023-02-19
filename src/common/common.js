@@ -27,6 +27,14 @@ export const avg = (a, b) => {
     return (b / a).toFixed(8)
 }
 
+export const formatAmount = num => {
+    return new Intl.NumberFormat(`en-US`, {
+        currency: `USD`,
+        style: 'currency',
+        maximumFractionDigits: 8,
+    }).format(num).substring(1)
+}
+
 export const asTokenAmount = num => {
     let absNum = Math.abs(num)
     let digits = Math.round(Math.min(8, 8000 / (absNum == 0 ? 8000000 : absNum)))

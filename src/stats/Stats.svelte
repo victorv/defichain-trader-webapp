@@ -1,7 +1,7 @@
 <script>
     import {onDestroy, onMount} from "svelte";
     import {screenStore} from "../store";
-    import {asDollars, asTokenAmount} from "../common/common";
+    import {asDollars, asTokenAmount, formatAmount} from "../common/common";
     import Help from "../common/Help.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
 
@@ -245,13 +245,13 @@
                                                         </tr>
                                                         <tr>
                                                             <td>
-                                                                <span class="amount">{item.inputAmount}</span>
+                                                                <span class="amount">{formatAmount(item.inputAmount)}</span>
                                                                 <span class="token">{fromTokenSymbol}</span>
                                                                 <br/>
                                                                 {asDollars(item.inputAmountUSD)}
                                                             </td>
                                                             <td>
-                                                                <span class="amount">{item.outputAmount}</span>
+                                                                <span class="amount">{formatAmount(item.outputAmount)}</span>
                                                                 <span class="token">{toTokenSymbol}</span>
                                                                 <br/>
                                                                 {asDollars(item.outputAmountUSD)}
@@ -396,7 +396,6 @@
     }
 
     .header td {
-        text-align: right;
         border: 0;
         background-color: rgb(240, 240, 240);
     }
