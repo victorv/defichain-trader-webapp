@@ -46,6 +46,17 @@ const burnAddress = {
 }
 
 const builtinAddressGroups = [cakeDeFiBuyBot, cakeDeFiCustomerSwaps, DFIP2201A, DFIP2206D, DFIP2211B, burnBots, burnAddress]
+let tokenIdsBySymbol = {}
+
+export const setTokensByID = tokens => {
+    for(const [id, symbol] of Object.entries(tokens)) {
+        tokenIdsBySymbol[symbol] = id
+    }
+}
+
+export const getTokenID = targetSymbol => {
+    return +tokenIdsBySymbol[targetSymbol]
+}
 
 const getAccount = () => {
     if (localStorage) {

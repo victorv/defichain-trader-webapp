@@ -9,6 +9,7 @@
     export let supportAnyToken
     export let supportPseudo
     export let freezeTokens
+    export let freezeFromToken
 
     let onTokenSelected
 
@@ -52,7 +53,7 @@
     <div>
         <button on:click={() => onTokenSelected = onFromTokenSelected}
                 class:pure-button-primary={onTokenSelected === onFromTokenSelected}
-                disabled={onTokenSelected || freezeTokens}
+                disabled={onTokenSelected || freezeTokens || freezeFromToken}
                 id="from-token-button"
                 class="pure-button"
                 type="button">
@@ -65,7 +66,10 @@
             {/if}
         </button>
     </div>
-    <a href="#" on:click|preventDefault={() => swapTokenSelection()} title="to - click to swap 'from' and 'to' symbols">
+    <a disabled={freezeFromToken}
+       href="#"
+       on:click|preventDefault={() => swapTokenSelection()}
+       title="to - click to swap 'from' and 'to' symbols">
         <Icon icon="exchange"/>
     </a>
     <div>

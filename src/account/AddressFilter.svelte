@@ -1,6 +1,6 @@
 <script>
-    import Icon from "../../common/Icon.svelte";
-    import {accountStore, updateAccount} from "../../store";
+    import Icon from "../common/Icon.svelte";
+    import {accountStore, updateAccount} from "../store";
     import {onDestroy, onMount} from "svelte";
 
     let account

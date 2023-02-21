@@ -39,6 +39,7 @@
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
     import WebSocket from "./WebSocket.svelte";
+    import {setTokensByID} from "./store";
 
     let allTokens
     let error
@@ -55,11 +56,16 @@
             tokenSymbolsById[tokenId] = token.symbol
         }
 
+
+        const validTokens = {}
         const poolPairTokens = new Set()
         for (const poolPair of Object.values(poolPairs)) {
             poolPairTokens.add(tokenSymbolsById[poolPair.idTokenA])
             poolPairTokens.add(tokenSymbolsById[poolPair.idTokenB])
+            validTokens[poolPair.idTokenA] = tokenSymbolsById[poolPair.idTokenA]
+            validTokens[poolPair.idTokenB] = tokenSymbolsById[poolPair.idTokenB]
         }
+        setTokensByID(validTokens)
 
         allTokens = Array.from(poolPairTokens).filter(token => token !== 'BURN').sort()
     }

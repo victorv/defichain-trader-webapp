@@ -1,6 +1,7 @@
 <script>
-    import AddressFilter from "./filter/AddressFilter.svelte";
+    import AddressFilter from "./AddressFilter.svelte";
     import DEX from "../dex/DEX.svelte";
+    import Wallet from "./Wallet.svelte";
 
     export let allTokens
     export let Chart
@@ -10,6 +11,7 @@
     const options = [
         {label: 'Addresses', component: AddressFilter},
         {label: 'Swaps', component: DEX},
+        {label: 'Wallet', component: Wallet},
     ]
 </script>
 
