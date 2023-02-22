@@ -25,7 +25,7 @@
         if (hash === '#auctions') {
             return Auctions
         }
-        if (hash === '#account') {
+        if (hash.includes('#account')) {
             return Account
         }
         if (hash === '#about') {

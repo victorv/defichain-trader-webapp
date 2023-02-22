@@ -1,5 +1,7 @@
 <script>
 
+    const cryptoAndDUSD = ['DFI', 'DUSD', 'csETH', 'USDT', 'USDC', 'DOGE', 'BTC', 'BCH', 'LTC', 'ETH']
+
     export let allTokens
     export let onTokenSelected
     export let onTokenSelectionCancelled
@@ -7,6 +9,11 @@
     export let supportPseudo
     export let isFrom = false
     export let isTo = false
+    export let stockOnly
+
+    let supportedTokens = stockOnly
+        ? allTokens.filter(token => !cryptoAndDUSD.includes(token))
+        : allTokens
 
     let tokens
 
@@ -17,9 +24,12 @@
             '#DUSD or stock',
             '#USDT or USDC',
             '#is sold or bought',
-        ] : []).concat(allTokens)
+        ] : []).concat(supportedTokens)
         tokens = supportAnyToken ? ['#Any'].concat(tokens) : tokens
 
+        if (stockOnly) {
+            return tokens
+        }
         return ['DUSD', 'DFI'].concat(tokens)
     }
 

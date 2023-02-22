@@ -7,6 +7,9 @@
 
     export let allTokens
 
+    const cryptoAndDUSD = ['DFI', 'DUSD', 'csETH', 'USDT', 'USDC', 'DOGE', 'BTC', 'BCH', 'LTC', 'ETH']
+
+    let stock = allTokens.filter(token => !cryptoAndDUSD.includes(token))
     let balances = []
     let address
     let fromTokenSymbol
@@ -14,6 +17,7 @@
     let walletAccount
     let swap
     let password
+    let dusdBalance = 0.0
 
     const encryptedKeys = {
         "pubKey": "0275cc4f36cfc6f254125640603d75af9f1403e21ea41720b52fc71ebe00456d2a",
@@ -27,7 +31,11 @@
 
     const submit = async newSwap => {
         fromTokenSymbol = null
-        swap = newSwap
+        swap = {
+            ...newSwap,
+            tokenFrom: 'DUSD',
+            tokenTo: newSwap.token,
+        }
         console.log(swap)
     }
 
@@ -36,22 +44,15 @@
         try {
             const script = await walletAccount.getScript()
             const builder = walletAccount.withTransactionBuilder()
-            console.log({
-                fromAmount: bigNumber.BigNumber(swap.amountFrom.toFixed(8)),
-                fromScript: script,
-                toScript: script,
-                fromTokenId: getTokenID(swap.tokenFrom),
-                toTokenId: getTokenID(swap.tokenTo),
-                maxPrice: bigNumber.BigNumber((swap.desiredResult / swap.amountFrom).toFixed(8))
-            })
+
             const tx = await builder.dex.poolSwap(
                 {
-                    fromAmount: BigNumber(swap.amountFrom),
+                    fromAmount: BigNumber(swap.quantity),
                     fromScript: script,
                     toScript: script,
                     fromTokenId: getTokenID(swap.tokenFrom),
                     toTokenId: getTokenID(swap.tokenTo),
-                    maxPrice: BigNumber(swap.desiredResult)
+                    maxPrice: BigNumber(swap.targetPrice)
                 }, script
             )
             console.log(tx)
@@ -79,6 +80,11 @@
             token: pair[0],
             amount: pair[1]
         }))
+
+        const dusd = balances.find(balance => balance.token === 'DUSD')
+        if (dusd) {
+            dusdBalance = dusd.amount
+        }
     })
 </script>
 
@@ -88,7 +94,7 @@
         {#each balances as balance}
             <li>
                 <button on:click={() => {error = null; fromTokenSymbol = balance.token}}
-                        class="pure-button primary-button">New limit order
+                        class="pure-button primary-button">Buy Stock
                 </button>
                 <span class="amount">{balance.amount}</span>
                 <span class="token">{balance.token}</span>
@@ -100,7 +106,8 @@
 {#if fromTokenSymbol}
     <LimitOrder {cancel}
                 {submit}
-                {allTokens}
+                {dusdBalance}
+                allTokens={stock}
                 {fromTokenSymbol}/>
 {/if}
 

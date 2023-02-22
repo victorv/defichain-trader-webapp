@@ -1,87 +1,92 @@
 <script>
     import {round} from "../common/common";
-    import FromToTokenFilter from "../dex/FromToTokenFilter.svelte";
+    import TokenFilter from "../dex/TokenFilter.svelte";
 
     export let allTokens
-
-    export let fromTokenSymbol
-    export let toTokenSymbol
+    export let dusdBalance
     export let cancel
     export let submit
 
-    let amountFrom
-    let amountFromElement
+    let token
+    let quantity
+    let quantityElement
+    let price
+    let targetPrice
+    let targetPriceElement
+    let selectToken = true
 
-    let desiredResult
-    let desiredResultElement
-    let multiplier = 1.0
-
-    const updateEstimate = async estimateMultiplier => {
-        multiplier = estimateMultiplier
-        if (fromTokenSymbol && toTokenSymbol) {
-            desiredResult = null
-
-            const amount = amountFrom
-            const request = `${amount}+${fromTokenSymbol}+to+${toTokenSymbol}`
+    const updateEstimate = async () => {
+        if (token) {
+            const request = `1.0+${token}+to+DUSD`
             const response = await fetch(`/estimate?poolswap=${request}`)
             const result = await response.json()
 
-            desiredResult = round(result.estimate * multiplier)
+            price = round(result.estimate)
         }
     }
 
-    const onTokenSelectionChanged = selection => {
-        fromTokenSymbol = selection.fromTokenSymbol
-        toTokenSymbol = selection.toTokenSymbol
+    const onTokenSelectionChanged = async selection => {
+        selectToken = false
+        token = selection
+        await updateEstimate()
     }
 
     const focusAmountFrom = e => {
         e.focus()
     }
 
-    const reset = () => {
-        fromTokenSymbol = null
-        toTokenSymbol = null
-        amountFrom = null
-        desiredResult = null
-        multiplier = 1
-    }
-
     const trackPoolSwap = async () => {
-        const amountFromValid = amountFromElement.reportValidity()
-        const desiredResultValid = desiredResultElement.reportValidity()
+        const amountFromValid = quantityElement.reportValidity()
+        const desiredResultValid = targetPriceElement.reportValidity()
         if (!amountFromValid || !desiredResultValid) {
             return
         }
 
         submit({
-            tokenFrom: fromTokenSymbol,
-            tokenTo: toTokenSymbol,
-            amountFrom: +amountFromElement.value,
-            desiredResult: desiredResult,
+            token,
+            quantity,
+            targetPrice,
         })
-
-        reset()
     }
 </script>
 
-<form class="pure-form pure-form-stacked"
+<form class="pure-form pure-form-stacked server"
       on:submit|preventDefault>
     <fieldset>
-        <FromToTokenFilter {allTokens}
-                           freezeFromToken={true}
-                           {fromTokenSymbol}
-                           {toTokenSymbol}
-                           {onTokenSelectionChanged}/>
-        {#if fromTokenSymbol && toTokenSymbol}
+        <div>
+            <button on:click={() => selectToken = true}
+                    class:pure-button-primary={selectToken}
+                    id="from-token-button"
+                    class="pure-button"
+                    type="button">
+                {#if token}
+                    {token}
+                {:else}
+                    Select token
+                {/if}
+            </button>
+        </div>
+        {#if selectToken}
+            <TokenFilter
+                    {allTokens}
+                    stockOnly={true}
+                    supportAnyToken={false}
+                    supportPseudo={false}
+                    onTokenSelected={onTokenSelectionChanged}
+                    onTokenSelectionCancelled={cancel}
+                    isFrom={true}
+                    isTo={false}
+            />
+        {/if}
+        {#if token}
             <div>
                 <div>
                     <label for="from-amount"
                            on:click|preventDefault>
-                        Amount
+                        Quantity
                     </label>
-                    <input bind:value={amountFrom}
-                           bind:this={amountFromElement}
+                    <input bind:value={quantity}
+                           bind:this={quantityElement}
                            use:focusAmountFrom
                            id="from-amount"
                            type="text">
@@ -89,23 +94,39 @@
                 <div>
                     <label for="desired-result"
                            on:click|preventDefault>
-                        Max Price
+                        Maximum price per token
+                        <br/>
+                        <span class="avg">
+                            Current price
+                            <a on:click|preventDefault={() => targetPrice = price}
+                               href="#">{price}</a>
+                        </span>
                     </label>
-                    <input bind:value={desiredResult}
-                           bind:this={desiredResultElement}
-                           disabled={!amountFrom}
+                    <input bind:value={targetPrice}
+                           bind:this={targetPriceElement}
                            id="desired-result"
                            type="text">
                 </div>
+                {#if quantity && targetPrice}
+                    You pay
+                    <span class="amount">{round(targetPrice * quantity)}</span>
+                    <span class="token">DUSD</span>
+                {/if}
+                {#if targetPrice * quantity > dusdBalance}
+                    <div class="error">
+                        You don't have enough DUSD
+                    </div>
+                {/if}
+
                 <div>
                     <button on:click={cancel}
                             class="pure-button"
                             type="button">Cancel
                     </button>
-                    <button disabled={!fromTokenSymbol || !toTokenSymbol || !amountFrom || !desiredResult}
+                    <button disabled={!token || !quantity || !targetPrice || targetPrice * quantity > dusdBalance}
                             on:click={trackPoolSwap}
                             class="pure-button pure-button-primary"
-                            type="button">Create limit order
+                            type="button">Submit buy-limit order
                     </button>
                 </div>
             </div>
@@ -114,6 +135,11 @@
 </form>
 
 <style>
+    .avg {
+        font-size: 80%;
+        color: gray;
+    }
+
     .multiplier > * {
         flex: 1;
     }
