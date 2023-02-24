@@ -50,9 +50,10 @@
     <WebSocketStatus status={webSocketStatus}/>
 {:else}
     {#if blacklist && blacklist.length}
-        <form class="pure-form">
+        <form class="pure-form" on:submit|preventDefault>
             <button on:click={() => showBlacklist = !showBlacklist}
                     class:pure-button-primary={showBlacklist}
+                    type="button"
                     class="icon pure-button">
                 {blacklist.length}
                 <Icon icon="filter"/>
