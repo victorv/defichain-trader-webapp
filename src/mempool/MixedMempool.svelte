@@ -1,11 +1,13 @@
+<svelte:options immutable/>
 <script>
     import {onDestroy, onMount} from "svelte";
-    import {mempool, mempoolBlacklistStore, updateMempoolBlacklist, webSocketStore} from "../store";
+    import {mempool, mempoolBlacklistStore, screenStore, updateMempoolBlacklist, webSocketStore} from "../store";
     import WebSocketStatus from "../WebSocketStatus.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import Help from "../common/Help.svelte";
     import {asDollars} from "../common/common";
     import Icon from "../common/Icon.svelte";
+    import Limit from "../common/Limit.svelte";
 
     export let allTokens
 
@@ -15,7 +17,8 @@
     let blacklist = []
     let showBlacklist = false
 
-    let subscriptions = []
+    let screen
+    let subs = []
     let webSocketStatus
     let now = new Date().getTime()
 
@@ -29,18 +32,19 @@
     const updateActiveItems = () => activeItems = filterItems(items)
 
     onMount(() => {
-        subscriptions.push(mempool.subscribe(mempoolItems => {
+        subs.push(mempool.subscribe(mempoolItems => {
             items = mempoolItems
             activeItems = filterItems(items)
         }))
-        subscriptions.push(webSocketStore.subscribe(status => webSocketStatus = status))
-        subscriptions.push(mempoolBlacklistStore.subscribe(newList => {
+        subs.push(webSocketStore.subscribe(status => webSocketStatus = status))
+        subs.push(mempoolBlacklistStore.subscribe(newList => {
             blacklist = newList.sort()
             activeItems = filterItems(items)
         }))
+        subs.push(screenStore.subscribe(newScreen => screen = newScreen))
     })
 
-    onDestroy(() => subscriptions.forEach(s => s()))
+    onDestroy(() => subs.forEach(s => s()))
 
     const hide = txType => updateMempoolBlacklist(blacklist.concat(txType))
     const show = txType => updateMempoolBlacklist(blacklist.filter(item => item !== txType))
@@ -48,9 +52,10 @@
 
 {#if webSocketStatus && (webSocketStatus.connecting || !webSocketStatus.connected)}
     <WebSocketStatus status={webSocketStatus}/>
-{:else}
+{:else if screen}
     {#if blacklist && blacklist.length}
-        <form class="pure-form" on:submit|preventDefault>
+        <form class="pure-form"
+              on:submit|preventDefault>
             <button on:click={() => showBlacklist = !showBlacklist}
                     class:pure-button-primary={showBlacklist}
                     type="button"
@@ -82,15 +87,16 @@
                 Type
             </th>
             <th>
-                Details |
                 <input on:keyup={updateActiveItems}
                        bind:value={minUSDT}
                        type="number"/>
                 <Help help="Hide TXs where the total USDT value of all amounts is less than the specified number. TXs that don't involve quantifiable amounts are always valued at 0 USDT."/>
             </th>
-            <th>
-                Owner
-            </th>
+            {#if screen.large}
+                <th>
+                    Owner
+                </th>
+            {/if}
         </tr>
         </thead>
         {#if activeItems && activeItems.length}
@@ -106,16 +112,21 @@
                         <br/>
                         <TimePastSince start={tx.time}
                                        end={now}/>
+                        {#if screen.small}
+                            <br/>
+                            <Limit text={tx.owner}/>
+                        {/if}
                     </td>
                     <td class="server">
                         {@html tx.description}
                         <br/>
                         <span class="brown">{asDollars(tx.usdtAmount)}</span>
                     </td>
-                    <td>
-                        {tx.owner}
-                        <br/>
-                    </td>
+                    {#if screen.large}
+                        <td>
+                            {tx.owner}
+                        </td>
+                    {/if}
                 </tr>
             {/each}
             </tbody>
@@ -134,6 +145,26 @@
 {/if}
 
 <style>
+    table {
+        table-layout: fixed;
+    }
+
+    th {
+        width: 50%;
+    }
+
+    table.large th {
+        width: 40%;
+    }
+
+    table.large th:last-child {
+        width: 20%;
+    }
+
+    th > * {
+        display: inline;
+    }
+
     .container span {
         padding: 1rem;
     }
