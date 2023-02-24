@@ -5,6 +5,7 @@
     import TimePastSince from "../common/TimePastSince.svelte";
     import Help from "../common/Help.svelte";
     import {asDollars} from "../common/common";
+    import Icon from "../common/Icon.svelte";
 
     export let allTokens
 
@@ -12,6 +13,7 @@
     let items = []
     let activeItems = []
     let blacklist = []
+    let showBlacklist = false
 
     let subscriptions = []
     let webSocketStatus
@@ -49,16 +51,30 @@
 {:else}
     {#if blacklist && blacklist.length}
         <form class="pure-form">
-            {#each blacklist as item}
-                <button on:click={() => show(item)} class="pure-button" type="button">
-                    <strong class="red">X</strong> hiding <strong>{item}</strong>
-                </button>
-            {/each}
+            <button on:click={() => showBlacklist = !showBlacklist}
+                    class:pure-button-primary={showBlacklist}
+                    class="icon pure-button">
+                {blacklist.length}
+                <Icon icon="filter"/>
+            </button>
+            {#if showBlacklist}
+                {#each blacklist as item}
+                    <button on:click={() => show(item)}
+                            class="pure-button"
+                            type="button">
+                        <strong class="red">X</strong>
+                        hiding
+                        <strong>{item}</strong>
+                    </button>
+                {/each}
+            {/if}
         </form>
         <br/>
     {/if}
 
-    <table class:small={screen.small} class="pure-table">
+
+    <table class:small={screen.small}
+           class="pure-table">
         <thead>
         <tr>
             <th>
@@ -66,7 +82,9 @@
             </th>
             <th>
                 Details |
-                <input on:keyup={updateActiveItems} bind:value={minUSDT} type="number"/>
+                <input on:keyup={updateActiveItems}
+                       bind:value={minUSDT}
+                       type="number"/>
                 <Help help="Hide TXs where the total USDT value of all amounts is less than the specified number. TXs that don't involve quantifiable amounts are always valued at 0 USDT."/>
             </th>
             <th>
@@ -79,12 +97,14 @@
             {#each activeItems as tx}
                 <tr>
                     <td>
-                        <button on:click={() => hide(tx.type)} class="pure-button icon">
+                        <button on:click={() => hide(tx.type)}
+                                class="pure-button icon">
                             <strong class="red">X</strong>
                         </button>
                         <strong>{tx.type}</strong>
                         <br/>
-                        <TimePastSince start={tx.time} end={now}/>
+                        <TimePastSince start={tx.time}
+                                       end={now}/>
                     </td>
                     <td class="server">
                         {@html tx.description}
@@ -92,21 +112,24 @@
                         <span class="brown">{asDollars(tx.usdtAmount)}</span>
                     </td>
                     <td>
-                        {tx.owner}<br/>
+                        {tx.owner}
+                        <br/>
                     </td>
                 </tr>
             {/each}
             </tbody>
         {/if}
     </table>
+{/if}
 
-    {#if !activeItems || !activeItems.length}
-        <div class="container">
-            <div>
-                <span class="info">Keep open to receive transactions. Mempool resets when a block is minted and can be empty.</span>
-            </div>
+{#if !activeItems || !activeItems.length}
+    <div class="container">
+        <div>
+            <span class="info">Keep open to receive transactions. Mempool resets when a block is minted and can be
+                               empty.
+            </span>
         </div>
-    {/if}
+    </div>
 {/if}
 
 <style>
