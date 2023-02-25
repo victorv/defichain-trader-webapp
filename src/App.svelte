@@ -38,7 +38,6 @@
 <script>
     import {onMount} from "svelte";
     import Menu from "./menu/Menu.svelte";
-    import WebSocket from "./WebSocket.svelte";
     import {setTokensByID} from "./store";
 
     let allTokens
@@ -88,9 +87,6 @@
 </script>
 
 <Menu onChange={updateComponentType} {componentType}/>
-<header>
-    <WebSocket/>
-</header>
 
 <main bind:this={mainElement} tabindex="1">
     {#if allTokens}

@@ -1,14 +1,14 @@
 <svelte:options immutable/>
 
 <script>
-    import {swaps} from "../store";
-    import ProfitLoss from "./ProfitLoss.svelte";
+    import {orderStore, swaps} from "../store";
     import Icon from "../common/Icon.svelte";
-    import PoolSwapBreakdown from "./PoolSwapBreakdown.svelte";
     import {hasItems} from "../common/common";
     import QuickGraph from "../history/QuickGraph.svelte";
     import WebSocketStatus from "../WebSocketStatus.svelte";
     import {onDestroy, onMount} from "svelte";
+    import ProfitLoss from "../dex/ProfitLoss.svelte";
+    import PoolSwapBreakdown from "../dex/PoolSwapBreakdown.svelte";
     import {removePoolswap, webSocketStore} from "../websocket";
 
     export let allTokens
@@ -19,7 +19,7 @@
     let webSocketStatus
 
     onMount(() => {
-        subscriptions.push(swaps.subscribe(swaps => poolSwaps = swaps))
+        subscriptions.push(orderStore.subscribe(newOrders => poolSwaps = newOrders))
         subscriptions.push(webSocketStore.subscribe(status => webSocketStatus = status))
     })
 

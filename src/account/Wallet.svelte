@@ -1,12 +1,19 @@
+<svelte:options immutable/>
 <script>
-    import {onMount} from "svelte";
-    import bigNumber, {createEncryptedWallet, CTransactionSegWit} from "../../public/lib/jellyfish";
+    import {onDestroy, onMount} from "svelte";
+    import {createEncryptedWallet, CTransactionSegWit} from "../../public/lib/jellyfish";
     import LimitOrder from "./LimitOrder.svelte";
-    import {getTokenID} from "../store";
+    import {getTokenID, uuidStore} from "../store";
     import BigNumber from "bignumber.js";
+    import OrderOverview from "./OrderOverview.svelte";
+    import {setAddress} from "../websocket";
 
     export let allTokens
 
+    let subs = []
+    let uuid
+
+    let spendable = []
     const cryptoAndDUSD = ['DFI', 'DUSD', 'csETH', 'USDT', 'USDC', 'DOGE', 'BTC', 'BCH', 'LTC', 'ETH']
 
     let stock = allTokens.filter(token => !cryptoAndDUSD.includes(token))
@@ -14,6 +21,7 @@
     let address
     let fromTokenSymbol
     let error
+    let statusText
     let walletAccount
     let swap
     let password
@@ -41,11 +49,16 @@
 
     const signSwap = async () => {
         error = null
+        statusText = 'Submitting transaction...'
         try {
             const script = await walletAccount.getScript()
+
             const builder = walletAccount.withTransactionBuilder()
 
-            const tx = await builder.dex.poolSwap(
+            spendable = await fetchSpendable()
+            const input = spendable[Math.floor(Math.random() * spendable.length)]
+
+            const signedTX = await builder.dex.poolSwap(
                 {
                     fromAmount: BigNumber(swap.quantity),
                     fromScript: script,
@@ -53,21 +66,83 @@
                     fromTokenId: getTokenID(swap.tokenFrom),
                     toTokenId: getTokenID(swap.tokenTo),
                     maxPrice: BigNumber(swap.targetPrice)
-                }, script
+                },
+                script,
             )
-            console.log(tx)
 
-            const raw = new CTransactionSegWit(tx).toHex()
-            console.log(raw)
-            password = ''
-            swap = null
+            const index = signedTX.vin.findIndex(v => v.txid === input.txid)
+
+            // firstInput.txid = input.txid
+            // firstInput.index = input.number
+            console.log(signedTX.vin)
+            console.log(signedTX.witness)
+            signedTX.vin = [signedTX.vin[0]]
+            signedTX.witness = [signedTX.witness[0]]
+            console.log(signedTX)
+
+            const rawSignedTX = new CTransactionSegWit(signedTX).toHex()
+            console.log(rawSignedTX)
+            await submitOrder(swap, rawSignedTX)
         } catch (e) {
             error = 'invalid password'
             console.log(e)
+        } finally {
+            swap = null
+            password = ''
+            statusText = ''
         }
     }
 
+    const submitOrder = async(swap, signedTX) => {
+        await fetch(`/submit-order?uuid=${uuid}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                tokenFrom: swap.tokenFrom,
+                tokenTo: swap.tokenTo,
+                amountFrom: +swap.quantity,
+                maxPrice: +swap.targetPrice,
+                signedTX
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+    }
+
+    const fetchSpendable = async () => {
+        const fetchUnspent = await fetch(`https://ocean.defichain.com/v0/mainnet/address/df1q23dwsp4k9zache7zmmxlfpfap6yp3u3dx4q7hr/transactions/unspent?size=50`)
+        const unspent = await fetchUnspent.json()
+        const largeUnspent = (unspent.data || [])
+            .filter(u => u.vout && +u.vout.value > 0.005)
+            .map(u => u.vout)
+
+        const fetchSpendable = await fetch(`/spendable`, {
+            method: 'POST',
+            body: JSON.stringify(largeUnspent.map(s => s.txid)),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        const spendableTXIds = await fetchSpendable.json()
+        return largeUnspent
+            .filter(s => spendableTXIds.includes(s.txid))
+            .map(s => (
+                {
+                    txid: s.txid,
+                    number: s.n,
+                }
+            ))
+    }
+
     onMount(async () => {
+        setAddress(true)
+
+        subs.push(uuidStore.subscribe(newUUID => {
+            uuid = newUUID
+        }))
+
         const wallet = await createEncryptedWallet(encryptedKeys, async () => {
             return password.trim()
         })
@@ -85,47 +160,65 @@
         if (dusd) {
             dusdBalance = dusd.amount
         }
+        spendable = await fetchSpendable()
+    })
+
+    onDestroy(() => {
+        subs.forEach(sub => sub())
+        setAddress(false)
     })
 </script>
 
-{#if address}
-    {address}
-    <ul class="server">
-        {#each balances as balance}
-            <li>
-                <button on:click={() => {error = null; fromTokenSymbol = balance.token}}
-                        class="pure-button primary-button">Buy Stock
-                </button>
-                <span class="amount">{balance.amount}</span>
-                <span class="token">{balance.token}</span>
-            </li>
-        {/each}
-    </ul>
-{/if}
+<p class="server">
+    {#if address}
+        {address}
+        <br/>
+        <span class="amount">{spendable.length}</span>
+        <span class="token">unspent</span>
+        <ul class="server">
+            {#each balances as balance}
+                <li>
+                    <button on:click={() => {error = null; fromTokenSymbol = balance.token}}
+                            class="pure-button primary-button">Buy Stock
+                    </button>
+                    <span class="amount">{balance.amount}</span>
+                    <span class="token">{balance.token}</span>
+                </li>
+            {/each}
+        </ul>
+    {/if}
 
-{#if fromTokenSymbol}
-    <LimitOrder {cancel}
-                {submit}
-                {dusdBalance}
-                allTokens={stock}
-                {fromTokenSymbol}/>
-{/if}
+    {#if fromTokenSymbol}
+        <LimitOrder {cancel}
+                    {submit}
+                    {dusdBalance}
+                    allTokens={stock}
+                    {fromTokenSymbol}/>
+    {/if}
 
-{#if swap}
-    <label>Password
-        <input bind:value={password}
-               type="password"/>
-        <button type="button" class="pure-button" on:click={signSwap}>
-            Sign and submit
-        </button>
-    </label>
-{/if}
+    {#if swap}
+        <label>Password
+            <input bind:value={password}
+                   type="password"/>
+            <button type="button"
+                    class="pure-button"
+                    on:click={signSwap}>
+                Sign and submit
+            </button>
+        </label>
+    {/if}
 
-{#if error}
-    <p class="error">
-        {error}
-    </p>
-{/if}
+    {#if error}
+        <p class="error">
+            {error}
+        </p>
+    {/if}
+    {#if statusText}
+        {statusText}
+    {/if}
+</p>
+
+<OrderOverview {allTokens} />
 
 <style>
     ul {

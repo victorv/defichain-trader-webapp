@@ -1,13 +1,14 @@
 <svelte:options immutable/>
 <script>
     import {onDestroy, onMount} from "svelte";
-    import {mempool, mempoolBlacklistStore, screenStore, updateMempoolBlacklist, webSocketStore} from "../store";
+    import {mempool, mempoolBlacklistStore, screenStore, updateMempoolBlacklist} from "../store";
     import WebSocketStatus from "../WebSocketStatus.svelte";
     import TimePastSince from "../common/TimePastSince.svelte";
     import Help from "../common/Help.svelte";
     import {asDollars} from "../common/common";
     import Icon from "../common/Icon.svelte";
     import Limit from "../common/Limit.svelte";
+    import {webSocketStore} from "../websocket";
 
     export let allTokens
 

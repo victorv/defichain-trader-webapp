@@ -8,7 +8,7 @@
     export let submit
 
     let token
-    let quantity
+    let quantity = 0.01
     let quantityElement
     let price
     let targetPrice
@@ -31,7 +31,7 @@
         await updateEstimate()
     }
 
-    const focusAmountFrom = e => {
+    const focusQuantity = e => {
         e.focus()
     }
 
@@ -87,9 +87,11 @@
                     </label>
                     <input bind:value={quantity}
                            bind:this={quantityElement}
-                           use:focusAmountFrom
+                           use:focusQuantity
+                           step="0.0005"
+                           disabled
                            id="from-amount"
-                           type="text">
+                           type="number">
                 </div>
                 <div>
                     <label for="desired-result"
@@ -105,7 +107,8 @@
                     <input bind:value={targetPrice}
                            bind:this={targetPriceElement}
                            id="desired-result"
-                           type="text">
+                           step="0.00000001"
+                           type="number">
                 </div>
                 {#if quantity && targetPrice}
                     You pay
